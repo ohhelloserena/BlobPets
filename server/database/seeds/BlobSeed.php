@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Blob;
+use App\BreedingRecord;
 
 use Faker\Factory as Faker;
 
@@ -26,7 +27,8 @@ class BlobSeed extends Seeder
 
 		foreach ($blobs as $blob)
         {
-            Blob::create($blob);
+            $blobCreated = Blob::create($blob);
+            BreedingRecord::create(array('id' => $blobCreated->id));
         }
         
 	}

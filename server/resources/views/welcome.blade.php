@@ -97,8 +97,8 @@
                 </div>
 
                 <div class="links">
-                    <a href="{{ url('/api/user/getAllUsers') }}">All Users</a>
-                    <a href="{{ url('/api/blob/getAllBlobs') }}">All Blobs</a>
+                    <a href="{{ url('/api/users') }}">All Users</a>
+                    <a href="{{ url('/api/blobs') }}">All Blobs</a>
                 </div>
             </div>
         </div>

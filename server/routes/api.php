@@ -17,29 +17,37 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('getAllUsers', function() {
-
-	$users = \App\User::all();
-
-	return $users;
-
-});
-
-// Route::post('authenticate', 'AuthenticateController@authenticate');
-// Route::get('authenticate', 'AuthenticateController@index');
-// Route::get('authenticate', 'AuthenticateController@index');
-
-
-
-
-Route::group(['prefix' => 'user'], function()
+Route::group(['prefix' => 'users'], function()
 {
-    Route::post('authenticate', 'UserController@authenticate');
-	Route::get('getTokenOwner', 'UserController@getTokenOwner');
-	Route::get('getAllUsers', 'UserController@getAllUsers');
+	Route::get('/', 'UserController@getAllUsers');	// return list of all users
+	Route::get('/{id}', 'UserController@getUser');	// return user with user id
+	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
+
+    Route::post('authenticate', 'UserController@authenticate');	// authenticate user with email and password, and return a token
+
+	Route::get('getTokenOwner', 'UserController@getTokenOwner');	// debug function
+	
 });
 
-Route::group(['prefix' => 'blob'], function()
+Route::group(['prefix' => 'blobs'], function()
 {
-	Route::get('getAllBlobs', 'BlobController@getAllBlobs');
+	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blob
+	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
+	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name
 });
+
+/*
+|--------------------------------------------------------------------------
+| Some examples for using the API
+|--------------------------------------------------------------------------
+| - GET serverAddress.com/api/users
+|		return a list of all users
+| - GET serverAddress.com/api/users/1
+|		return the user with user id 1
+| - POST serverAddress.com/api/users/authenticate?email=mail@email.com&password=password
+|		return a token for user with email 'mail@email.com' and 
+|		with password 'password', given that this is in the database
+|
+| - PUT serverAddress.com/api/blobs/1?name=Blobby
+|		change the name of blob with id 1 to 'Blobby'
+*/
