@@ -8,6 +8,8 @@ use Carbon\Carbon;
 
 class Blob extends Model
 {
+
+    protected $fillable = ['name', 'type', 'owner_id', 'color'];
     //
     // public function updatedAt()
     // {

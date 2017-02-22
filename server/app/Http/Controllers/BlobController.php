@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Blob;
 use Illuminate\Http\Request;
 use \DateTime;
 use Carbon\Carbon;
@@ -95,9 +96,7 @@ class BlobController extends Controller
             // check if owner is valid
             $user = $this->verifyUser();
             if ($user) {
-                $numBlobs = DB::table('blobs')
-                    ->where('owner_id', $user)
-                    ->count();
+                $numBlobs = DB::table('blobs')->where('owner_id', $user)->count();
 
                 // check that user does not have the max number of blobs
                 if ($numBlobs<$maxNumBlobs){
@@ -105,11 +104,8 @@ class BlobController extends Controller
                     //check if inputs are valid
                     $supportedTypes = array('A', 'B', 'C');
                     if (in_array($blobType, $supportedTypes)) {
-
-                        // create blob
-                        $id = DB::table('blobs')->insertGetId(
-                            ['name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor,"created_at" =>  Carbon::now(), "updated_at" => Carbon::now()]
-                        );
+                        $blob = Blob::create(array('name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor));
+                        $id = $blob->id;
 
                         // return blob id
                         return response()->json(['blobID' => $id], 201);
@@ -136,19 +132,13 @@ class BlobController extends Controller
     public function deleteBlob($id){
         $user = $this->verifyUser();
         if($user) {
-
             // Check if blob exists and that it belongs to user
-            $results = DB::select('select * from blobs where id = :id and owner_id = :uid', ['id' => $id, 'uid'=> $user]);
+            $results = Blob::where('id', $id)->where('owner_id',$user)->first();
             if(!empty($results)) {
-                $health = -1;
-                foreach ($results as $result) {
-                    $health = $result->health_level;
-                    break;
-                }
-//                // Check if blob health = 0
-                if ($health == 0){
+                // Check if blob health = 0
+                if ($results->health_level == 0){
                     // Delete blob
-                    DB::delete('delete from blobs where id=:id', ['id' => $id]);
+                    Blob::destroy($id);
                     return Response::make('OK', 200);
                 }
                 else{
@@ -172,7 +162,6 @@ class BlobController extends Controller
      */
     public function verifyUser(){
         try{
-
             $authenticatedUser = JWTAuth::parseToken()->authenticate();
             $user =  $authenticatedUser['id'];
             return $user;
