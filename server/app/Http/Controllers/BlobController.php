@@ -49,7 +49,7 @@ class BlobController extends Controller
     // return error if the blob does not exist
     // input:   'id': the id of a blob
     //          'name': new name for the blob
-    public function updateBlob(Request $request, $id) {
+    public function updateBlobName(Request $request, $id) {
         $user = $this->verifyUser();
 
         $blob = BlobController::getBlob($id);

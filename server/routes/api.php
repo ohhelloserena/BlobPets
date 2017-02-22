@@ -23,7 +23,11 @@ Route::group(['prefix' => 'users'], function()
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
 
+
+    Route::post('/', 'UserController@createUser');	// create a user
     Route::post('authenticate', 'UserController@authenticate');	// authenticate user with email and password, and return a token
+
+    Route::put('/{id}', 'UserController@updateUser');	// update an existing user
 
 	Route::get('getTokenOwner', 'UserController@getTokenOwner');	// debug function
 	
@@ -34,7 +38,7 @@ Route::group(['prefix' => 'blobs'], function()
 	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blobs
     Route::post('/', 'BlobController@createBlob'); // creates a blob
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
-	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name
+	Route::put('/{id}', 'BlobController@updateBlobName');	// update blob's name
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
 });
 

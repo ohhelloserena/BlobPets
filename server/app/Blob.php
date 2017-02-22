@@ -10,11 +10,6 @@ class Blob extends Model
 {
 
     protected $fillable = ['name', 'type', 'owner_id', 'color'];
-    //
-    // public function updatedAt()
-    // {
-    //     return $this->updated_at;
-    // }
 
     public function updateBlob() {
 
@@ -50,9 +45,6 @@ class Blob extends Model
             $this->save();
 
         }
-
-        
-
 
     }
 
