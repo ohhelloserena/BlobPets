@@ -31,9 +31,11 @@ Route::group(['prefix' => 'users'], function()
 
 Route::group(['prefix' => 'blobs'], function()
 {
-	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blob
+	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blobs
+    Route::post('/', 'BlobController@createBlob'); // creates a blob
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
 	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name
+    Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
 });
 
 /*
@@ -48,6 +50,16 @@ Route::group(['prefix' => 'blobs'], function()
 |		return a token for user with email 'mail@email.com' and 
 |		with password 'password', given that this is in the database
 |
+| - POST serverAddress.com/api/blobs/?token=<token>&name=blob&type=A&color=purple
+|       creates a blob if user has less than 4 blobs and returns the blob id
+| - GET serverAddress.com/api/blobs/
+|       gets information about all blobs
+|
 | - PUT serverAddress.com/api/blobs/1?name=Blobby
 |		change the name of blob with id 1 to 'Blobby'
+| - GET serverAddress.com/api/blobs/1
+|       gets blob info for blob with id 1
+| - DELETE serverAddress.com/api/blobs/1?token=<token>
+|       deletes blob with id 1 if health = 0
+|
 */

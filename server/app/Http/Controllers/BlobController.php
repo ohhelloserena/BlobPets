@@ -7,11 +7,16 @@ use \DateTime;
 use Carbon\Carbon;
 use \Response;
 
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions;
+use Illuminate\Support\Facades\DB;
+
+
 class BlobController extends Controller
 {
     public function __construct()
 	{
-		$this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getBlobUpdatedAt', 'updateBlob']]);
+		$this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'deleteBlob']]);
 	}
 
     // return a list of all the blobs in the database
@@ -44,48 +49,139 @@ class BlobController extends Controller
     // input:   'id': the id of a blob
     //          'name': new name for the blob
     public function updateBlob(Request $request, $id) {
+        $user = $this->verifyUser();
+
         $blob = BlobController::getBlob($id);
-        if (empty($blob)) {
-            return response()->json(['error' => 'Blob ID invalid'], 400);
+        if($user){
+            if (!empty($blob) and $user == $blob->owner_id){
+
+                $blob->updateBlob();
+
+                $new_name = $request->input('name', $blob->name);
+                // $new_type = $request->input('type', $blob->type);
+
+                $blob->name = $new_name;
+                // $blob->type = $new_type;
+
+                $blob->save();
+
+                return Response::make('OK', 200);
+            }
+
+            else{
+                return response()->json(['error' => 'Blob ID invalid'], 400);
+            }
         }
-        $blob->updateBlob();
-
-        $new_name = $request->input('name', $blob->name);
-        // $new_type = $request->input('type', $blob->type);
-
-        $blob->name = $new_name;
-        // $blob->type = $new_type;
-
-        $blob->save();
-
-        return Response::make('OK', 200);
+        else{
+            return response()->json(['error' => 'Authentication failed'], 400);
+        }
     }
 
-
-    // do not use this one yet
+    /**
+     * Creates a new blob if owner does not already have maxNumBlobs
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function createBlob(Request $request)
     {
+        $maxNumBlobs = 4;
+        $expected = array('name', 'type', 'color', 'token');
+        // check for correct number of inputs
+        if ($request->exists($expected)) {
+            $blobName = $request->input('name');
+            $blobType = $request->input('type');
+            $blobColor = $request->input('color');
 
-        $token = $request->input('token');
-        $associatedUser = JWTAuth::toUser($token);
-        $user = \App\User::all()->find($associatedUser->id);
+            // check if owner is valid
+            $user = $this->verifyUser();
+            if ($user) {
+                $numBlobs = DB::table('blobs')
+                    ->where('owner_id', $user)
+                    ->count();
 
-        return $blob;
+                // check that user does not have the max number of blobs
+                if ($numBlobs<$maxNumBlobs){
 
-        try {
-            // verify the credentials and create a token for the user
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                    //check if inputs are valid
+                    $supportedTypes = array('A', 'B', 'C');
+                    if (in_array($blobType, $supportedTypes)) {
+
+                        // create blob
+                        $id = DB::table('blobs')->insertGetId(
+                            ['name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor,"created_at" =>  Carbon::now(), "updated_at" => Carbon::now()]
+                        );
+
+                        // return blob id
+                        return response()->json(['blobID' => $id], 201);
+                    } else{
+                        return response()->json(['error' => 'Invalid inputs'], 400);
+                    }
+                }
+                else{
+                    return response()->json(['error' => 'User has max number of blobs'], 400);
+                }
+            } else {
+                return response()->json(['error' => 'Authentication failed'], 400);
             }
-        } catch (JWTException $e) {
-            // something went wrong
-            return response()->json(['error' => 'could_not_create_token'], 500);
+        } else {
+            return response()->json(['error' => 'Did not have all required inputs'], 400);
+        }
+    }
+
+    /**
+     * Deletes a blob if blob health = 0
+     * @param $id - the id of the blob to delete
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteBlob($id){
+        $user = $this->verifyUser();
+        if($user) {
+
+            // Check if blob exists and that it belongs to user
+            $results = DB::select('select * from blobs where id = :id and owner_id = :uid', ['id' => $id, 'uid'=> $user]);
+            if(!empty($results)) {
+                $health = -1;
+                foreach ($results as $result) {
+                    $health = $result->health_level;
+                    break;
+                }
+//                // Check if blob health = 0
+                if ($health == 0){
+                    // Delete blob
+                    DB::delete('delete from blobs where id=:id', ['id' => $id]);
+                    return Response::make('OK', 200);
+                }
+                else{
+                    return response()->json(['error' => 'Blob is alive'], 400);
+                }
+            }
+            else{
+                return response()->json(['error' => 'Invalid blobID'], 400);
+            }
+        }
+        else{
+            return response()->json(['error' => 'Authentication failed'], 400);
         }
 
-        // if no errors are encountered we can return a JWT
-        return response()->json(compact('token'));
-
-        
     }
+
+    /**
+     * Verifies that the user token is correct and will return the user id associated with the token if token is valid, else it will return false
+     * NOTE RETURNS 500 IF TOKEN IS INVALID/EXPIRED
+     * @return bool or string
+     */
+    public function verifyUser(){
+        try{
+
+            $authenticatedUser = JWTAuth::parseToken()->authenticate();
+            $user =  $authenticatedUser['id'];
+            return $user;
+        }
+        // For some odd reason it currently just returns 500: Internal Server Error when invalid token is used
+        catch(Exception $e){
+            return false;
+        }
+    }
+
 
 }

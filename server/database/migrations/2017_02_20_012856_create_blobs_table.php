@@ -17,6 +17,7 @@ class CreateBlobsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('type');
+            $table->string('color');
             $table->boolean('alive')->default(true);
             $table->integer('level')->unsigned()->default(1);
             $table->integer('exercise_level')->default(60);

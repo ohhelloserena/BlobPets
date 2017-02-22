@@ -18,11 +18,11 @@ class BlobSeed extends Seeder
 	public function run()
 	{
 		$blobs = array(
-			['name' => 'Blob 1', 'type' => 'type A', 'owner_id' => 1],
-			['name' => 'Blob 2', 'type' => 'type A', 'owner_id' => 2],
-			['name' => 'Blob 3', 'type' => 'type B', 'owner_id' => 3],
-			['name' => 'Blob 4', 'type' => 'type B', 'owner_id' => 4],
-			['name' => 'Blob 5', 'type' => 'type C', 'owner_id' => 1],
+			['name' => 'Blob 1', 'type' => 'type A', 'owner_id' => 1, 'color'=> 'red'],
+			['name' => 'Blob 2', 'type' => 'type A', 'owner_id' => 2, 'color'=>  'purple'],
+			['name' => 'Blob 3', 'type' => 'type B', 'owner_id' => 3, 'color'=> 'green'],
+			['name' => 'Blob 4', 'type' => 'type B', 'owner_id' => 4, 'color'=> 'yellow'],
+			['name' => 'Blob 5', 'type' => 'type C', 'owner_id' => 1, 'color'=> 'blue'],
 		);
 
 		foreach ($blobs as $blob)
