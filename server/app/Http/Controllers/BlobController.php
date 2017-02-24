@@ -8,8 +8,6 @@ use \DateTime;
 use Carbon\Carbon;
 use \Response;
 
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions;
 use Illuminate\Support\Facades\DB;
 
 
@@ -50,10 +48,10 @@ class BlobController extends Controller
     // input:   'id': the id of a blob
     //          'name': new name for the blob
     public function updateBlobName(Request $request, $id) {
-        $user = $this->verifyUser();
-
+        $ret = $this->verifyUser();
         $blob = BlobController::getBlob($id);
-        if($user){
+        if(is_int($ret)){
+            $user = $ret;
             if (!empty($blob) and $user == $blob->owner_id){
 
                 $blob->updateBlob();
@@ -68,13 +66,12 @@ class BlobController extends Controller
 
                 return Response::make('OK', 200);
             }
-
             else{
                 return response()->json(['error' => 'Blob ID invalid'], 400);
             }
         }
-        else{
-            return response()->json(['error' => 'Authentication failed'], 400);
+        else {
+            return ret;
         }
     }
 
@@ -94,8 +91,9 @@ class BlobController extends Controller
             $blobColor = $request->input('color');
 
             // check if owner is valid
-            $user = $this->verifyUser();
-            if ($user) {
+            $ret = $this->verifyUser();
+            if (is_int($ret)) {
+                $user = $ret;
                 $numBlobs = DB::table('blobs')->where('owner_id', $user)->count();
 
                 // check that user does not have the max number of blobs
@@ -116,12 +114,14 @@ class BlobController extends Controller
                 else{
                     return response()->json(['error' => 'User has max number of blobs'], 400);
                 }
-            } else {
-                return response()->json(['error' => 'Authentication failed'], 400);
+            }
+            else {
+                return $ret;
             }
         } else {
             return response()->json(['error' => 'Did not have all required inputs'], 400);
         }
+
     }
 
     /**
@@ -130,8 +130,9 @@ class BlobController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteBlob($id){
-        $user = $this->verifyUser();
-        if($user) {
+        $ret = $this->verifyUser();
+        if(is_int($ret)) {
+            $user = $ret;
             // Check if blob exists and that it belongs to user
             $results = Blob::where('id', $id)->where('owner_id',$user)->first();
             if(!empty($results)) {
@@ -150,26 +151,9 @@ class BlobController extends Controller
             }
         }
         else{
-            return response()->json(['error' => 'Authentication failed'], 400);
+            return $ret;
         }
 
-    }
-
-    /**
-     * Verifies that the user token is correct and will return the user id associated with the token if token is valid, else it will return false
-     * NOTE RETURNS 500 IF TOKEN IS INVALID/EXPIRED
-     * @return bool or string
-     */
-    public function verifyUser(){
-        try{
-            $authenticatedUser = JWTAuth::parseToken()->authenticate();
-            $user =  $authenticatedUser['id'];
-            return $user;
-        }
-        // For some odd reason it currently just returns 500: Internal Server Error when invalid token is used
-        catch(Exception $e){
-            return false;
-        }
     }
 
 

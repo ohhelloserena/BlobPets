@@ -42,6 +42,14 @@ Route::group(['prefix' => 'blobs'], function()
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
 });
 
+Route::group(['prefix' => 'exercise'], function()
+{
+    Route::get('/', 'ExerciseController@testing'); // Returns all exercise records for the user
+    Route::post('/', 'ExerciseController@createExerciseRecord'); // Creates a new exercise record
+
+    Route::get('/{id}', 'ExerciseContoller@testing'); // Returns the exercise record with record id
+    Route::put('/{id}', 'ExerciseController@testing'); // Updates the exercise record
+});
 /*
 |--------------------------------------------------------------------------
 | Some examples for using the API
