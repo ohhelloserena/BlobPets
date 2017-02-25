@@ -13,5 +13,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call("UserSeed");
         $this->call("BlobSeed");
+        $this->call("ExerciseSeed");
     }
 }

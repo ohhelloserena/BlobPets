@@ -19,7 +19,7 @@ class Controller extends BaseController
     /**
      * Verifies that the user token is correct and will return the user id associated with the token if token is valid.
      * If token is invalid or incorrect the function will return a json response with the error code
-     * @return user or response
+     * @return user(int) or response(JsonResponse)
      */
     public function verifyUser()
     {
@@ -29,7 +29,7 @@ class Controller extends BaseController
             return $user;
         } catch (JwtException $e) {
             $error_code = $e->getMessage();
-            return response()->json(['Error:' => $error_code], 401);
+            return response()->json(['error:' => $error_code], 401);
         }
     }
 }

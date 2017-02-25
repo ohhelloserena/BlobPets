@@ -44,11 +44,10 @@ Route::group(['prefix' => 'blobs'], function()
 
 Route::group(['prefix' => 'exercise'], function()
 {
-    Route::get('/', 'ExerciseController@testing'); // Returns all exercise records for the user
-    Route::post('/', 'ExerciseController@createExerciseRecord'); // Creates a new exercise record
+    Route::post('/', 'ExerciseController@createExerciseRecord'); // Creates a new exercise record if there is none
 
-    Route::get('/{id}', 'ExerciseContoller@testing'); // Returns the exercise record with record id
-    Route::put('/{id}', 'ExerciseController@testing'); // Updates the exercise record
+    Route::get('/{id}', 'ExerciseController@getExerciseRecord'); // Returns the exercise record with record id
+    Route::put('/{id}', 'ExerciseController@updateExerciseRecord'); // Updates the exercise record
 });
 /*
 |--------------------------------------------------------------------------
@@ -74,4 +73,10 @@ Route::group(['prefix' => 'exercise'], function()
 | - DELETE serverAddress.com/api/blobs/1?token=<token>
 |       deletes blob with id 1 if health = 0
 |
+|   POST serverAddress.com/api/exercise
+|       creates an exercise record for the user if it doesn't already exist
+|   GET serverAddress.com/api/exercise/{id}?token=<token>
+|       Gets an exercise record for a user
+|   PUT serverAddress.com/api/exercise/{id}?distance=5&token=<token>
+|       Updates and exercise record for a user with distance walked since last update
 */
