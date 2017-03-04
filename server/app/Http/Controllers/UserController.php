@@ -71,7 +71,9 @@ class UserController extends Controller
         }
 
         // if no errors are encountered we can return a JWT
-        return response()->json(compact('token'));
+        $associatedUser = JWTAuth::toUser($token);
+        $id = $associatedUser->id;
+        return response()->json(compact('token', 'id'));
     }
 
     // Create a new user with the specified name, email, and password. Return the new user's id if successfully created
