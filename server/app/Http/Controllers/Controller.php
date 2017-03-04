@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,7 +20,7 @@ class Controller extends BaseController
     /**
      * Verifies that the user token is correct and will return the user id associated with the token if token is valid.
      * If token is invalid or incorrect the function will return a json response with the error code
-     * @return user(int) or response(JsonResponse)
+     * @return JsonResponse or user
      */
     public function verifyUser()
     {

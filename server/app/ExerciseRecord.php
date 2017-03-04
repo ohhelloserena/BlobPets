@@ -32,7 +32,7 @@ class ExerciseRecord extends Model
             $days_left = 7 - $day_of_week;
         }
         // New week
-        if(true){
+        if($days_left < $diff){
             $prevmax = $this->weekly_goal;
             $current_total = $this->total_exercise;
 

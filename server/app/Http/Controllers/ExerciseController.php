@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\ExerciseRecord;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use \DateTime;
 use Carbon\Carbon;
@@ -51,7 +52,7 @@ class ExerciseController extends Controller
     /**
      * Gets the exercise record for a user
      * @param $id
-     * @return JsonResponse
+     * @return JsonResponse|ExerciseRecord
      */
     public function getExerciseRecord($id)
     {
@@ -94,9 +95,6 @@ class ExerciseController extends Controller
                     $totaldistance = $record->total_exercise;
                     $goaldistance = $record->weekly_goal;
                     $newdistance = $totaldistance + $distance;
-//                    if($newdistance > $goaldistance){
-//                        $newdistance = $goaldistance;
-//                    }
                     if($newdistance > $goaldistance){
                         $remaining = 0;
                     }
@@ -128,10 +126,6 @@ class ExerciseController extends Controller
         } else{
             return response()->json(['error' => 'Did not have all required inputs'], 400);
         }
-    }
-
-    public function testing(){
-        return Response::make('OK', 200);
     }
 
 }
