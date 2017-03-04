@@ -16,9 +16,9 @@ class CreateExerciseRecordTable extends Migration
         Schema::create('exercise_records', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('owner_id')->unsigned();
-            $table->integer('total_exercise')->default(0);
-            $table->integer('max_exercise')->default(5);
-            $table->integer('remaining_exercise')->default(5);
+            $table->float('total_exercise')->default(0);
+            $table->float('weekly_goal')->default(5);
+            $table->float('remaining_exercise')->default(5);
             $table->timestamps();
         });
 

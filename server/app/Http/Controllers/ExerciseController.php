@@ -92,17 +92,33 @@ class ExerciseController extends Controller
 
                     // Update the record
                     $totaldistance = $record->total_exercise;
-                    $maxdistance = $record->max_exercise;
+                    $goaldistance = $record->weekly_goal;
                     $newdistance = $totaldistance + $distance;
-                    if($newdistance > $maxdistance){
-                        $newdistance = $maxdistance;
+//                    if($newdistance > $goaldistance){
+//                        $newdistance = $goaldistance;
+//                    }
+                    if($newdistance > $goaldistance){
+                        $remaining = 0;
                     }
-                    $remaining = $maxdistance -$newdistance;
+                    else{
+                        $remaining = $goaldistance -$newdistance;
+                    }
                     $record->total_exercise = $newdistance;
                     $record->remaining_exercise = $remaining;
                     $record->save();
+
+                    // Update user exercise level
+                    $distance = floor($distance);
+                    $uc = new UserController();
+                    $blobs = $uc->getUserBlobs($user);
+                    foreach($blobs as $blob) {
+                        $old_exercise = $blob->exercise_level;
+                        $new_exercise = $old_exercise + $distance;
+                        $blob->exercise_level = $new_exercise;
+                        $blob->save();
+                    }
                     return Response::make('OK', 200);
-                }
+                    }
                 else{
                     return response()->json(['error' => 'Invalid ExerciseRecordID'], 400);
                 }

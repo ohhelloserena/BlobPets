@@ -18,6 +18,7 @@ class ExerciseRecord extends Model
      */
     public function updateRecord(){
         $km_per_week = 5;
+        $penalty = 10;
         $now = Carbon::now();
         $last_update = $this->updated_at;
         $diff = $last_update->diffInDays($now);
@@ -31,8 +32,8 @@ class ExerciseRecord extends Model
             $days_left = 7 - $day_of_week;
         }
         // New week
-        if($days_left < $diff){
-            $prevmax = $this->max_exercise;
+        if(true){
+            $prevmax = $this->weekly_goal;
             $current_total = $this->total_exercise;
 
             // Decrement exercise level
@@ -41,17 +42,17 @@ class ExerciseRecord extends Model
                 $uc = new UserController();
                 $blobs = $uc->getUserBlobs($user_id);
                 foreach($blobs as $blob){
-                    $old_health = $blob->exercise_level;
-                    $new_health = $old_health - 10;
-                    $blob->exercise_level = $new_health;
+                    $old_exercise = $blob->exercise_level;
+                    $new_exercise = $old_exercise - $penalty;
+                    $blob->exercise_level = $new_exercise;
                     $blob->save();
                 }
             }
 
             // Update Max
-            $newmax = $prevmax + $km_per_week;
-            $this->max_exercise = $newmax;
-            $this->save;
+            $newmax = $current_total + $km_per_week;
+            $this->weekly_goal = $newmax;
+            $this->save();
         }
         else{
             return;
