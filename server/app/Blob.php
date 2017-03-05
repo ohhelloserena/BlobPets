@@ -8,11 +8,8 @@ use Carbon\Carbon;
 
 class Blob extends Model
 {
-    //
-    // public function updatedAt()
-    // {
-    //     return $this->updated_at;
-    // }
+
+    protected $fillable = ['name', 'type', 'owner_id', 'color'];
 
     public function updateBlob() {
 
@@ -48,9 +45,6 @@ class Blob extends Model
             $this->save();
 
         }
-
-        
-
 
     }
 

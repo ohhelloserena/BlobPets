@@ -23,7 +23,11 @@ Route::group(['prefix' => 'users'], function()
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
 
+
+    Route::post('/', 'UserController@createUser');	// create a user
     Route::post('authenticate', 'UserController@authenticate');	// authenticate user with email and password, and return a token
+
+    Route::put('/{id}', 'UserController@updateUser');	// update an existing user
 
 	Route::get('getTokenOwner', 'UserController@getTokenOwner');	// debug function
 	
@@ -34,8 +38,21 @@ Route::group(['prefix' => 'blobs'], function()
 	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blobs
     Route::post('/', 'BlobController@createBlob'); // creates a blob
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
-	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name
+	Route::put('/{id}', 'BlobController@updateBlobName');	// update blob's name
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
+});
+
+Route::group(['prefix' => 'exercises'], function()
+{
+    Route::post('/', 'ExerciseController@createExerciseRecord'); // Creates a new exercise record if there is none
+
+    Route::get('/{id}', 'ExerciseController@getExerciseRecord'); // Returns the exercise record with record id
+    Route::put('/{id}', 'ExerciseController@updateExerciseRecord'); // Updates the exercise record
+});
+
+Route::group(['prefix' => 'events'], function(){
+    Route::post('/', 'EventController@createEventRecord');
+    Route::get('/{id}', 'EventController@getEventRecord');
 });
 
 /*
@@ -62,4 +79,10 @@ Route::group(['prefix' => 'blobs'], function()
 | - DELETE serverAddress.com/api/blobs/1?token=<token>
 |       deletes blob with id 1 if health = 0
 |
+|   POST serverAddress.com/api/exercises
+|       creates an exercise record for the user if it doesn't already exist
+|   GET serverAddress.com/api/exercises/{id}?token=<token>
+|       Gets an exercise record for a user
+|   PUT serverAddress.com/api/exercises/{id}?distance=5&token=<token>
+|       Updates and exercise record for a user with distance walked since last update
 */
