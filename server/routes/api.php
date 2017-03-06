@@ -85,4 +85,9 @@ Route::group(['prefix' => 'events'], function(){
 |       Gets an exercise record for a user
 |   PUT serverAddress.com/api/exercises/{id}?distance=5&token=<token>
 |       Updates and exercise record for a user with distance walked since last update
+|
+|   POST serverAddress.com/api/events
+|       creates an event record for a blob
+|   GET serverAddress.com/api/events/{id}
+|       gets the event record if the user owns the blob associated with the event record
 */

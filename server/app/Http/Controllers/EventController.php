@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 use App\EventRecord;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -102,6 +103,35 @@ class EventController extends Controller
         }
     }
 
+    /**
+     * Generates a timestamp for the requested event and saves it to the database.
+     * @param $id
+     * @param $type - the type of event to generate, can only be feed or clean
+     * @throws Exception
+     */
+    public function generateEvent($id, $type){
+//        $period = 12;
+        $period = 1;
+        $now = Carbon::now();
+        $maxtime = Carbon::create($now->year,$now->month,$now->day,$now->hour+$period,$now->minute,$now->second);
+        $randomDate = Carbon::createFromTimestamp(rand($now->timestamp, $maxtime->timestamp));
+        $record = EventRecord::where('id', $id)->first();
+
+        if($record) {
+            if ($type == 'feed') {
+                $record->hungry_timestamp = $randomDate;
+            } elseif ($type == 'clean') {
+                $record->clean_timestamp = $randomDate;
+            } else {
+                throw new Exception("Invalid event type");
+            }
+            $record->save();
+        }
+        else{
+            throw new Exception("Specified record does not exist");
+        }
+    }
+
     public function generateTimestamp(){
         $period = 6;
         $now = Carbon::now();
@@ -109,20 +139,4 @@ class EventController extends Controller
         $randomDate = Carbon::createFromTimestamp(rand($now->timestamp, $maxtime->timestamp));
         return $randomDate;
     }
-
-    public function generateEvent($id, $type){
-        $period = 12;
-        $now = Carbon::now();
-        $maxtime = Carbon::create($now->year,$now->month,$now->day,$now->hour+$period,$now->minute,$now->second);
-        $randomDate = Carbon::createFromTimestamp(rand($now->timestamp, $maxtime->timestamp));
-        $record = EventRecord::where('id', $id)->first();
-        if ($type == 'feed'){
-            $record->hungry_timestamp = $randomDate;
-        }
-        elseif($type == 'clean'){
-            $record->clean_timestamp = $randomDate;
-        }
-        $record->save();
-    }
-
 }
