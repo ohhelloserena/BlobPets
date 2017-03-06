@@ -50,10 +50,10 @@ Route::group(['prefix' => 'exercises'], function()
     Route::put('/{id}', 'ExerciseController@updateExerciseRecord'); // Updates the exercise record
 });
 
-Route::group(['prefix' => 'events'], function(){
-    Route::post('/', 'EventController@createEventRecord');
-    Route::get('/{id}', 'EventController@getEventRecord');
-});
+//Route::group(['prefix' => 'events'], function(){
+//    Route::post('/', 'EventController@createEventRecord');
+//    Route::get('/{id}', 'EventController@getEventRecord');
+//});
 
 /*
 |--------------------------------------------------------------------------
