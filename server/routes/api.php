@@ -27,7 +27,7 @@ Route::group(['prefix' => 'users'], function()
     Route::post('/', 'UserController@createUser');	// create a user
     Route::post('authenticate', 'UserController@authenticate');	// authenticate user with email and password, and return a token
 
-    Route::put('/{id}', 'UserController@updateUser');	// update an existing user
+    Route::patch('/{id}', 'UserController@updateUser');	// update an existing user
 
 	Route::get('getTokenOwner', 'UserController@getTokenOwner');	// debug function
 	
@@ -38,7 +38,7 @@ Route::group(['prefix' => 'blobs'], function()
 	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blobs
     Route::post('/', 'BlobController@createBlob'); // creates a blob
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
-	Route::put('/{id}', 'BlobController@updateBlobName');	// update blob's name
+	Route::patch('/{id}', 'BlobController@updateBlob');	// update blob's name or level attributes
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
 });
 
@@ -72,7 +72,7 @@ Route::group(['prefix' => 'events'], function(){
 | - GET serverAddress.com/api/blobs/
 |       gets information about all blobs
 |
-| - PUT serverAddress.com/api/blobs/1?name=Blobby
+| - PATCH serverAddress.com/api/blobs/1?name=Blobby
 |		change the name of blob with id 1 to 'Blobby'
 | - GET serverAddress.com/api/blobs/1
 |       gets blob info for blob with id 1

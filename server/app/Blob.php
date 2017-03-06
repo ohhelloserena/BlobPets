@@ -13,7 +13,7 @@ class Blob extends Model
 
     public function updateBlob() {
 
-        $old_time = $this->updated_at->getTimestamp();
+        $old_time = Carbon::parse($this->last_levels_decrement)->getTimestamp();
         $now = Carbon::now()->getTimestamp();
 
         // time difference in second
@@ -27,21 +27,31 @@ class Blob extends Model
 
         // update only if at least 1 minute has passed
         // currently decrease exercise_level, cleanliness_level, and health_level by 1 for each minute passed
-        if ($timeDifference >= 60) {
-            $minutesPassedSinceUpdate = round($timeDifference / 60);
+
+        if ($this->alive == false) {
+            return;
+        }
+
+        $minimumTimeDifferenceInSecond = 60;
+        if ($timeDifference >= $minimumTimeDifferenceInSecond) {
+            $unitTimePassed = round($timeDifference / $minimumTimeDifferenceInSecond);
 
             $old_exercise_level = $this->exercise_level;
             $old_cleanliness_level = $this->cleanliness_level;
             $old_health_level = $this->health_level;
 
-            $new_exercise_level = $old_exercise_level - $minutesPassedSinceUpdate;
-            $new_cleanliness_level = $old_cleanliness_level - $minutesPassedSinceUpdate;
-            $new_health_level = $old_health_level - $minutesPassedSinceUpdate;
+            $new_exercise_level = max(0, $old_exercise_level - $unitTimePassed);
+            $new_cleanliness_level = max(0, $old_cleanliness_level - $unitTimePassed);
+            $new_health_level = max(0, $old_health_level - $unitTimePassed);
 
             $new_blob_levels = array('exercise_level' => $new_exercise_level, 'cleanliness_level' => $new_cleanliness_level, 'health_level' => $new_health_level);
             $this->exercise_level = $new_exercise_level;
             $this->cleanliness_level = $new_cleanliness_level;
             $this->health_level = $new_health_level;
+            $this->last_levels_decrement = Carbon::parse($this->last_levels_decrement)->addSeconds($unitTimePassed * $minimumTimeDifferenceInSecond)->toDateTimeString();
+            if ($new_health_level <= 0) {
+                $this->alive = false;
+            }
             $this->save();
 
         }

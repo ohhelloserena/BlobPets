@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use \Response;
 
 use Illuminate\Support\Facades\DB;
+use \App\Http\Controllers\BlobController;
 
 
 class BlobController extends Controller
@@ -43,37 +44,78 @@ class BlobController extends Controller
         return $blob;
     }
 
-    // update the specified blob's name (and type?, maybe not...)
+    // update the specified blob's name or level attributes
     // return error if the blob does not exist
     // input:   'id': the id of a blob
     //          'name': new name for the blob
-    public function updateBlobName(Request $request, $id) {
+    public function updateBlob(Request $request, $id) {
         $ret = $this->verifyUser();
         $blob = BlobController::getBlob($id);
         if(is_int($ret)){
             $user = $ret;
-            if (!empty($blob) and $user == $blob->owner_id){
+            if (!empty($blob)){
+                if ($user == $blob->owner_id) {
+                    $blob->updateBlob();
 
-                $blob->updateBlob();
+                    $new_name = $request->input('name');
+                    // $new_type = $request->input('type', $blob->type);
+                    $new_exercise_level = $request->input('exercise_level');
+                    $new_cleanliness_level = $request->input('cleanliness_level');
+                    $new_health_level = $request->input('health_level');
 
-                $new_name = $request->input('name', $blob->name);
-                // $new_type = $request->input('type', $blob->type);
 
-                $blob->name = $new_name;
-                // $blob->type = $new_type;
+                    $rejectRequest = false;
 
-                $blob->save();
+                    if (!empty($new_name)) {
+                        $blob->name = $new_name;
+                    }
+                    // $blob->type = $new_type;
+                    // TODO: do request verification and generate a new timestamp for next event
+                    //          Old timestamp should be in the past, otherwise, reject request
 
-                return Response::make('OK', 200);
+                    if (!empty($new_exercise_level)) {
+                        $blob->exercise_level = $new_exercise_level;
+                    }
+
+                    if (!empty($new_cleanliness_level)) {
+                        if (BlobController::timeValueIsInThePast($blob->next_cleanup_time)) {
+                            $blob->cleanliness_level = $new_cleanliness_level;
+                            $blob->next_cleanup_time = BlobController::generateNewTime();
+                        } else {
+                            $rejectRequest = true;
+                        }
+                    }
+                    
+                    if (!empty($new_health_level)) {
+                        if (BlobController::timeValueIsInThePast($blob->next_feed_time)) {
+                            $blob->health_level = $new_health_level;
+                            $blob->next_feed_time = BlobController::generateNewTime();
+                        } else {
+                            $rejectRequest = true;
+                        }
+                    }
+                  
+                    if ($rejectRequest == false) {
+                        $blob->save();
+                    } else {
+                        return response()->json(['error' => 'Request rejected'], 403);
+                    }                
+
+                    return Response::make('OK', 200);
+                } else {
+                    return response()->json(['error' => 'Unauthorized action'], 401);
+                }
             }
             else{
                 return response()->json(['error' => 'Blob ID invalid'], 400);
             }
         }
         else {
-            return ret;
+            return $ret;
         }
     }
+
+
 
     /**
      * Creates a new blob if owner does not already have maxNumBlobs
@@ -156,5 +198,23 @@ class BlobController extends Controller
 
     }
 
+    // helper function
+    public function timeValueIsInThePast($timeValue) {
+        $oldTime = Carbon::parse($timeValue)->getTimestamp();
+        $now = Carbon::now()->getTimestamp();
+        $timeDifference = $now - $oldTime;
+
+        return $timeDifference >= 0;
+    }
+
+    // generate a new time for the next event.
+    // the next event will be less than 24 hours from now.
+    // lower bound?
+    public function generateNewTime() {
+        $randomHours = rand(0, 23);
+        $randomMinutes = rand(0, 59);
+        $randomSeconds = rand(0, 59);
+        return Carbon::now()->addHours($randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
+    }
 
 }
