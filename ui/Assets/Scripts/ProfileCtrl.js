@@ -2,7 +2,7 @@
 import UnityEngine.UI;
 #pragma strict
 
-var url = "http://104.131.144.86/api/users/1";
+var url = "http://104.131.144.86/api/users/";
 
 var data;
 
@@ -32,7 +32,6 @@ var blobId2 = -1;
 var blobId3 = -1;
 
 function Start () {
-
 
     var www: WWW = new WWW(url);
 

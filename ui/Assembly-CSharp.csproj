@@ -46,11 +46,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Boomlagoon\JSON\JSONObject.cs" />
-     <Compile Include="Assets\Boomlagoon\JSON\TestScene\JSONObjectTester.cs" />
+     <Compile Include="Assets\Scripts\ButtonCtrl.cs" />
+     <Compile Include="Assets\Scripts\EditCtrl.cs" />
+     <Compile Include="Assets\Scripts\NewUser.cs" />
      <None Include="Assets\Fonts\Apache License.txt" />
      <None Include="Assets\images\png\README.txt" />
-     <None Include="Assets\Boomlagoon\JSON\Readme.txt" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>

@@ -49,7 +49,6 @@
      <Compile Include="Assets\Plugins\SimpleJSON.cs.cs" />
      <None Include="Assets\Fonts\Apache License.txt" />
      <None Include="Assets\images\png\README.txt" />
-     <None Include="Assets\Boomlagoon\JSON\Readme.txt" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
