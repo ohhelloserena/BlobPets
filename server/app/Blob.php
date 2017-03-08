@@ -32,7 +32,8 @@ class Blob extends Model
             return;
         }
 
-        $minimumTimeDifferenceInSecond = 60;
+        // 72 minutes => 5 days = 100 ticks
+        $minimumTimeDifferenceInSecond = 4320;
         if ($timeDifference >= $minimumTimeDifferenceInSecond) {
             $unitTimePassed = round($timeDifference / $minimumTimeDifferenceInSecond);
 

@@ -59,7 +59,7 @@ class BlobController extends Controller
 
                     $new_name = $request->input('name');
                     // $new_type = $request->input('type', $blob->type);
-                    $new_exercise_level = $request->input('exercise_level');
+                    // $new_exercise_level = $request->input('exercise_level');
                     $new_cleanliness_level = $request->input('cleanliness_level');
                     $new_health_level = $request->input('health_level');
 
@@ -73,14 +73,18 @@ class BlobController extends Controller
                     // TODO: do request verification and generate a new timestamp for next event
                     //          Old timestamp should be in the past, otherwise, reject request
 
-                    if (!empty($new_exercise_level)) {
-                        $blob->exercise_level = $new_exercise_level;
-                    }
+                    // if (!empty($new_exercise_level)) {
+                    //     $blob->exercise_level = $new_exercise_level;
+                    // }
 
                     if (!empty($new_cleanliness_level)) {
                         if (BlobController::timeValueIsInThePast($blob->next_cleanup_time)) {
-                            $blob->cleanliness_level = $new_cleanliness_level;
-                            $blob->next_cleanup_time = BlobController::generateNewTime();
+                            if ($new_cleanliness_level - $blob->cleanliness_level <= 11) {
+                                $blob->cleanliness_level = $blob->cleanliness_level + 10;
+                                $blob->next_cleanup_time = BlobController::generateNewTime();
+                            } else {
+                                $rejectRequest = true;
+                            }                            
                         } else {
                             $rejectRequest = true;
                         }
@@ -88,8 +92,13 @@ class BlobController extends Controller
                     
                     if (!empty($new_health_level)) {
                         if (BlobController::timeValueIsInThePast($blob->next_feed_time)) {
-                            $blob->health_level = $new_health_level;
-                            $blob->next_feed_time = BlobController::generateNewTime();
+                            if ($new_health_level - $blob->health_level <= 11) {
+                                $blob->health_level = $blob->health_level + 10;
+                                $blob->next_feed_time = BlobController::generateNewTime();
+                            } else {
+                                $rejectRequest = true;
+                            }
+                            
                         } else {
                             $rejectRequest = true;
                         }
@@ -208,13 +217,12 @@ class BlobController extends Controller
     }
 
     // generate a new time for the next event.
-    // the next event will be less than 24 hours from now.
-    // lower bound?
+    // the next event will be between 6 and 12 hours from now
     public function generateNewTime() {
-        $randomHours = rand(0, 23);
+        $randomHours = rand(0, 5);
         $randomMinutes = rand(0, 59);
         $randomSeconds = rand(0, 59);
-        return Carbon::now()->addHours($randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
+        return Carbon::now()->addHours(6 + $randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
     }
 
 }
