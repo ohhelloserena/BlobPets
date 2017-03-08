@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use \Response;
 
 use Illuminate\Support\Facades\DB;
-use \App\Http\Controllers\BlobController;
+//use \App\Http\Controllers\BlobController;
 
 
 class BlobController extends Controller
@@ -188,7 +188,7 @@ class BlobController extends Controller
             $results = Blob::where('id', $id)->where('owner_id',$user)->first();
             if(!empty($results)) {
                 // Check if blob health = 0
-                if ($results->health_level == 0){
+                if ($results->alive == false){
                     // Delete blob
                     Blob::destroy($id);
                     return Response::make('OK', 200);
