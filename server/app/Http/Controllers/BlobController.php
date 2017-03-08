@@ -219,10 +219,12 @@ class BlobController extends Controller
     // generate a new time for the next event.
     // the next event will be between 6 and 12 hours from now
     public function generateNewTime() {
-        $randomHours = rand(0, 5);
-        $randomMinutes = rand(0, 59);
-        $randomSeconds = rand(0, 59);
-        return Carbon::now()->addHours(6 + $randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
+        // set it to 1 minutes for demo purpose
+        $minimumHour = 0;
+        $randomHours = 0;//rand(0, 5);
+        $randomMinutes = 1;//rand(0, 59);
+        $randomSeconds = 0;//rand(0, 59);
+        return Carbon::now()->addHours($minimumHour + $randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
     }
 
 }
