@@ -46,15 +46,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\HealthUpdate.cs" />
-     <Compile Include="Assets\ScreenCtrl.cs" />
      <Compile Include="Assets\Scripts\ButtonCtrl.cs" />
      <Compile Include="Assets\Scripts\EditCtrl.cs" />
      <Compile Include="Assets\Scripts\FeedCtrl.cs" />
      <Compile Include="Assets\Scripts\FeedPoopCtrl.cs" />
+     <Compile Include="Assets\Scripts\HealthUpdate.cs" />
      <Compile Include="Assets\Scripts\InputFieldToText.cs" />
      <Compile Include="Assets\Scripts\NewUser.cs" />
-     <Compile Include="Assets\SelectBlob.cs" />
+     <Compile Include="Assets\Scripts\ScreenCtrl.cs" />
+     <Compile Include="Assets\Scripts\SelectBlob.cs" />
      <None Include="Assets\Fonts\Apache License.txt" />
      <None Include="Assets\images\png\README.txt" />
  <Reference Include="UnityEngine.UI">
