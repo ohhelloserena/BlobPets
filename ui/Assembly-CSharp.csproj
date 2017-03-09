@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\FeedPoopCtrl.cs" />
      <Compile Include="Assets\Scripts\InputFieldToText.cs" />
      <Compile Include="Assets\Scripts\NewUser.cs" />
+     <Compile Include="Assets\SelectBlob.cs" />
      <None Include="Assets\Fonts\Apache License.txt" />
      <None Include="Assets\images\png\README.txt" />
  <Reference Include="UnityEngine.UI">
