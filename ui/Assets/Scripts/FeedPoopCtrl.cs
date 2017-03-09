@@ -12,6 +12,8 @@ using UnityEngine.Networking;
 
 // 2017-03-07 21:14:17
 
+// server uses UTC time 
+
 public class FeedPoopCtrl : MonoBehaviour
 {
 	// JSON
@@ -38,7 +40,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	{
 		imgPoop.enabled = false;
 		imgHam.enabled = false;
-		imgPoop.enabled = false;
+		imgThoughtBub.enabled = false;
 
 		WWW www = new WWW (url + blobId0.ToString ());
 		StartCoroutine (GetBlobInfo (www));
