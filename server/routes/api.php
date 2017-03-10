@@ -93,6 +93,15 @@ Route::group(['prefix' => 'battles'], function(){
 |   PUT serverAddress.com/api/exercises/{id}?distance=5&token=<token>
 |       Updates and exercise record for a user with distance walked since last update
 |
+|   POST serverAddress.com/api/battles?blob1=<>&blob2=<>
+|       creates a battle record
+|   GET serverAddress.com/api/battles?user=<>
+|   GET serverAddress.com/api/battles?blob=<>
+|   GET serverAddress.com/api/battles
+|       Gets the battles associated with the user, blob or all records
+|   GET serverAddress.com/api/battles/{id}
+|       Get a specific battle record
+|
 |   POST serverAddress.com/api/events
 |       creates an event record for a blob
 |   GET serverAddress.com/api/events/{id}

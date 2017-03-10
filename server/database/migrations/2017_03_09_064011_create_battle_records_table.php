@@ -15,9 +15,8 @@ class CreateBattleRecordsTable extends Migration
     {
         Schema::create('battle_records', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('blob_id1')->unsigned();
-            $table->integer('blob_id2')->unsigned();
-            $table->integer('winner_blob')->unsigned();
+            $table->integer('loserBlobID')->unsigned();
+            $table->integer('winnerBlobID')->unsigned();
             $table->timestamps();
         });
 

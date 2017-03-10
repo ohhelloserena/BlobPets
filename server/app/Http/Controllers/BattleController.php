@@ -41,8 +41,14 @@ class BattleController extends Controller
                 if ($blob1->owner_id == $user xor $blob2->owner_id == $user){
                     //Compute winner
                     $winner = $this->determineWinner($blob1,$blob2);
+                    if ($winner == $blob1_id){
+                        $loser = $blob2_id;
+                        }
+                    else{
+                        $loser = $blob1_id;
+                    }
                     //Return battle record
-                    $record = BattleRecord::create(array('blob_id1' => $blob1_id, 'blob_id2'=> $blob2_id, 'winner_blob' => $winner));
+                    $record = BattleRecord::create(array('loserBlobID' => $loser, 'winnerBlobID' => $winner));
                     $id = $record->id;
                     return response()->json(['BattleRecordID' => $id], 201);
                 }
@@ -60,13 +66,17 @@ class BattleController extends Controller
 
     }
 
-    // TODO do we need to do this for a specific user or blob or simply get all the records?
+    /**
+     * Gets a list of battle records for a specific user, a specific blob or all existing records
+     * @param Request $request
+     * @return Collection|static[]
+     */
     public function getBattleRecords(Request $request){
         $blob = $request->input('blob');
         $user = $request->input('user');
         if (!empty($blob)){
             // Gets the records that include a blob
-            $records = BattleRecord::where('blob_id1', $blob)->orWhere('blob_id2', $blob)->get();
+            $records = BattleRecord::where('winnerBlobID', $blob)->orWhere('loserBlobID', $blob)->get();
             return $records;
         }
         elseif (!empty($user)){
@@ -76,7 +86,7 @@ class BattleController extends Controller
             $records = new Collection();
             foreach ($blobs as $blob) {
                 $blobid = $blob->id;
-                $record = BattleRecord::where('blob_id1', $blobid)->orWhere('blob_id2', $blobid)->get();
+                $record = BattleRecord::where('winnerBlobID', $blobid)->orWhere('loserBlobID', $blobid)->get();
                 $records->push($record);
             }
             return $records;
@@ -132,7 +142,7 @@ class BattleController extends Controller
         $winner_record->save();
     }
 
-    //TODO determine how much to punish by
+    //TODO determine how much to punish by or do we decrement the level
     /**
      * Update losing blob with a punishment
      * @param $blob
