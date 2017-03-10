@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,12 @@ Route::group(['prefix' => 'exercises'], function()
 
     Route::get('/{id}', 'ExerciseController@getExerciseRecord'); // Returns the exercise record with record id
     Route::put('/{id}', 'ExerciseController@updateExerciseRecord'); // Updates the exercise record
+});
+
+Route::group(['prefix' => 'battles'], function(){
+    Route::post('/', 'BattleController@createBattleRecord');
+    Route::get('/', 'BattleController@getBattleRecords');
+    Route::get('/{id}', 'BattleController@getBattleRecord');
 });
 
 //Route::group(['prefix' => 'events'], function(){
