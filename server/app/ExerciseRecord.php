@@ -36,6 +36,7 @@ class ExerciseRecord extends Model
             $prevmax = $this->weekly_goal;
             $current_total = $this->total_exercise;
 
+
             // Decrement exercise level
             if ($current_total < $prevmax){
                 $user_id = $this->owner_id;
@@ -50,7 +51,7 @@ class ExerciseRecord extends Model
             }
 
             // Update Max
-            $newmax = $current_total + $km_per_week;
+            $newmax = $prevmax + $km_per_week;
             $this->weekly_goal = $newmax;
             $this->save();
         }
