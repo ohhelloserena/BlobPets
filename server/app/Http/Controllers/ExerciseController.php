@@ -89,7 +89,7 @@ class ExerciseController extends Controller
                     $distance = $request->distance;
 
                     // Check if it has been a week and the max_exercise needs to be updated
-                    $record->updateRecord();
+                    $record->updateRecord(Carbon::now());
 
                     // Update the record
                     $totaldistance = $record->total_exercise;

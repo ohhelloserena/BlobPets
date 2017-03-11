@@ -15,11 +15,11 @@ class ExerciseRecord extends Model
     /**
      * Updates the max_exercise record of the user if it is a new week
      * Also decrements the exercise_level of the user if they haven't met their weekly total
+     * @param Carbon $now - time to calculate the record
      */
-    public function updateRecord(){
+    public function updateRecord(Carbon $now){
         $km_per_week = 5;
         $penalty = 10;
-        $now = Carbon::now();
         $last_update = $this->updated_at;
         $diff = $last_update->diffInDays($now);
         $day_of_week = $last_update->dayOfWeek;
