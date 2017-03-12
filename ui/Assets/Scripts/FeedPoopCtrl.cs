@@ -13,6 +13,7 @@ using UnityEngine.Networking;
 // 2017-03-07 21:14:17
 
 // server uses UTC time 
+using UnityEngine.Rendering;
 
 public class FeedPoopCtrl : MonoBehaviour
 {
@@ -20,6 +21,10 @@ public class FeedPoopCtrl : MonoBehaviour
 	public JSONNode N;
 	public string nextCleanTime;
 	public string nextFeedTime;
+	public string level;
+	public string cleanlinessLevel;
+	public string healthLevel;
+
 
 	// API URL
 	public string url = "http://104.131.144.86/api/blobs/";
@@ -27,6 +32,8 @@ public class FeedPoopCtrl : MonoBehaviour
 	//public int blobId1 = 5;
 	public string blobName0 = "";
 	public string blobName1 = "";
+
+	public string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEwNC4xMzEuMTQ0Ljg2XC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0ODkwNDE5NTAsImV4cCI6MTQ4OTA0NTU1MCwibmJmIjoxNDg5MDQxOTUwLCJqdGkiOiI2M2JjOTQxZWJjMTc1MDUwODE2Yzk0NzI4MzczZDU1ZiJ9.HcU5milX-vz2lMgP-JQXoiMUvjrTA6kiA5BMEXO3vZY";
 
 	public Image imgPoop;
 	public Image imgHam;
@@ -38,13 +45,16 @@ public class FeedPoopCtrl : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+
+		//TokenCtrl tokenCtrl = new TokenCtrl ();
+		//token = tokenCtrl.token;
+		Debug.Log ("TOKEN: " + token);
+
 		imgPoop.enabled = false;
 		imgHam.enabled = false;
 		imgThoughtBub.enabled = false;
 
-		WWW www = new WWW (url + blobId0.ToString ());
-		StartCoroutine (GetBlobInfo (www));
-
+		GetBlob ();
 	}
 
 
@@ -56,6 +66,12 @@ public class FeedPoopCtrl : MonoBehaviour
 		
 	}
 
+	public void GetBlob() {
+		WWW www = new WWW (url + blobId0.ToString ());
+		StartCoroutine (GetBlobInfo (www));
+	}
+		
+
 	IEnumerator GetBlobInfo (WWW www)
 	{
 		yield return www;
@@ -65,7 +81,7 @@ public class FeedPoopCtrl : MonoBehaviour
 			N = JSON.Parse (www.text);
 			ParseJson ();
 			CompareTimes ();
-			Debug.Log ("WWW Ok!: " + www.text);
+			Debug.Log ("GetBlobInfo OK: " + www.text);
 		} else {
 			Debug.Log ("WWW Error: " + www.error);
 		}    
@@ -75,20 +91,23 @@ public class FeedPoopCtrl : MonoBehaviour
 	{
 		nextCleanTime = N ["next_cleanup_time"].Value;
 		nextFeedTime = N ["next_feed_time"].Value;
-
+		cleanlinessLevel = N ["cleanliness_level"].Value;
+		healthLevel = N ["health_level"].Value;
 		blobName0 = N ["name"].Value;
 
 
 		Debug.Log ("nextCleanTime: " + nextCleanTime);
 		Debug.Log ("nextFeedTime: " + nextFeedTime);
-	}
+		Debug.Log ("cleanliness level: " + cleanlinessLevel);
+		Debug.Log ("health level: " + healthLevel);
+			}
 
 
 	public void CompareTimes ()
 	{
 		
-		DateTime dateTime = DateTime.Now;
-		Debug.Log ("CURRENT!! " + dateTime.ToString ());
+		DateTime dateTime = DateTime.Now.ToUniversalTime ();
+		Debug.Log ("Current time in UTC: " + dateTime.ToString ());
 
 		DateTime cleanTime = Convert.ToDateTime (nextCleanTime);
 
@@ -107,21 +126,20 @@ public class FeedPoopCtrl : MonoBehaviour
 
 			// print poop img
 
+			Debug.Log ("PRINTING POOP...");
+
 			needsCleaning = true;
 			imgPoop.enabled = true;
 		}
 
 		if (feedComp < 0) {
 			// dateTime is earlier than cleanTime
-
 			imgThoughtBub.enabled = false;
 			imgHam.enabled = false;
 		} else if (feedComp == 0 || cleanComp > 0) {
 			// == 0 : dateTime same as CleanTime
 			// > 0 : dateTime is later than cleanTime
-
-			// print thought bubble img, then print ham img one second later
-
+			Debug.Log ("PRINTING FOOD...");
 			needsFeeding = true;
 			imgThoughtBub.enabled = true;
 			Invoke ("EnableHam", 1);
@@ -152,14 +170,32 @@ public class FeedPoopCtrl : MonoBehaviour
 	// PUT request
 	IEnumerator UpdateBlob (string button)
 	{
-		byte[] myData = System.Text.Encoding.UTF8.GetBytes (blobName0);
-		using (UnityWebRequest www = UnityWebRequest.Put (url + blobId0.ToString (), myData)) {
+		string myData =" ";
+		//byte[] myData = new byte[1];
+		string finalUrl;
+
+		if (button == "feed") {
+			//myData = System.Text.Encoding.UTF8.GetBytes ("/token=" + token + "health_level=" + healthLevel);
+			finalUrl = url + blobId0 + "?token=" + token + "&health_level=" + healthLevel;
+			//myData = "?token=123" + "&health_level=" + healthLevel;
+			//Debug.Log (myData);
+		} else {
+			//myData = System.Text.Encoding.UTF8.GetBytes ("/token=" + token + "cleanliness_level=" + cleanlinessLevel);
+			finalUrl = url + blobId0 + "?token=" + token + "&cleanliness_level=" + cleanlinessLevel;
+			//myData = "/token=" + token + "cleanliness_level=" + cleanlinessLevel;
+		}
+
+		using (UnityWebRequest www = UnityWebRequest.Put (finalUrl, myData)) {
+		//using (UnityWebRequest www = UnityWebRequest.Put (url + blobId0.ToString (), myData)) {
 			yield return www.Send ();
 
 			if (www.isError) {
 				Debug.Log ("PUT ERROR: " + www.error);
 			} else {
-				Debug.Log ("Uploaded!!");
+				Debug.Log ("PUT REQUEST SUCCESSFUL.");
+				Debug.Log (www.url.ToString ());
+
+				// get next clean and/or feed times
 
 				if (button == "feed") {
 					needsFeeding = false;
@@ -171,6 +207,8 @@ public class FeedPoopCtrl : MonoBehaviour
 					needsCleaning = false;
 					imgPoop.enabled = false;
 				}
+
+				//GetBlob ();
 			}
 	
 		}
@@ -182,7 +220,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		imgHam.enabled = true;
 	}
 
-	// hide ham img
+	// hide thought bubble img
 	public void DisableBubble ()
 	{
 		imgThoughtBub.enabled = false;

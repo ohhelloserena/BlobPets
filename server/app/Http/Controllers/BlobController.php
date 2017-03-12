@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use \Response;
 
 use Illuminate\Support\Facades\DB;
-use \App\Http\Controllers\BlobController;
+//use \App\Http\Controllers\BlobController;
 
 
 class BlobController extends Controller
@@ -188,7 +188,7 @@ class BlobController extends Controller
             $results = Blob::where('id', $id)->where('owner_id',$user)->first();
             if(!empty($results)) {
                 // Check if blob health = 0
-                if ($results->health_level == 0){
+                if ($results->alive == false){
                     // Delete blob
                     Blob::destroy($id);
                     return Response::make('OK', 200);
@@ -219,10 +219,12 @@ class BlobController extends Controller
     // generate a new time for the next event.
     // the next event will be between 6 and 12 hours from now
     public function generateNewTime() {
-        $randomHours = rand(0, 5);
-        $randomMinutes = rand(0, 59);
-        $randomSeconds = rand(0, 59);
-        return Carbon::now()->addHours(6 + $randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
+        // set it to 1 minutes for demo purpose
+        $minimumHour = 0;
+        $randomHours = 0;//rand(0, 5);
+        $randomMinutes = 1;//rand(0, 59);
+        $randomSeconds = 0;//rand(0, 59);
+        return Carbon::now()->addHours($minimumHour + $randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
     }
 
 }
