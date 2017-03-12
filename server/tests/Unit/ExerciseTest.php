@@ -8,6 +8,7 @@
 
 namespace tests\Unit;
 
+use App\Http\Controllers\BlobController;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Http\Controllers\ExerciseController;
@@ -120,7 +121,7 @@ class ExerciseTest extends TestCase
 
         // Update record
         $this->refreshApplication();
-        $response = $this->call('POST','/api/exercises', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $this->call('POST','/api/exercises', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
 
         $this->refreshApplication();
         $response = $this->call('PUT','/api/exercises/3', ['distance'=>1], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
@@ -136,16 +137,21 @@ class ExerciseTest extends TestCase
         $this->assertEquals(4, $response_json->remaining_exercise);
     }
 
+
     public function testUpdateRecord(){
         $this->refreshApplication();
         $today = Carbon::now();
-        $response = $this->call('POST','/api/exercises', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $this->call('POST','/api/exercises', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
 
         // Update record while on current week
-        $response = $this->call('GET','/api/exercises/3', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $this->call('GET','/api/exercises/3', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $ec = new ExerciseController();
         $record = $ec->getExerciseRecord(3);
         $record->updateRecord($today);
+
+        $bc = new BlobController();
+        $blob_record = $bc->getBlob(4);
+        $this->assertEquals(60, $blob_record->exercise_level);
 
         $this->refreshApplication();
         $response = $this->call('GET','/api/exercises/3', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
@@ -154,7 +160,7 @@ class ExerciseTest extends TestCase
         $this->assertEquals(5, $response_json->weekly_goal);
 
         // Get record for next week after meeting max
-        $response = $this->call('PUT','/api/exercises/3', ['distance'=>5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $this->call('PUT','/api/exercises/3', ['distance'=>5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $next_week = Carbon::createFromDate($today->year,$today->month,$today->day+7);
         $record = $ec->getExerciseRecord(3);
         $record->updateRecord($next_week);
@@ -164,6 +170,9 @@ class ExerciseTest extends TestCase
         $response_json = json_decode($response->getContent());
         $this->assertEquals(5, $response_json->total_exercise);
         $this->assertEquals(10, $response_json->weekly_goal);
+
+        $blob_record = $bc->getBlob(4);
+        $this->assertEquals(65, $blob_record->exercise_level);
 
         // Get record for next week without meeting max
         $next_week = Carbon::createFromDate($next_week->year,$next_week->month,$next_week->day+7);
@@ -175,6 +184,9 @@ class ExerciseTest extends TestCase
         $response_json = json_decode($response->getContent());
         $this->assertEquals(5, $response_json->total_exercise);
         $this->assertEquals(15, $response_json->weekly_goal);
+
+        $blob_record = $bc->getBlob(4);
+        $this->assertEquals(55, $blob_record->exercise_level);
     }
 
 }

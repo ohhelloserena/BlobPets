@@ -41,14 +41,18 @@ class BattleController extends Controller
                 if ($blob1->owner_id == $user xor $blob2->owner_id == $user){
                     //Compute winner
                     $winner = $this->determineWinner($blob1,$blob2);
-                    if ($winner == $blob1_id){
-                        $loser = $blob2_id;
+                    if ($winner->id == $blob1_id){
+                        $loser = $blob2;
                         }
                     else{
-                        $loser = $blob1_id;
+                        $loser = $blob1;
                     }
+                    $this->rewardWinner($winner);
+                    $this->updateWinner($winner->owner_id);
+                    $this->punishLoser($loser);
+
                     //Return battle record
-                    $record = BattleRecord::create(array('loserBlobID' => $loser, 'winnerBlobID' => $winner));
+                    $record = BattleRecord::create(array('loserBlobID' => $loser->id, 'winnerBlobID' => $winner->id));
                     $id = $record->id;
                     return response()->json(['BattleRecordID' => $id], 201);
                 }
@@ -113,8 +117,7 @@ class BattleController extends Controller
             return response()->json(['error' => 'Record does not exist'], 400);
         }
     }
-
-    //TODO Determine how to calculate winner
+    
     /**
      * Determines the winner of the battle
      * @param $blob1
@@ -122,13 +125,33 @@ class BattleController extends Controller
      * @return int(the id of the user)
      */
     public function determineWinner($blob1, $blob2){
-        $winner = $blob1;
-        $loser = $blob2;
-        $winner_owner = $winner->owner_id;
-        $this->punishLoser($loser);
-        $this->rewardWinner($winner);
-        $this->updateWinner($winner_owner);
-        return $winner->id;
+        // Calculate values
+        $exercise = $blob1->exercise_level;
+        $health = $blob1->health_level;
+        $clean = $blob1->cleanliness_level;
+        $level = $blob1->level;
+
+        $blob1_value = $level * ((0.005*$exercise) + (0.003*$health) +(0.002*$clean));
+        $exercise = $blob2->exercise_level;
+        $health = $blob2->health_level;
+        $clean = $blob2->cleanliness_level;
+        $level = $blob2->level;
+        $blob2_value = $level * ((0.005*$exercise) + (0.003*$health) +(0.002*$clean));
+
+        // Determine winner
+        if ($blob1_value > $blob2_value){
+            $winner = $blob1;
+        }
+        else if ($blob1_value < $blob2_value){
+            $winner = $blob2;
+        }
+        else{
+            // The targeted blob wins if it is a tie
+            $winner = $blob2;
+        }
+
+        // Return winner blob
+        return $winner;
     }
 
     /**
