@@ -30,7 +30,7 @@ class Controller extends BaseController
             return $user;
         } catch (JwtException $e) {
             $error_code = $e->getMessage();
-            return response()->json(['error:' => $error_code], 401);
+            return response()->json(['error' => $error_code], 401);
         }
     }
 }

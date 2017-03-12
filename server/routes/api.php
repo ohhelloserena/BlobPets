@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,12 @@ Route::group(['prefix' => 'exercises'], function()
     Route::put('/{id}', 'ExerciseController@updateExerciseRecord'); // Updates the exercise record
 });
 
+Route::group(['prefix' => 'battles'], function(){
+    Route::post('/', 'BattleController@createBattleRecord');
+    Route::get('/', 'BattleController@getBattleRecords');
+    Route::get('/{id}', 'BattleController@getBattleRecord');
+});
+
 //Route::group(['prefix' => 'events'], function(){
 //    Route::post('/', 'EventController@createEventRecord');
 //    Route::get('/{id}', 'EventController@getEventRecord');
@@ -85,6 +92,15 @@ Route::group(['prefix' => 'exercises'], function()
 |       Gets an exercise record for a user
 |   PUT serverAddress.com/api/exercises/{id}?distance=5&token=<token>
 |       Updates and exercise record for a user with distance walked since last update
+|
+|   POST serverAddress.com/api/battles?blob1=<>&blob2=<>
+|       creates a battle record
+|   GET serverAddress.com/api/battles?user=<>
+|   GET serverAddress.com/api/battles?blob=<>
+|   GET serverAddress.com/api/battles
+|       Gets the battles associated with the user, blob or all records
+|   GET serverAddress.com/api/battles/{id}
+|       Get a specific battle record
 |
 |   POST serverAddress.com/api/events
 |       creates an event record for a blob

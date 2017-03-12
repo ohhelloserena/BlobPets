@@ -87,9 +87,15 @@ class UserController extends Controller
         if ($request->exists($required)) {
             $userEmail = $request->input('email');
             $userWithEmail = User::where('email', $userEmail)->first();
+            $userlat = $request->input('lat');
+            $userlong = $request->input('long');
 
             if (empty($userWithEmail)) {
                 $credentials = $request->only('name', 'email', 'password');
+                if (!empty($userlat) and !empty($userlong)){
+                    $credentials['latitude'] = $userlat;
+                    $credentials['longitude'] = $userlong;
+                }
                 $credentials['password'] = Hash::make($credentials['password']);
                 $newUser = User::create($credentials);
                 return Response::make($newUser->id, 201);
@@ -117,6 +123,8 @@ class UserController extends Controller
         $token = $request->input('token');
         $newName = $request->input('name');
         $newPassword = $request->input('password');
+        $newlat = $request->input('lat');
+        $newlong = $request->input('long');
 
         $associatedUser = JWTAuth::toUser($token);
         $user = User::find($associatedUser->id);
@@ -134,6 +142,10 @@ class UserController extends Controller
         }
         if (!empty($newPassword)) {
             $user->password = Hash::make($newPassword);
+        }
+        if (!empty($newlat) and !empty($newlong)){
+            $user->latitude = $newlat;
+            $user->longitude = $newlong;
         }
         $user->save();
 
