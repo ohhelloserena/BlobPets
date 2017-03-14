@@ -26,6 +26,7 @@ class CreateBlobsTable extends Migration
             $table->dateTime('next_cleanup_time')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->dateTime('next_feed_time')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->dateTime('last_levels_decrement')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->dateTime('end_rest')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->integer('owner_id')->unsigned();
             $table->timestamps();
         });
