@@ -14,14 +14,16 @@ public class TokenCtrl : MonoBehaviour
 {
 
 	public string token = "";
-	public string userId = "1";
-	public string email = "ryanchenkie@gmail.com";
-	public string password = "secret";
+	public string userId = "";
+	//public string email = "";
+	//public string password = "";
+
+	public bool userExists;
 
 	// Use this for initialization
 	void Start ()
 	{
-		GetToken ();
+		
 	}
 	
 	// Update is called once per frame
@@ -30,7 +32,12 @@ public class TokenCtrl : MonoBehaviour
 		
 	}
 
-	public void GetToken ()
+	/*
+	 * Sends POST request to the API to get token for the 
+	 * user with the given email and password.
+	 */
+
+	public string GetToken (string email, string password)
 	{
 		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
 		WWWForm form = new WWWForm ();
@@ -38,6 +45,8 @@ public class TokenCtrl : MonoBehaviour
 		form.AddField ("password", password);
 		WWW www = new WWW (tokenUrl, form);
 		StartCoroutine (WaitForRequest (www));
+
+		return token;
 	}
 
 	IEnumerator WaitForRequest (WWW www)
@@ -46,13 +55,20 @@ public class TokenCtrl : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-			//Debug.Log ("Token: " + www.text);
+			
+
 			JSONNode N = JSON.Parse (www.text);
+
+			userExists = true;
+			Debug.Log("!!! USER EXISTS.");
+
 			ParseJson (N);
 
 
 		} else {
-			Debug.Log ("WWW Error: " + www.error);
+			Debug.Log ("***WWW Error: " + www.error);
+			userExists = false;
+			Debug.Log("!!! USER DOESN'T EXIST.");
 			if (www.error == "400 Bad Request") {
 				// alert for duplicate email address
 			}
@@ -64,15 +80,4 @@ public class TokenCtrl : MonoBehaviour
 		token = data ["token"].Value;
 		//Debug.Log ("Parsed, token is: " + token);
 	}
-
-	/*
-	public string GetBlobId ()
-	{
-		FeedPoopCtrl fpc = new FeedPoopCtrl ();
-		int blobId = fpc.blobId0;
-		return blobId.ToString ();
-	}
-	*/
-
-
 }

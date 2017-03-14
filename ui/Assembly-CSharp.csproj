@@ -52,13 +52,9 @@
      <Compile Include="Assets\Scripts\HealthUpdate.cs" />
      <Compile Include="Assets\Scripts\InputFieldToText.cs" />
      <Compile Include="Assets\Scripts\NewUser.cs" />
-<<<<<<< HEAD
-     <Compile Include="Assets\Scripts\SelectBlob.cs" />
-     <Compile Include="Assets\Scripts\TokenCtrl.cs" />
-=======
      <Compile Include="Assets\Scripts\ScreenCtrl.cs" />
      <Compile Include="Assets\Scripts\SelectBlob.cs" />
->>>>>>> 0aa32208f3f2fada04febe8019572af1f7fb610e
+     <Compile Include="Assets\Scripts\TokenCtrl.cs" />
      <None Include="Assets\Fonts\Apache License.txt" />
      <None Include="Assets\images\png\README.txt" />
  <Reference Include="UnityEngine.Analytics">
