@@ -41,6 +41,7 @@ Route::group(['prefix' => 'blobs'], function()
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
 	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name or level attributes
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
+    Route::post('/breed', 'BlobController@breedBlob'); // creates a blob through breeding
 });
 
 Route::group(['prefix' => 'exercises'], function()
