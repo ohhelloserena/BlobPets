@@ -33,10 +33,10 @@ class Blob extends Model
         }
 
         // 72 minutes => 5 days = 100 ticks
-        // $minimumTimeDifferenceInSecond = 4320;
+        $minimumTimeDifferenceInSecond = 4320;
 
         // 30 seconds for demo purpose
-        $minimumTimeDifferenceInSecond = 30;
+        // $minimumTimeDifferenceInSecond = 30;
         if ($timeDifference >= $minimumTimeDifferenceInSecond) {
             $unitTimePassed = round($timeDifference / $minimumTimeDifferenceInSecond);
 
@@ -45,9 +45,9 @@ class Blob extends Model
             $old_health_level = $this->health_level;
 
             // minimum level is 10 for demo purpose
-            $new_exercise_level = max(10, $old_exercise_level - $unitTimePassed);
-            $new_cleanliness_level = max(10, $old_cleanliness_level - $unitTimePassed);
-            $new_health_level = max(10, $old_health_level - $unitTimePassed);
+            $new_exercise_level = max(0, $old_exercise_level - $unitTimePassed);
+            $new_cleanliness_level = max(0, $old_cleanliness_level - $unitTimePassed);
+            $new_health_level = max(0, $old_health_level - $unitTimePassed);
 
             $new_blob_levels = array('exercise_level' => $new_exercise_level, 'cleanliness_level' => $new_cleanliness_level, 'health_level' => $new_health_level);
             $this->exercise_level = $new_exercise_level;
