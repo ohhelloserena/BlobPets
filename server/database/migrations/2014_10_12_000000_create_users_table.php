@@ -18,8 +18,8 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->float('latitude')->default(0);
-            $table->float('longitude')->default(0);
+            $table->decimal('latitude',10,7)->default(0);
+            $table->decimal('longitude',10,7)->default(0);
             $table->integer('battles_won')->unsigned()->default(0);
             $table->rememberToken();
             $table->timestamps();

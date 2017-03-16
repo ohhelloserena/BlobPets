@@ -29,7 +29,6 @@ class BattleTest extends TestCase
     public $user_token = '';
 
     protected function setUp(){
-//        print 'running setup';
         parent::setUp();
         $response = $this->call('POST', '/api/users/authenticate', array('email' => 'ryanchenkie@gmail.com', 'password' => 'secret'));
         $response_json = json_decode($response->getContent());
@@ -379,4 +378,5 @@ class BattleTest extends TestCase
         $this->assertEquals($prev_time, $post_time);
 
     }
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use AppHttpRequests;
@@ -17,7 +18,7 @@ class UserController extends Controller
 
 	public function __construct()
 	{
-		$this->middleware('jwt.auth', ['except' => ['authenticate', 'getAllUsers', 'getUser', 'getUserBlobs', 'createUser']]);
+		$this->middleware('jwt.auth', ['except' => ['authenticate', 'getAllUsers', 'getUsers', 'getUser', 'getUserBlobs', 'createUser']]);
 	}
 
     // return a list of all the users in the database
@@ -27,6 +28,25 @@ class UserController extends Controller
     {
     	$users = User::with("blobs")->get();
     	return $users;
+    }
+
+    /**
+     * Gets users near the specified location and returns them
+     * @param Request $request
+     * @return User|JsonResponse
+     */
+    public function getUsers(Request $request){
+        //Check that lat long provided
+        $required = array('lat', 'long');
+        if ($request->exists($required)){
+            $lat = $request->lat;
+            $long = $request->long;
+            //Get users and return them
+            return $this->getCloseUsers($lat,$long);
+        }
+        else{
+            return response()->json(['error' => 'Missing required input fields'], 400);
+        }
     }
 
     // return the user with the specified user id
@@ -164,6 +184,46 @@ class UserController extends Controller
 
         $users = \App\User::all();
         return $users->find($associatedUser->id);
+    }
+
+    /**
+     * Get users within a boxed area
+     * @param $latitude
+     * @param $longitude
+     * @return mixed(An array of users)
+     */
+    public function getCloseUsers($latitude, $longitude){
+        $box = $this->getBox($latitude,$longitude);
+        $users = User::where('latitude', '>=', $box['minLAT'])
+            ->where('latitude', '<=', $box['maxLAT'])
+            ->where('longitude', '>=', $box['minLON'])
+            ->where('longitude', '<=', $box['maxLON'])->get();
+
+        // Return users that qualify
+        return $users;
+	}
+
+    /**
+     * Gives an approximately 1km bounding box, 500m distance from latlong to edge of box
+     * @param $latitude
+     * @param $longitude
+     * @return array
+     */
+    public function getBox($latitude, $longitude){
+        $coord = array();
+        $distance = 30;
+        $radius = $distance/6371;
+        $delta = asin(sin($radius) / cos($latitude));
+        $minLat = $latitude - $radius;
+        $maxLat = $latitude + $radius;
+        $minLon = $longitude - $delta;
+        $maxLon = $longitude + $delta;
+
+        $coord['maxLAT'] = round($maxLat, 7);
+        $coord['minLAT'] = round($minLat, 7);
+        $coord['maxLON'] = round($maxLon, 7);
+        $coord['minLON'] = round($minLon, 7);
+        return $coord;
     }
 
 }
