@@ -89,10 +89,7 @@ public class EditCtrl : MonoBehaviour
 			pwChangeRequested = true;
 		}
 	}
-
-
-	
-
+		
 	public void LoadScene (string sceneName)
 	{
 		SceneManager.LoadScene (sceneName);
@@ -107,51 +104,6 @@ public class EditCtrl : MonoBehaviour
 			return false;
 		}
 	}
-
-	/*
-	 * Returns true if inputted name is a valid name, else false.
-	 * A valid name is at least 1 character (that isn't a white space) long
-	 * and no longer than 25 characters long.
-	 * 
-	 * Input(s):
-	 * - n: new name inputted into name text field.
-	 */
-
-	public bool IsValidName(string n) 
-	{
-		int len = n.Length;
-
-		string nNoSpaces = Regex.Replace (n, @"\s+", "");
-		int lenNoSpaces = nNoSpaces.Length;
-
-		if ((lenNoSpaces >= 1) && len <= 25) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/*
-	 * Returns true if inputted password is valid, else false.
-	 * A valid password is at least 6 characters long and doesn't contain spaces.
-	 * 
-	 * Input(s):
-	 * - pw: new password inputted into password text field.
-	 */
-
-	public bool IsValidPassword (string pw)
-	{
-		bool containsWhiteSpace = pw.Contains (" ");
-		int len = pw.Length;
-
-		if ((len >= 6) && !containsWhiteSpace) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-
 
 
 }
