@@ -5,43 +5,53 @@ using UnityEngine.SceneManagement;
 using System.Text.RegularExpressions;
 using System;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 // Create new user with given name, email, and password.
 using System.Runtime.Remoting;
 using UnityEditor;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 public class NewUser : MonoBehaviour
 {
-	public TokenCtrl tokenCtrl;
-	public string username = "";
-	public string email = "";
-	public string password = "";
+	public InputFieldCtrl ifCtrl;
+	public string username;
+	public string email;
+	public string password;
 	public string userId = "";
 	public string url = "http://104.131.144.86/api/users/";
 	public bool validName = false;
 	public bool validEmail = false;
 	public bool validPW = false;
 	public bool validNewUserCombo = false;
+
 	public GameObject namePanel;
 	public GameObject emailPanel;
 	public GameObject passwordPanel;
 
-
-
 	// Use this for initialization
-	public void Start ()
+ void Start ()
 	{
 		HideNamePanel ();
 		HideEmailPanel ();
 		HidePasswordPanel ();
-
-
-		
 	}
+
+
 
 	public void ButtonClick ()
 	{
-		Debug.Log ("1. Button clicked.");
+		Debug.Log ("BUTTON CLICKED");
+		username = ifCtrl.username;
+		email = ifCtrl.email;
+		password = ifCtrl.password;
+
+		Debug.Log ("username: " + username);
+		Debug.Log ("email: " + email);
+		Debug.Log ("pw: " + password);
+
+
 
 		CreateUser ();
 	}
@@ -53,26 +63,22 @@ public class NewUser : MonoBehaviour
 
 	public void CreateUser ()
 	{
-		Debug.Log ("CreateUser() entered");
-		Debug.Log ("*NAME* " + username);
-		Debug.Log ("*PASSWORD* " + password);
-		Debug.Log ("*EMAIL* " + email);
 
 		validName = IsValidName (username);
 		validEmail = IsValidEmailAddress (email);
 		validPW = IsValidPassword (password);
-		//validNewUserCombo = IsValidNewUserCombo (email, password);
-
-		Debug.Log ("2. validName: " + validName);
-		Debug.Log ("3. validEmail: " + validEmail);
-		Debug.Log ("4. validPW: " + validPW);
-		//Debug.Log ("5. validNewUserCombo: " + validNewUserCombo);
 
 		if (validName && validEmail && validPW) {
-			Debug.Log ("6. VALID INPUTS");
+			Debug.Log ("Valid inputs");
 			CallAPI ();
 		} else {
-			Debug.Log ("8. INVALID INPUTS");
+			Debug.Log ("Invalid inputs");
+
+
+			Debug.Log ("validName: " + validName);
+			Debug.Log ("validEmail: " + validEmail);
+			Debug.Log ("validPW: " + validPW);
+
 			if (validName == false) {
 				ShowNamePanel ();
 			}
@@ -113,32 +119,6 @@ public class NewUser : MonoBehaviour
 		} 
 	}
 
-	public void ShowNamePanel() {
-		Debug.Log ("shownamepanel");
-		//namePanel.SetActive (true);
-	}
-
-	public void HideNamePanel() {
-		namePanel.SetActive (false);
-	}
-
-	public void ShowEmailPanel() {
-		Debug.Log ("showemailpanel");
-		//emailPanel.SetActive (true);
-	}
-
-	public void HideEmailPanel() {
-		emailPanel.SetActive (false);
-	}
-
-	public void ShowPasswordPanel() {
-		Debug.Log ("showpasswordpanel");
-		//passwordPanel.SetActive (true);
-	}
-
-	public void HidePasswordPanel() {
-		passwordPanel.SetActive (false);
-	}
 
 	/*
 	 * Returns true if inputted name is a valid name, else false.
@@ -157,6 +137,7 @@ public class NewUser : MonoBehaviour
 		int lenNoSpaces = nNoSpaces.Length;
 
 		if ((lenNoSpaces >= 1) && len <= 25) {
+			HideNamePanel ();
 			return true;
 		} else {
 			return false;
@@ -173,14 +154,17 @@ public class NewUser : MonoBehaviour
 
 	public bool IsValidEmailAddress (string emailAddress)
 	{
-		try {
 			Regex rx = new Regex (
 				           @"^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z{|}~])*@[a-zA-Z](-?[a-zA-Z0-9])*(\.[a-zA-Z](-?[a-zA-Z0-9])*)+$"
 			           );
-			return rx.IsMatch (emailAddress);
-		} catch (FormatException) {
-			return false;
-		}
+			bool res= rx.IsMatch (emailAddress);
+			if (res == true) {
+				HideEmailPanel();
+				return true;
+			} else {
+				return false;
+			}
+	
 	}
 
 	/*
@@ -197,6 +181,7 @@ public class NewUser : MonoBehaviour
 		int len = pw.Length;
 
 		if ((len >= 6) && !containsWhiteSpace) {
+			HideEmailPanel ();
 			return true;
 		} else {
 			return false;
@@ -234,36 +219,37 @@ public class NewUser : MonoBehaviour
 	 * - nameField: new name inputted into name text field.
 	*/
  
-	public void getName (string inputField)
-	{
-		Debug.Log ("Name: " + inputField);
-		username = inputField;
+	
+
+	public void ShowNamePanel() {
+		Debug.Log ("ShowNamePanel");
+		namePanel.gameObject.SetActive (true);
 	}
 
-	/*
-	 * Get input email for new user.
-	 * 
-	 * Input(s):
-	 * - pwField: new password inputted into password field.
-	 */
-
-	public void getEmail (string inputField)
-	{
-		Debug.Log ("Email: " + inputField);
-		email = inputField.ToLower ();
+	public void ShowEmailPanel() {
+		Debug.Log ("ShowEmailPanel");
+		emailPanel.gameObject.SetActive (true);
 	}
 
-	/*
-	 * Get input password for new user.
-	 * 
-	 * Input(s):
-	 * - pwField: new password inputted into password field.
-	 */
 
-	public void getPassword (string inputField)
-	{
-		Debug.Log ("Password: " + inputField);
-		password = inputField;
+	public void ShowPasswordPanel() {
+		Debug.Log ("ShowPasswordPanel");
+		passwordPanel.gameObject.SetActive (true);
+	}
+
+	public void HideNamePanel() {
+		Debug.Log ("HideNamePanel");
+		namePanel.gameObject.SetActive (false);
+	}
+
+	public void HideEmailPanel() {
+		Debug.Log ("HideEmailPanel");
+		emailPanel.gameObject.SetActive (false);
+	}
+
+	public void HidePasswordPanel() {
+		Debug.Log ("HidePasswordPanel");
+		passwordPanel.gameObject.SetActive (false);
 	}
 
 	

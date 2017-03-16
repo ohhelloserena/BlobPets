@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement; 
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 
 /* Update User Profile*/
 
@@ -20,11 +21,17 @@ public class EditCtrl : MonoBehaviour
 	public string newPW = "-1";
 	public string confirmedPW = "-1";
 
+	public bool nameChangeRequested = false;
+	public bool pwChangeRequested = false;
+
 	public Text matched;
+
+	public InputFieldCtrl ifctrl;
+	public ValidInputsCtrl validInputsCtrl;
 
 	public void Start ()
 	{
-		printPasswordMsg();
+
 	}
 
 	/* 
@@ -34,9 +41,23 @@ public class EditCtrl : MonoBehaviour
 
 	public void Button_Click ()
 	{
-		Debug.Log ("Button clicked.");
-		//StartCoroutine(UpdateUser());
-		LoadScene ("UserProfileUI");
+		Debug.Log ("Save button clicked.");
+
+		newName = ifctrl.username;
+		newPW = ifctrl.password;
+
+		Debug.Log ("New name: " + newName);
+		Debug.Log ("new PW: " + newPW);
+
+		CheckVariables ();
+
+		if (nameChangeRequested || pwChangeRequested) {
+			//StartCoroutine(UpdateUser());
+			//LoadScene ("UserProfileUI");
+		} else {
+			// user didn't update username or password
+			// do nothing
+		}
 
 	}
 
@@ -45,8 +66,29 @@ public class EditCtrl : MonoBehaviour
 	 */
 
 	 public void UpdateUser() {
+		if (nameChangeRequested) {
+		}
+
+		if (pwChangeRequested) {
+		}
+
 		
 	 }
+
+	public void CheckVariables() {
+		bool isNameEmpty = IsEmpty (newName);
+		bool isPWEmpty = IsEmpty (newPW);
+		bool isNameValid = validInputsCtrl.IsValidName (newName);
+		bool isPWValid = validInputsCtrl.IsValidPassword (newPW);
+
+		if (!isNameEmpty && isNameValid) {
+			nameChangeRequested = true;
+		}
+
+		if (!isPWEmpty && isPWValid) {
+			pwChangeRequested = true;
+		}
+	}
 
 
 	
@@ -55,92 +97,60 @@ public class EditCtrl : MonoBehaviour
 	{
 		SceneManager.LoadScene (sceneName);
 	}
+		
 
-
-	public void printPasswordMsg ()
-	{
-		if (checkPW ()) {
-			matched.text = "Passwords match.";
-		} else {
-			matched.text = "Passwords do not match.";
-		}
-	}
-
-
-	/*
-	Get new name for the user. 
-	
-	Input: 
-	nameField: new name inputted into name text field.
-	*/
- 
-	public void getNewName (string nameField)
-	{
-		Debug.Log ("New name: " + nameField);
-		newName = nameField;
-	}
-
-	/*
-	Get new email for the user.
-
-	Input: 
-	- pwField: new password inputted into password field.
-	 */
-
-	public void getPW (string pwField)
-	{
-		Debug.Log ("PW: " + pwField);
-		newPW = pwField;
-	}
-
-
-	/*
-	Get confirmed email for the user.
-
-	Input: 
-	- pwField: confirmed email inputted into confirmed password field.
-	 */
-
-	public void getConfirmedPW (string pwField)
-	{
-		Debug.Log ("Confirmed PW: " + pwField);
-		confirmedPW = pwField;
-	}
-
-
-	/*
-	Return false if no new name entered or if new name only includes white spaces.
-	Else return true.
-	 */
-
-	public bool checkName ()
-	{
-		return false;
-		/*
-		string nameNoSpaces = newName.Replace (" ", string.empty);
-		Debug.Log ("nameNoSpaces: " + nameNoSpaces);
-		if (newName == "-1" || nameNoSpaces.Length < 1) {
-			return false;
-		} else {
+	public bool IsEmpty(string str) {
+	string noSpaces = Regex.Replace (str, @"\s+", ""); // remove whitespaces in string
+		if (String.IsNullOrEmpty (noSpaces)) {
 			return true;
+		} else {
+			return false;
 		}
-		*/
 	}
 
 	/*
-	Return false if no new password entered, if user doesn't fill out both password fields,
-	or if input for both fields don't match.
-	Else return true.
+	 * Returns true if inputted name is a valid name, else false.
+	 * A valid name is at least 1 character (that isn't a white space) long
+	 * and no longer than 25 characters long.
+	 * 
+	 * Input(s):
+	 * - n: new name inputted into name text field.
 	 */
 
-	public bool checkPW ()
+	public bool IsValidName(string n) 
 	{
-		if (newPW == "-1" || confirmedPW == "-1" || newPW != confirmedPW) {
-			return false;
-		} else {
+		int len = n.Length;
+
+		string nNoSpaces = Regex.Replace (n, @"\s+", "");
+		int lenNoSpaces = nNoSpaces.Length;
+
+		if ((lenNoSpaces >= 1) && len <= 25) {
 			return true;
+		} else {
+			return false;
 		}
 	}
+
+	/*
+	 * Returns true if inputted password is valid, else false.
+	 * A valid password is at least 6 characters long and doesn't contain spaces.
+	 * 
+	 * Input(s):
+	 * - pw: new password inputted into password text field.
+	 */
+
+	public bool IsValidPassword (string pw)
+	{
+		bool containsWhiteSpace = pw.Contains (" ");
+		int len = pw.Length;
+
+		if ((len >= 6) && !containsWhiteSpace) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 
 
