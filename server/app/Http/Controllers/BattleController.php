@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\BattleRecord;
+use Carbon\Carbon;
+use App\Blob;
 
 class BattleController extends Controller
 {
@@ -22,6 +24,7 @@ class BattleController extends Controller
 
     /**
      * Creates a battle record
+     * TODO Blob battle number check to restrict battling? timeout/rest flag & time
      * @param Request $request
      * @return JsonResponse
      */
@@ -34,30 +37,52 @@ class BattleController extends Controller
                 $user = $ret;
                 $blob1_id = $request->input('blob1');
                 $blob2_id = $request->input('blob2');
-                $bc = new BlobController();
-                $blob1 = $bc->getBlob($blob1_id);
-                $blob2 = $bc->getBlob($blob2_id);
-                //Verify that only one of the blobs is owned by them
-                if ($blob1->owner_id == $user xor $blob2->owner_id == $user){
-                    //Compute winner
-                    $winner = $this->determineWinner($blob1,$blob2);
-                    if ($winner->id == $blob1_id){
-                        $loser = $blob2;
-                        }
-                    else{
-                        $loser = $blob1;
-                    }
-                    $this->rewardWinner($winner);
-                    $this->updateWinner($winner->owner_id);
-                    $this->punishLoser($loser);
+                $blob1 = Blob::find($blob1_id);
+                $blob2 = Blob::find($blob2_id);
+                // TODO add these two tests
+                // Check that blobs are valid
+                if (!empty($blob1) and !empty($blob2)){
+                    //Verify that only one of the blobs is owned by them
+                    if ($blob1->owner_id == $user xor $blob2->owner_id == $user){
+                    // Verify that blobs are available for battle
+                    if ($this->checkRestFlag($blob1) and $this->checkRestFlag($blob2)){
+                        // Verify that blobs are fit for battle
+                        if ($blob1->health_level > 10 and $blob2->health_level > 10){
+                                //Compute winner
+                                $winner = $this->determineWinner($blob1,$blob2);
+                                if ($winner->id == $blob1_id){
+                                    $loser = $blob2;
+                                }
+                                else{
+                                    $loser = $blob1;
+                                }
+                                $this->rewardWinner($winner);
+                                $this->updateWinner($winner->owner_id);
+                                $this->punishLoser($loser);
 
-                    //Return battle record
-                    $record = BattleRecord::create(array('loserBlobID' => $loser->id, 'winnerBlobID' => $winner->id));
-                    $id = $record->id;
-                    return response()->json(['BattleRecordID' => $id], 201);
+                                //Return battle record
+                                $record = BattleRecord::create(array('loserBlobID' => $loser->id, 'winnerBlobID' => $winner->id));
+                                $id = $record->id;
+
+                                //Update rest flags if needed
+                                $this->checkBattleRecord($blob1);
+                                $this->checkBattleRecord($blob2);
+                                return response()->json(['BattleRecordID' => $id], 201);
+                                }
+                            else{
+                                return response()->json(['error' => 'Blob(s) are unfit for battle'], 400);
+                            }
+                        }
+                        else{
+                            return response()->json(['error' => 'Blob(s) are resting'], 400);
+                        }
+                    }
+                    else{
+                        return response()->json(['error' => 'Invalid blobs, either own both or none'], 400);
+                    }
                 }
                 else{
-                    return response()->json(['error' => 'Invalid blobs, either own both or none'], 400);
+                    return response()->json(['error' => 'Blob(s) are invalid'], 400);
                 }
             }
             else{
@@ -194,5 +219,32 @@ class BattleController extends Controller
         $blob->level = $prevBlobLevel + 1;
 
         $blob->save();
+    }
+
+    public function checkRestFlag($blob){
+        $blob_rest = Carbon::parse($blob->end_rest);
+        $now = Carbon::now();
+
+        //Checks if rest flag is before current time
+        $flag = $blob_rest->lt($now);
+        return $flag;
+    }
+
+    public function checkBattleRecord($blob){
+        $period = 30;
+        $id = $blob->id;
+        $records = BattleRecord::where('loserBlobID', $id)->orWhere('winnerBlobID', $id)->orderBy('created_at', 'desc')->take(5)->get();
+        $now = Carbon::now();
+        // Verify at least 5 records
+        if (count($records) >= 5){
+            $mostRecent = $records->last()->created_at;
+            // Check timestamp between now and oldest of the records if diff is less than 30 raise flag
+            if ($mostRecent->diffInMinutes($now) < 10){
+                //Change end_flag
+                $timeout = Carbon::create($now->year,$now->month,$now->day,$now->hour,$now->minute+$period,$now->second);
+                $blob->end_rest = $timeout;
+                $blob->save();
+            }
+        }
     }
 }

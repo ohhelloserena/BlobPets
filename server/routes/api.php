@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'users'], function()
 {
 	Route::get('/', 'UserController@getAllUsers');	// return list of all users
+    Route::get('/nearbyUsers', 'UserController@getUsers'); // returns list of user near a specified lat long
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
 
@@ -31,6 +32,7 @@ Route::group(['prefix' => 'users'], function()
     Route::put('/{id}', 'UserController@updateUser');	// update an existing user
 
 	Route::get('getTokenOwner', 'UserController@getTokenOwner');	// debug function
+
 	
 });
 
@@ -41,6 +43,7 @@ Route::group(['prefix' => 'blobs'], function()
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
 	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name or level attributes
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
+    Route::post('/breed', 'BlobController@breedBlob'); // creates a blob through breeding
 });
 
 Route::group(['prefix' => 'exercises'], function()
@@ -73,6 +76,8 @@ Route::group(['prefix' => 'battles'], function(){
 | - POST serverAddress.com/api/users/authenticate?email=mail@email.com&password=password
 |		return a token for user with email 'mail@email.com' and 
 |		with password 'password', given that this is in the database
+| - GET serverAddress.com/api/users/nearbyUsers?lat=<>&long=<>
+|       returns a list of users in the nearby area
 |
 | - POST serverAddress.com/api/blobs/?token=<token>&name=blob&type=A&color=purple
 |       creates a blob if user has less than 4 blobs and returns the blob id
