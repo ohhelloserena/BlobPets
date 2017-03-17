@@ -15,6 +15,7 @@ public class LoginCtrl : MonoBehaviour {
 
 	public JSONNode result;
 
+
 	// Use this for initialization
 	void Start () {
 		
@@ -43,9 +44,8 @@ public class LoginCtrl : MonoBehaviour {
 	{
 		if (userExists) {
 			buttonCtrl.LoadScene ("UserProfileUI");
-			
-			
 		} else {
+			
 		}
 	}
 
