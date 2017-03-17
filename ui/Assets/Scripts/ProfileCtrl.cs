@@ -21,10 +21,15 @@ public class ProfileCtrl : MonoBehaviour {
 	public int blobId2 = -1;
 	public int blobId3 = -1;
 
+	public int sceneNumber = 1;
+
+
 
 
 	// Use this for initialization
 	void Start () {
+
+		
 		
 	}
 	

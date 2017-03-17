@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\ProfileCtrl.js" />
      <None Include="Assets\Fonts\Apache License.txt" />
+     <None Include="Assets\Fonts\roboto\Apache License.txt" />
      <None Include="Assets\images\png\README.txt" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>

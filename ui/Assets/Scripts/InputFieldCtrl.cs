@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEditor;
+using System.Security.Cryptography;
 
 public class InputFieldCtrl : MonoBehaviour {
 
@@ -22,19 +23,32 @@ public class InputFieldCtrl : MonoBehaviour {
 	void Start () {
 		
 	}
+
+	public string getName()
+	{
+		return username;
+	}
+
+	public string getEmail()
+	{
+		return email;
+	}
+
+	public string getPassword()
+	{
+		return password;
+	}
+
 	
 
 
-	public void getName (string name)
+	public void setName (string name)
 	{
 		
 		username = name;
 		Debug.Log ("Name: " + username);
 	}
 		
-
-
-
 	/*
 	 * Get input email for new user.
 	 * 
@@ -42,12 +56,10 @@ public class InputFieldCtrl : MonoBehaviour {
 	 * - pwField: new password inputted into password field.
 	 */
 
-	public void getEmail (string inputField)
+	public void setEmail (string inputField)
 	{
-
 		email = inputField.ToLower ();
 		Debug.Log ("Email: " + email);
-
 
 	}
 
@@ -58,9 +70,8 @@ public class InputFieldCtrl : MonoBehaviour {
 	 * - pwField: new password inputted into password field.
 	 */
 
-	public void getPassword (string inputField)
+	public void setPassword (string inputField)
 	{
-
 		password = inputField;
 		Debug.Log ("Password: " + password);
 	}

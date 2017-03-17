@@ -20,6 +20,9 @@ public class TokenCtrl : MonoBehaviour
 
 	public bool userExists;
 
+	public string invalidServerError = "invalid_credentials";
+	public string noTokenServerError = "could_not_create_token";
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -79,5 +82,10 @@ public class TokenCtrl : MonoBehaviour
 	{
 		token = data ["token"].Value;
 		//Debug.Log ("Parsed, token is: " + token);
+	}
+
+	public bool getUserExists()
+	{
+		return userExists;
 	}
 }
