@@ -57,21 +57,7 @@ class UserBattleTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         self::assertEquals(3, count($response_json));
 
-//        $latitude = 49.188857;
-//        $longitude = -123.102681;
-
     }
-
-//    public function getCloseUsers($latitude, $longitude){
-//        $box = $this->getBox($latitude,$longitude);
-//        $users = User::where('latitude', '>=', $box['minLAT'])
-//            ->where('latitude', '<=', $box['maxLAT'])
-//            ->where('longitude', '>=', $box['minLON'])
-//            ->where('longitude', '<=', $box['maxLON'])->get();
-//
-//        // Return users that qualify
-//        return $users;
-//    }
 
     public function testGetCloseUser(){
         $uc = new UserController();
