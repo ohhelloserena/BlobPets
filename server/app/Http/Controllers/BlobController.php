@@ -179,7 +179,7 @@ class BlobController extends Controller
     public function createBlob(Request $request)
     {
         $maxNumBlobs = 4;
-        $expected = array('name', 'type', 'color', 'token');
+        $expected = array('name', 'type', 'color');
         // check for correct number of inputs
         if ($request->exists($expected)) {
             $blobName = $request->input('name');
