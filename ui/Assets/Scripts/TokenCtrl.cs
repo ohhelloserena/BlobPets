@@ -88,4 +88,9 @@ public class TokenCtrl : MonoBehaviour
 	{
 		return userExists;
 	}
+
+	public string getToken()
+	{
+		return token;
+	}
 }

@@ -1,14 +1,10 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/NewUser.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ProfileCtrl.js">
     <Files>
-      <File FileName="Assets/Scripts/ShowPanelCtrl.cs" Line="16" Column="34" />
-      <File FileName="Assets/Scripts/EditCtrl.cs" Line="29" Column="31" />
-      <File FileName="Assets/Scripts/NewUser.cs" Line="138" Column="3" />
-      <File FileName="Assets/Scripts/ButtonCtrl.cs" Line="15" Column="1" />
-      <File FileName="Assets/Scripts/ErrorCtrl.cs" Line="12" Column="3" />
-      <File FileName="Assets/Scripts/ProfileCtrl.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/ProfileCtrl.js" Line="77" Column="30" />
+      <File FileName="Assets/Scripts/ProfileCtrl.js" Line="98" Column="1" />
+      <File FileName="Assets/Scripts/NewUser.cs" Line="23" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/UserProfileCtrl.cs" Line="62" Column="23" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

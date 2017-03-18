@@ -21,10 +21,11 @@ public class NewUser : MonoBehaviour
 	public ValidInputsCtrl validInputsCtrl;
 	public ButtonCtrl buttonCtrl;
 
+
 	public string username = "-1";
 	public string email = "-1";
 	public string password = "-1";
-	public string userId = "-1";
+	public int userId;
 
 	public string url = "http://104.131.144.86/api/users/";
 
@@ -128,9 +129,16 @@ public class NewUser : MonoBehaviour
 		// check for errors
 		if (www.error == null) {
 			Debug.Log ("WWW Ok! User created.");
-			userId = www.text;
-			Debug.Log ("userId: " + userId);
-			SceneManager.LoadScene ("UserProfileUI");
+
+			userId = Convert.ToInt32 (www.text);
+
+			SaveUserInfo (username, email, password, userId);
+
+			if (PlayerPrefs.HasKey ("UserId")) {
+				Debug.Log ("PLAYER PREF ID: " + PlayerPrefs.GetInt ("UserId"));
+			}
+
+			//SceneManager.LoadScene ("UserProfileUI");
 
 		} else {
 			Debug.Log ("WWW Error: " + www.error);
@@ -149,6 +157,15 @@ public class NewUser : MonoBehaviour
 	private string ParseJson (string name)
 	{
 		return result [name].Value;
+	}
+
+	private void SaveUserInfo(string user, string emailAddr, string passwrd, int userid) 
+	{
+		PlayerPrefs.SetString("Name", user);
+		PlayerPrefs.SetString ("Email", emailAddr);
+		PlayerPrefs.SetString ("Password", passwrd);
+		PlayerPrefs.SetInt ("UserId", userid);
+		PlayerPrefs.Save ();
 	}
 
 	public void ShowNamePanel ()

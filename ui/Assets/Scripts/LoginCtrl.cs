@@ -26,6 +26,14 @@ public class LoginCtrl : MonoBehaviour {
 		
 	}
 
+	private void SaveUserInfo(string user, string emailAddr, string passwrd, int userid) 
+	{
+		PlayerPrefs.SetString("Name", user);
+		PlayerPrefs.SetString ("Email", emailAddr);
+		PlayerPrefs.SetString ("Password", passwrd);
+		PlayerPrefs.SetInt ("UserId", userid);
+	}
+
 	public void ButtonClick()
 	{
 		Debug.Log ("BUTTON CLICKED");
