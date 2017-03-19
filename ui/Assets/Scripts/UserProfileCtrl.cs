@@ -90,9 +90,6 @@ public class UserProfileCtrl : MonoBehaviour {
 			ParseJson (result);
 			SetHeader ();
 			SetBlobNames ();
-			
-			
-			
 		} else {
 			
 		}
@@ -111,10 +108,11 @@ public class UserProfileCtrl : MonoBehaviour {
 		blobName2 = result ["blobs"] [2] ["name"].Value;
 		blobName3 = result ["blobs"] [3] ["name"].Value;
 
-		Debug.Log ("BLOB NAME: " + blobName0);
-
-		int bId = result ["blobs"] [0] ["id"].AsInt;
-			
+		// get blob IDs
+		blobId0 = result ["blobs"] [0] ["id"].AsInt;
+		blobId1 = result ["blobs"] [1] ["id"].AsInt;
+		blobId2 = result ["blobs"] [2] ["id"].AsInt;
+		blobId3 = result ["blobs"] [3] ["id"].AsInt;
 	}
 
 	public void SetHeader()

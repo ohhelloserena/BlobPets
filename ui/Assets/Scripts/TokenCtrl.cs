@@ -40,7 +40,7 @@ public class TokenCtrl : MonoBehaviour
 	 * user with the given email and password.
 	 */
 
-	public string GetToken (string email, string password)
+	public void SendTokenRequest (string email, string password)
 	{
 		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
 		WWWForm form = new WWWForm ();
@@ -49,7 +49,7 @@ public class TokenCtrl : MonoBehaviour
 		WWW www = new WWW (tokenUrl, form);
 		StartCoroutine (WaitForRequest (www));
 
-		return token;
+	
 	}
 
 	IEnumerator WaitForRequest (WWW www)
@@ -81,7 +81,7 @@ public class TokenCtrl : MonoBehaviour
 	public void ParseJson(JSONNode data) 
 	{
 		token = data ["token"].Value;
-		//Debug.Log ("Parsed, token is: " + token);
+		Debug.Log ("Parsed, token is: " + token);
 	}
 
 	public bool getUserExists()

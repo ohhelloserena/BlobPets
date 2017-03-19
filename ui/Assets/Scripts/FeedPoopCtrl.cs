@@ -170,8 +170,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	// PUT request
 	IEnumerator UpdateBlob (string button)
 	{
-		string myData =" ";
-		//byte[] myData = new byte[1];
+		string myData ="Hello";	// need to send a dummy string in UnityWebReqest.Put, otherwise it won't work
 		string finalUrl;
 
 		if (button == "feed") {
