@@ -4,7 +4,7 @@ using UnityEngine;
 
 using UnityEngine.UI;
 using SimpleJSON;
-using UnityEditor.Sprites;
+//using UnityEditor.Sprites;
 using System;
 
 public class UserProfileCtrl : MonoBehaviour {

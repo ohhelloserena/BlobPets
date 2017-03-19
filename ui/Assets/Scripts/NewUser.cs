@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using SimpleJSON;
 using System.Runtime.Remoting;
-using UnityEditor;
+//using UnityEditor;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 
@@ -161,7 +161,7 @@ public class NewUser : MonoBehaviour
 
 	private void SaveUserInfo(string user, string emailAddr, string passwrd, int userid) 
 	{
-		PlayerPrefs.SetString("Name", user);
+		//PlayerPrefs.SetString("Name", user);
 		PlayerPrefs.SetString ("Email", emailAddr);
 		PlayerPrefs.SetString ("Password", passwrd);
 		PlayerPrefs.SetInt ("UserId", userid);

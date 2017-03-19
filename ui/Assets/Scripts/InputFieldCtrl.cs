@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using UnityEditor;
+//using UnityEditor;
 using System.Security.Cryptography;
 
 public class InputFieldCtrl : MonoBehaviour {

@@ -7,7 +7,7 @@ using System;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Runtime.Remoting;
-using UnityEditor;
+//using UnityEditor;
 
 public class ShowPanelCtrl : MonoBehaviour {
 

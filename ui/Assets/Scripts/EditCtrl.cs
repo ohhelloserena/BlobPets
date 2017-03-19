@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using SimpleJSON;
 using System.ComponentModel;
 using System.Runtime.Remoting;
-using UnityEngine.Networking;
 
 /* Update User Profile*/
 
@@ -27,7 +26,7 @@ public class EditCtrl : MonoBehaviour
 
 	private string newName = "-1";
 	private string newPW = "-1";
-	private string confirmedPW = "-1";
+	//private string confirmedPW = "-1";
 
 	private string token;
 
@@ -154,10 +153,12 @@ public class EditCtrl : MonoBehaviour
 			if (www.isError) {
 				Debug.Log ("Put error: " + www.error);
 			} else {
+				/*
 				if (nameChangeRequested) {
 					PlayerPrefs.SetString ("Name", newName);
 					PlayerPrefs.Save ();
 				} 
+				*/
 
 				if (pwChangeRequested) {
 					PlayerPrefs.SetString ("Password", newPW);

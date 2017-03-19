@@ -25,15 +25,16 @@ public class FeedPoopCtrl : MonoBehaviour
 	public string cleanlinessLevel;
 	public string healthLevel;
 
+	public bool userExists;
+	public string userId;
 
-	// API URL
 	public string url = "http://104.131.144.86/api/blobs/";
 	public int blobId0 = 1;
 	//public int blobId1 = 5;
 	public string blobName0 = "";
 	public string blobName1 = "";
 
-	public string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEwNC4xMzEuMTQ0Ljg2XC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0ODkwNDE5NTAsImV4cCI6MTQ4OTA0NTU1MCwibmJmIjoxNDg5MDQxOTUwLCJqdGkiOiI2M2JjOTQxZWJjMTc1MDUwODE2Yzk0NzI4MzczZDU1ZiJ9.HcU5milX-vz2lMgP-JQXoiMUvjrTA6kiA5BMEXO3vZY";
+	public string token;
 
 	public Image imgPoop;
 	public Image imgHam;
@@ -64,6 +65,55 @@ public class FeedPoopCtrl : MonoBehaviour
 	{
 
 		
+	}
+
+	/*
+	 * Sends POST request to the API to get token for the 
+	 * user with the given email and password.
+	 */
+
+	public void SendTokenRequest (string email, string password)
+	{
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForRequest (www));
+
+
+	}
+
+	IEnumerator WaitForRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+
+
+			JSONNode N = JSON.Parse (www.text);
+
+			userExists = true;
+			Debug.Log("!!! USER EXISTS.");
+
+			ParseJson (N);
+
+
+		} else {
+			Debug.Log ("***WWW Error: " + www.error);
+			userExists = false;
+			Debug.Log("!!! USER DOESN'T EXIST.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+	}
+
+	public void ParseJson(JSONNode data) 
+	{
+		token = data ["token"].Value;
+		userId = data ["id"].Value;
 	}
 
 	public void GetBlob() {
@@ -174,18 +224,13 @@ public class FeedPoopCtrl : MonoBehaviour
 		string finalUrl;
 
 		if (button == "feed") {
-			//myData = System.Text.Encoding.UTF8.GetBytes ("/token=" + token + "health_level=" + healthLevel);
 			finalUrl = url + blobId0 + "?token=" + token + "&health_level=" + healthLevel;
-			//myData = "?token=123" + "&health_level=" + healthLevel;
-			//Debug.Log (myData);
 		} else {
-			//myData = System.Text.Encoding.UTF8.GetBytes ("/token=" + token + "cleanliness_level=" + cleanlinessLevel);
 			finalUrl = url + blobId0 + "?token=" + token + "&cleanliness_level=" + cleanlinessLevel;
-			//myData = "/token=" + token + "cleanliness_level=" + cleanlinessLevel;
+
 		}
 
 		using (UnityWebRequest www = UnityWebRequest.Put (finalUrl, myData)) {
-		//using (UnityWebRequest www = UnityWebRequest.Put (url + blobId0.ToString (), myData)) {
 			yield return www.Send ();
 
 			if (www.isError) {
