@@ -98,6 +98,20 @@ class BattleTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Invalid blobs, either own both or none', $response_json->error);
 
+        // Blobs are not near each other
+        $uc = new UserController();
+
+        $user = $uc->getUser(1);
+        $user->latitude = 49.184148163083;
+        $user->longitude = -123.11260905865;
+
+        $user->save();
+
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/battles', ['blob1'=>1, 'blob2'=>3], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Blob(s) are not near each other', $response_json->error);
     }
 
     public function testCreateBattleRecord(){

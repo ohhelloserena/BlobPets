@@ -18,7 +18,7 @@ class UserController extends Controller
 
 	public function __construct()
 	{
-		$this->middleware('jwt.auth', ['except' => ['authenticate', 'getAllUsers', 'getUsers', 'getUser', 'getUserBlobs', 'createUser']]);
+		$this->middleware('jwt.auth', ['except' => ['authenticate', 'getAllUsers', 'getUsers', 'getUser', 'getUserBlobs', 'createUser', 'getTopPlayers']]);
 	}
 
     // return a list of all the users in the database
@@ -31,6 +31,7 @@ class UserController extends Controller
     }
 
     /**
+     * TODO determine if we want to just get lat long from user rather than have them as inputs, might make more sense
      * Gets users near the specified location and returns them
      * @param Request $request
      * @return User|JsonResponse
@@ -204,6 +205,29 @@ class UserController extends Controller
 	}
 
     /**
+     * Checks if two users are close to each other
+     * @param $user1
+     * @param $user2
+     * @return bool
+     */
+    public function checkCloseUser($user1, $user2){
+        $lat = $user1->latitude;
+        $long = $user1->longitude;
+
+        $box = $this->getBox($lat, $long);
+
+        $lat2 = $user2->latitude;
+        $long2 = $user2->longitude;
+
+        if ($lat2 >= $box['minLAT'] and $lat2 <= $box['maxLAT']){
+            if ($long2 >= $box['minLON'] and $long2 <= $box['maxLON']){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Gives an approximately 1km bounding box, 500m distance from latlong to edge of box
      * @param $latitude
      * @param $longitude
@@ -226,4 +250,13 @@ class UserController extends Controller
         return $coord;
     }
 
+    /**
+     * Returns list of top 10 players, if less than 10 players in total then all players returned
+     * @return mixed
+     */
+    public function getTopPlayers(){
+        $numPlayers = 10;
+        $records = User::orderBy('battles_won', 'desc')->take($numPlayers)->get();
+        return $records;
+    }
 }

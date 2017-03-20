@@ -22,6 +22,7 @@ Route::group(['prefix' => 'users'], function()
 {
 	Route::get('/', 'UserController@getAllUsers');	// return list of all users
     Route::get('/nearbyUsers', 'UserController@getUsers'); // returns list of user near a specified lat long
+    Route::get('/getTopUsers', 'UserController@getTopPlayers'); //returns a list of 10 players with the highest battles won
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
 
@@ -60,11 +61,6 @@ Route::group(['prefix' => 'battles'], function(){
     Route::get('/{id}', 'BattleController@getBattleRecord');
 });
 
-//Route::group(['prefix' => 'events'], function(){
-//    Route::post('/', 'EventController@createEventRecord');
-//    Route::get('/{id}', 'EventController@getEventRecord');
-//});
-
 /*
 |--------------------------------------------------------------------------
 | Some examples for using the API
@@ -78,6 +74,8 @@ Route::group(['prefix' => 'battles'], function(){
 |		with password 'password', given that this is in the database
 | - GET serverAddress.com/api/users/nearbyUsers?lat=<>&long=<>
 |       returns a list of users in the nearby area
+| - GET serverAddress.com/api/users/getTopUsers
+|       returns a list of up to 10 top players based on battles won
 |
 | - POST serverAddress.com/api/blobs/?token=<token>&name=blob&type=A&color=purple
 |       creates a blob if user has less than 4 blobs and returns the blob id

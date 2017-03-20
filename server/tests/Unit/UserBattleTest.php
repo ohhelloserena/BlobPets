@@ -37,13 +37,13 @@ class UserBattleTest extends TestCase
         $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=> 49.188857, 'long'=> -123.102681));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
-        self::assertEquals(0, count($response_json));
+        $this->assertEquals(0, count($response_json));
 
         // GET with users found
         $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=> 0, 'long'=> 0));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
-        self::assertEquals(4, count($response_json));
+        $this->assertEquals(4, count($response_json));
 
         // Change lat long and verify that only certain users are found
         $uc = new UserController();
@@ -55,7 +55,7 @@ class UserBattleTest extends TestCase
         $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=> 0, 'long'=> 0));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
-        self::assertEquals(3, count($response_json));
+        $this->assertEquals(3, count($response_json));
 
     }
 
@@ -102,6 +102,102 @@ class UserBattleTest extends TestCase
 
         $users = $uc->getCloseUsers(49.188857,-123.102681);
         $this->assertEquals(4, count($users));
+    }
+
+    public function testCheckCloseUser(){
+        $uc = new UserController();
+
+        $user1 = $uc->getUser(1);
+        $user2 = $uc->getUser(2);
+
+        // Users are at the same location
+        $this->assertTrue($uc->checkCloseUser($user1, $user2));
+        $this->assertTrue($uc->checkCloseUser($user2, $user1));
+
+        $user1->latitude = 49.188857;
+        $user1->longitude = -123.102681;
+        $user1->save();
+
+        $user1 = $uc->getUser(1);
+
+        // Users are not near each other
+        $this->assertFalse($uc->checkCloseUser($user1, $user2));
+        $this->assertFalse($uc->checkCloseUser($user2, $user1));
+
+        $user2->latitude = 49.184148163083;
+        $user2->longitude = -123.11260905865;
+        $user2->save();
+
+        $user1 = $uc->getUser(1);
+        $user2 = $uc->getUser(2);
+
+        // Users are near each other
+        $this->assertTrue($uc->checkCloseUser($user1, $user2));
+        $this->assertTrue($uc->checkCloseUser($user2, $user1));
+    }
+
+    public function testGetTopPlayers(){
+
+        // No difference between players
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/users/getTopUsers', array());
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(4, count($response_json));
+        $this->assertEquals(0, $response_json[0]->battles_won);
+        $this->assertEquals(1, $response_json[0]->id);
+
+        $uc = new UserController();
+        $user = $uc->getUser(3);
+        $user->battles_won = 60;
+        $user->save();
+
+        // One player better than everyone else
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/users/getTopUsers', array());
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(4, count($response_json));
+        $topPlayer= $response_json[0];
+        $this->assertEquals(60, $topPlayer->battles_won);
+        $this->assertEquals(3, $topPlayer->id);
+
+        // Actual ranking
+
+        $uc = new UserController();
+        $user = $uc->getUser(1);
+        $user->battles_won = 10;
+        $user->save();
+
+        $user = $uc->getUser(4);
+        $user->battles_won = 34;
+        $user->save();
+
+        $user = $uc->getUser(2);
+        $user->battles_won = 5;
+        $user->save();
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/users/getTopUsers', array());
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(4, count($response_json));
+
+        $topPlayer= $response_json[0];
+        $this->assertEquals(60, $topPlayer->battles_won);
+        $this->assertEquals(3, $topPlayer->id);
+
+        $secondPlayer = $response_json[1];
+        $this->assertEquals(34, $secondPlayer->battles_won);
+        $this->assertEquals(4, $secondPlayer->id);
+
+        $thirdPlayer = $response_json[2];
+        $this->assertEquals(10, $thirdPlayer->battles_won);
+        $this->assertEquals(1, $thirdPlayer->id);
+
+        $lastPlayer = $response_json[3];
+        $this->assertEquals(5, $lastPlayer->battles_won);
+        $this->assertEquals(2, $lastPlayer->id);
     }
 
 }
