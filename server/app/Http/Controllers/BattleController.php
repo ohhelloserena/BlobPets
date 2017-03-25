@@ -131,7 +131,7 @@ class BattleController extends Controller
     /**
      * Gets a specific battle record
      * @param $id - the battleRecordID
-     * @return JsonResponse
+     * @return JsonResponse|BattleRecord
      */
     public function getBattleRecord($id){
         $record = BattleRecord::where('id', $id)->first();
@@ -148,7 +148,7 @@ class BattleController extends Controller
      * Determines the winner of the battle
      * @param $blob1
      * @param $blob2
-     * @return int(the id of the user)
+     * @return Blob
      */
     public function determineWinner($blob1, $blob2){
         // Calculate values

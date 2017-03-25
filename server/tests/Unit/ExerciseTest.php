@@ -8,6 +8,7 @@
 
 namespace tests\Unit;
 
+use App\ExerciseRecord;
 use App\Http\Controllers\BlobController;
 use Carbon\Carbon;
 use Tests\TestCase;
@@ -65,6 +66,13 @@ class ExerciseTest extends TestCase
     }
 
     public function testGetRecord(){
+        // Missing token
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/exercises/1', [], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
+
         //Get Record For User
         $this->refreshApplication();
         $response = $this->call('GET','/api/exercises/1', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
@@ -97,6 +105,12 @@ class ExerciseTest extends TestCase
     }
 
     public function testUpdateExerciseRecord(){
+        // Missing token
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/exercises/1', ['distance'=>1], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
 
         // Update record without valid inputs
         $this->refreshApplication();
@@ -135,10 +149,60 @@ class ExerciseTest extends TestCase
         $this->assertEquals(1, $response_json->total_exercise);
         $this->assertEquals(5, $response_json->weekly_goal);
         $this->assertEquals(4, $response_json->remaining_exercise);
+
+        // Update record for user that has walked the weekly amount
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/exercises/3', ['distance'=>4], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/exercises/3', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(3, $response_json->id);
+        $this->assertEquals(4, $response_json->owner_id);
+        $this->assertEquals(5, $response_json->total_exercise);
+        $this->assertEquals(5, $response_json->weekly_goal);
+        $this->assertEquals(0, $response_json->remaining_exercise);
     }
 
 
     public function testUpdateRecord(){
+        $today = Carbon::now();
+
+        $record = ExerciseRecord::create(array('owner_id' => 3));
+        $record = ExerciseRecord::find($record->id);
+
+        // On same day
+        $record->updateRecord($today);
+        $this->assertEquals(5, $record->weekly_goal);
+
+        $bc = new BlobController();
+        $blob_record = $bc->getBlob(3);
+        $this->assertEquals(60, $blob_record->exercise_level);
+
+        // Next week
+        $next_week = Carbon::createFromDate($today->year,$today->month,$today->day+7);
+        $record = ExerciseRecord::find(3);
+        $record->updateRecord($next_week);
+        $this->assertEquals(10, $record->weekly_goal);
+        $blob_record = $bc->getBlob(3);
+        $this->assertEquals(50, $blob_record->exercise_level);
+
+
+        // Last update was a sunday
+        $some_sunday = Carbon::createFromDate(2017,3,19);
+        $record->updated_at = $some_sunday;
+        $record->save();
+
+        $record = ExerciseRecord::find(3);
+        $record->updateRecord($next_week);
+        $this->assertEquals(15, $record->weekly_goal);
+        $blob_record = $bc->getBlob(3);
+        $this->assertEquals(40, $blob_record->exercise_level);
+
+    }
+
+    public function testUpdateRecordINT(){
         $this->refreshApplication();
         $today = Carbon::now();
         $this->call('POST','/api/exercises', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);

@@ -74,9 +74,30 @@ class BlobTest extends TestCase
         $this->assertEquals('testy', $blob->name);
         $this->assertEquals('type A', $blob->type);
         $this->assertEquals('yellow', $blob->color);
+
+        // Hit max number of blobs
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(7, $response_json->blobID);
+
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy2', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('User has max number of blobs', $response_json->error);
+
     }
 
     public function testDeleteBlob(){
+        // Missing Token
+        $this->refreshApplication();
+        $response = $this->call('DELETE','/api/blobs/50', [], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
+
         // Invalid BlobID, blob doesn't exist
         $this->refreshApplication();
         $response = $this->call('DELETE','/api/blobs/50', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
