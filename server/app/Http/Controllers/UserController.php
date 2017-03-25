@@ -251,11 +251,11 @@ class UserController extends Controller
     }
 
     /**
-     * Returns list of top 10 players, if less than 10 players in total then all players returned
+     * Returns list of top 5 players, if less than 5 players in total then all players returned
      * @return mixed
      */
     public function getTopPlayers(){
-        $numPlayers = 10;
+        $numPlayers = 5;
         $records = User::orderBy('battles_won', 'desc')->take($numPlayers)->get();
         return $records;
     }

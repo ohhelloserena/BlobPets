@@ -24,7 +24,6 @@ class BattleController extends Controller
 
     /**
      * Creates a battle record
-     * TODO Blob battle number check to restrict battling? timeout/rest flag & time
      * @param Request $request
      * @return JsonResponse
      */
@@ -192,7 +191,6 @@ class BattleController extends Controller
         $winner_record->save();
     }
 
-    //TODO determine how much to punish by or do we decrement the level
     /**
      * Update losing blob with a punishment
      * @param $blob

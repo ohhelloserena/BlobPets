@@ -41,6 +41,7 @@ Route::group(['prefix' => 'blobs'], function()
 {
 	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blobs
     Route::post('/', 'BlobController@createBlob'); // creates a blob
+	Route::get('/getTopBlobs', 'BlobController@getTopBlobs');	// return blob with blob id
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
 	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name or level attributes
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
@@ -75,12 +76,14 @@ Route::group(['prefix' => 'battles'], function(){
 | - GET serverAddress.com/api/users/nearbyUsers?lat=<>&long=<>
 |       returns a list of users in the nearby area
 | - GET serverAddress.com/api/users/getTopUsers
-|       returns a list of up to 10 top players based on battles won
+|       returns blob info for the top 5 players based on battles_won
 |
 | - POST serverAddress.com/api/blobs/?token=<token>&name=blob&type=A&color=purple
 |       creates a blob if user has less than 4 blobs and returns the blob id
 | - GET serverAddress.com/api/blobs/
 |       gets information about all blobs
+| - GET serverAddress.com/api/blobs/getTopBlobs
+|       gets blob info for the top 5 blobs
 |
 | - PATCH serverAddress.com/api/blobs/1?name=Blobby
 |		change the name of blob with id 1 to 'Blobby'
@@ -104,9 +107,4 @@ Route::group(['prefix' => 'battles'], function(){
 |       Gets the battles associated with the user, blob or all records
 |   GET serverAddress.com/api/battles/{id}
 |       Get a specific battle record
-|
-|   POST serverAddress.com/api/events
-|       creates an event record for a blob
-|   GET serverAddress.com/api/events/{id}
-|       gets the event record if the user owns the blob associated with the event record
 */
