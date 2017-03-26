@@ -163,6 +163,20 @@ class ExerciseTest extends TestCase
         $this->assertEquals(5, $response_json->total_exercise);
         $this->assertEquals(5, $response_json->weekly_goal);
         $this->assertEquals(0, $response_json->remaining_exercise);
+
+        // Update record for user that has walked beyond the weekly amount
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/exercises/3', ['distance'=>4], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/exercises/3', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(3, $response_json->id);
+        $this->assertEquals(4, $response_json->owner_id);
+        $this->assertEquals(9, $response_json->total_exercise);
+        $this->assertEquals(5, $response_json->weekly_goal);
+        $this->assertEquals(0, $response_json->remaining_exercise);
     }
 
 
@@ -188,6 +202,16 @@ class ExerciseTest extends TestCase
         $blob_record = $bc->getBlob(3);
         $this->assertEquals(50, $blob_record->exercise_level);
 
+        // Last update was not sunday
+        $some_day = Carbon::createFromDate(2017,3,17);
+        $record->updated_at = $some_day;
+        $record->save();
+
+        $record = ExerciseRecord::find(3);
+        $record->updateRecord($next_week);
+        $this->assertEquals(15, $record->weekly_goal);
+        $blob_record = $bc->getBlob(3);
+        $this->assertEquals(40, $blob_record->exercise_level);
 
         // Last update was a sunday
         $some_sunday = Carbon::createFromDate(2017,3,19);
@@ -196,9 +220,9 @@ class ExerciseTest extends TestCase
 
         $record = ExerciseRecord::find(3);
         $record->updateRecord($next_week);
-        $this->assertEquals(15, $record->weekly_goal);
+        $this->assertEquals(20, $record->weekly_goal);
         $blob_record = $bc->getBlob(3);
-        $this->assertEquals(40, $blob_record->exercise_level);
+        $this->assertEquals(30, $blob_record->exercise_level);
 
     }
 
