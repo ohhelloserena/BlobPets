@@ -8,7 +8,6 @@
 
 namespace tests\Unit;
 
-use app\Blob;
 use Tests\TestCase;
 use App\Http\Controllers\BlobController;
 
@@ -87,6 +86,28 @@ class BlobTest extends TestCase
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('User has max number of blobs', $response_json->error);
+
+    }
+
+//| - PATCH serverAddress.com/api/blobs/1?name=Blobby
+//|		change the name of blob with id 1 to 'Blobby'
+    public function testUpdateBlob(){
+        // Failing example
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', [], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
+
+        // Valid example
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['name'=>'testy'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals('testy', $blob->name);
 
     }
 
