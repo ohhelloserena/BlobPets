@@ -249,14 +249,4 @@ class UserController extends Controller
         $coord['minLON'] = round($minLon, 7);
         return $coord;
     }
-
-    /**
-     * Returns list of top 5 players, if less than 5 players in total then all players returned
-     * @return mixed
-     */
-    public function getTopPlayers(){
-        $numPlayers = 5;
-        $records = User::orderBy('battles_won', 'desc')->take($numPlayers)->get();
-        return $records;
-    }
 }

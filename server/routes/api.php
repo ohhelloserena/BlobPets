@@ -62,6 +62,10 @@ Route::group(['prefix' => 'battles'], function(){
     Route::get('/{id}', 'BattleController@getBattleRecord');
 });
 
+Route::group(['prefix' => 'dashboards'], function(){
+    Route::get('/', 'DashboardController@getDashboard');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Some examples for using the API
@@ -107,4 +111,7 @@ Route::group(['prefix' => 'battles'], function(){
 |       Gets the battles associated with the user, blob or all records
 |   GET serverAddress.com/api/battles/{id}
 |       Get a specific battle record
+|
+|   GET serverAddress.com/api/dashboards/?type=<blobs/users>
+|       Gets a list of top players/blobs for dashboard
 */
