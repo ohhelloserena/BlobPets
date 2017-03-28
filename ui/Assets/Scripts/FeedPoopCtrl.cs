@@ -17,6 +17,7 @@ using UnityEngine.Rendering;
 
 public class FeedPoopCtrl : MonoBehaviour
 {
+	public PlayerPreferences playerPreferences;
 	// JSON
 	public JSONNode N;
 	public string nextCleanTime;
@@ -25,12 +26,18 @@ public class FeedPoopCtrl : MonoBehaviour
 	public string cleanlinessLevel;
 	public string healthLevel;
 
+	//private string nameKey = "Name";
+	private string emailKey = "Email";
+	private string passwordKey = "Password";
+	private string idKey = "UserId";
+
 	public bool userExists;
 	public string userId;
+	public string email;
+	public string password;
 
 	public string url = "http://104.131.144.86/api/blobs/";
-	public int blobId0 = 1;
-	//public int blobId1 = 5;
+	public string blobId;
 	public string blobName0 = "";
 	public string blobName1 = "";
 
@@ -43,18 +50,38 @@ public class FeedPoopCtrl : MonoBehaviour
 	public bool needsCleaning = false;
 	public bool needsFeeding = false;
 
+	public DateTime dateTime;
+	public DateTime cleanTime;
+	public DateTime feedTime;
+	public int cleanComp;
+	public int feedComp;
+
 	// Use this for initialization
 	void Start ()
 	{
+		string blobIdKey = "RequestedBlobId";
+		if (PlayerPrefs.HasKey (blobIdKey)) {
+			blobId = PlayerPrefs.GetString (blobIdKey);
+		}
 
-		//TokenCtrl tokenCtrl = new TokenCtrl ();
-		//token = tokenCtrl.token;
-		Debug.Log ("TOKEN: " + token);
+		Debug.Log ("blobId: " + blobId);
+
+		if (PlayerPrefs.HasKey (emailKey)) {
+			email = PlayerPrefs.GetString (emailKey);
+		}
+
+		if (PlayerPrefs.HasKey (passwordKey)) {
+			password = PlayerPrefs.GetString (passwordKey);
+		}
+
+		if (PlayerPrefs.HasKey (idKey)) {
+			userId = PlayerPrefs.GetString (idKey);
+		}
 
 		imgPoop.enabled = false;
 		imgHam.enabled = false;
 		imgThoughtBub.enabled = false;
-
+		SendTokenRequest(email, password);
 		GetBlob ();
 	}
 
@@ -64,10 +91,20 @@ public class FeedPoopCtrl : MonoBehaviour
 	void Update ()
 	{
 
+		dateTime = DateTime.Now.ToUniversalTime ();
+		Debug.Log ("Current time in UTC: " + dateTime.ToString ());
+
+		cleanTime = Convert.ToDateTime (nextCleanTime);
+
+		feedTime = Convert.ToDateTime (nextFeedTime);
+
+		cleanComp = DateTime.Compare (dateTime, cleanTime);
+		feedComp = DateTime.Compare (dateTime, feedTime);
+
 		
 	}
 
-	/*
+/*
 	 * Sends POST request to the API to get token for the 
 	 * user with the given email and password.
 	 */
@@ -90,23 +127,21 @@ public class FeedPoopCtrl : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-
-
-			JSONNode N = JSON.Parse (www.text);
-
-			userExists = true;
 			Debug.Log("!!! USER EXISTS.");
-
+			userExists = true;
+			JSONNode N = JSON.Parse (www.text);
 			ParseJson (N);
 
+			PlayerPrefs.SetString (emailKey, email);
+			PlayerPrefs.SetString (passwordKey, password);
+			PlayerPrefs.SetInt (idKey, Int32.Parse (userId));
+			PlayerPrefs.Save();
 
 		} else {
+			Debug.Log("!!! USER DOESN'T EXIST.");
 			Debug.Log ("***WWW Error: " + www.error);
 			userExists = false;
-			Debug.Log("!!! USER DOESN'T EXIST.");
-			if (www.error == "400 Bad Request") {
-				// alert for duplicate email address
-			}
+		
 		}    
 	}
 
@@ -117,7 +152,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	}
 
 	public void GetBlob() {
-		WWW www = new WWW (url + blobId0.ToString ());
+		WWW www = new WWW (url +blobId);
 		StartCoroutine (GetBlobInfo (www));
 	}
 		
@@ -169,17 +204,22 @@ public class FeedPoopCtrl : MonoBehaviour
 		if (cleanComp < 0) {
 			// dateTime is earlier than cleanTime
 
-			imgPoop.enabled = false;
+			if (imgPoop.enabled != false) {
+				imgPoop.enabled = false;
+			}
+
 		} else if (cleanComp == 0 || cleanComp > 0) {
 			// == 0 : dateTime same as CleanTime
 			// > 0 : dateTime is later than cleanTime
 
 			// print poop img
 
-			Debug.Log ("PRINTING POOP...");
+			if (imgPoop.enabled != true) {
+				Debug.Log ("PRINTING POOP...");
 
-			needsCleaning = true;
-			imgPoop.enabled = true;
+				needsCleaning = true;
+				imgPoop.enabled = true;
+			}
 		}
 
 		if (feedComp < 0) {
@@ -224,11 +264,12 @@ public class FeedPoopCtrl : MonoBehaviour
 		string finalUrl;
 
 		if (button == "feed") {
-			finalUrl = url + blobId0 + "?token=" + token + "&health_level=" + healthLevel;
+			finalUrl = url + blobId + "?token=" + token + "&health_level=" + healthLevel;
 		} else {
-			finalUrl = url + blobId0 + "?token=" + token + "&cleanliness_level=" + cleanlinessLevel;
-
+			finalUrl = url + blobId + "?token=" + token + "&cleanliness_level=" + cleanlinessLevel;
 		}
+
+		Debug.Log ("final URL... " + finalUrl);
 
 		using (UnityWebRequest www = UnityWebRequest.Put (finalUrl, myData)) {
 			yield return www.Send ();
@@ -239,6 +280,7 @@ public class FeedPoopCtrl : MonoBehaviour
 				Debug.Log ("PUT REQUEST SUCCESSFUL.");
 				Debug.Log (www.url.ToString ());
 
+				GetBlob ();
 				// get next clean and/or feed times
 
 				if (button == "feed") {

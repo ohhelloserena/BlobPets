@@ -7,10 +7,12 @@ using SimpleJSON;
 //using UnityEditor.Sprites;
 using System;
 
-public class UserProfileCtrl : MonoBehaviour {
+public class UserProfileCtrl : MonoBehaviour
+{
 
-	public string url = "http://104.131.144.86/api/users/";
-	public int userId = 4;
+	public PlayerPreferences playerPreferences;
+
+	public int userId;
 	public string username = "-1";
 	public string numWins = "-1";
 	public int numBlobs = -1;
@@ -21,29 +23,40 @@ public class UserProfileCtrl : MonoBehaviour {
 	public string blobName3;
 
 
-	public int blobId0 = -1;
-	public int blobId1 = -1;
-	public int blobId2 = -1;
-	public int blobId3 = -1;
+	public string blobId0;
+	public string blobId1;
+	public string blobId2;
+	public string blobId3;
 
 	public JSONNode result;
 
 	public Text nameLabel;
 	public Text winsLabel;
 	public Text blobCountLabel;
+
 	public Text blob0_label;
 	public Text blob1_label;
 	public Text blob2_label;
 	public Text blob3_label;
 
+	public Button b0;
+	public Button b1;
+	public Button b2;
+	public Button b3;
 
 	public GameObject nameGameObject;
 	public GameObject winsGameObject;
 	public GameObject blobCountGameObject;
+
 	public GameObject blob0_GameObject;
 	public GameObject blob1_GameObject;
 	public GameObject blob2_GameObject;
 	public GameObject blob3_GameObject;
+
+	public GameObject b0GO;
+	public GameObject b1GO;
+	public GameObject b2GO;
+	public GameObject b3GO;
 
 
 	// Use this for initialization
@@ -52,36 +65,35 @@ public class UserProfileCtrl : MonoBehaviour {
 		nameLabel = nameGameObject.GetComponent<Text> ();
 		winsLabel = winsGameObject.GetComponent<Text> ();
 		blobCountLabel = blobCountGameObject.GetComponent<Text> ();
+
 		blob0_label = blob0_GameObject.GetComponent<Text> ();
 		blob1_label = blob1_GameObject.GetComponent<Text> ();
 		blob2_label = blob2_GameObject.GetComponent<Text> ();
 		blob3_label = blob3_GameObject.GetComponent<Text> ();
 
-		string userKey = "UserId";
-		if (PlayerPrefs.HasKey (userKey)) {
-			userId = PlayerPrefs.GetInt (userKey);
-			Debug.Log ("USERID: " + userId);
-		}
+		b0 = b0GO.GetComponent<Button> ();
+		b1 = b1GO.GetComponent<Button> ();
+		b2 = b2GO.GetComponent<Button> ();
+		b3 = b3GO.GetComponent<Button> ();
+
+		// Reset RequestedBlobId
+		playerPreferences.ResetRequestedBlob ();
+
+		userId = playerPreferences.GetUser ();
 
 		CallAPI ();
 	}
-	
-	// Update is called once per frame
-	void Update () {
 		
-	}
-
-	public void CallAPI()
+	public void CallAPI ()
 	{
+		string url = "http://104.131.144.86/api/users/";
 		string fullUrl = url + userId;
-
-		Debug.Log (fullUrl);
-
+		Debug.Log ("FULL URL: " + fullUrl);
 		WWW www = new WWW (fullUrl);
-		StartCoroutine (GetUserInfo(www)); 
+		StartCoroutine (GetUserInfo (www)); 
 	}
 
-	IEnumerator GetUserInfo(WWW www)
+	IEnumerator GetUserInfo (WWW www)
 	{
 		yield return www;
 
@@ -90,39 +102,52 @@ public class UserProfileCtrl : MonoBehaviour {
 			ParseJson (result);
 			SetHeader ();
 			SetBlobNames ();
+			ManageBlobButtons ();
 		} else {
 			
 		}
 	}
 
-	public void ParseJson(JSONNode userResult)
+	public void ParseJson (JSONNode userResult)
 	{
-		// get user info
-		username = result["name"].Value;
-		numWins = result["battles_won"].Value;
-		numBlobs = result["blobs"].Count;
+		// set user info
+		username = result ["name"].Value;
+		numWins = result ["battles_won"].Value;
+		numBlobs = result ["blobs"].Count;
 
-		// get blob names
+		// save number of blobs owned by user in memory
+		playerPreferences.SetNumBlobs (numBlobs);
+
+		// set blob names
 		blobName0 = result ["blobs"] [0] ["name"].Value;
 		blobName1 = result ["blobs"] [1] ["name"].Value;
 		blobName2 = result ["blobs"] [2] ["name"].Value;
 		blobName3 = result ["blobs"] [3] ["name"].Value;
 
-		// get blob IDs
-		blobId0 = result ["blobs"] [0] ["id"].AsInt;
-		blobId1 = result ["blobs"] [1] ["id"].AsInt;
-		blobId2 = result ["blobs"] [2] ["id"].AsInt;
-		blobId3 = result ["blobs"] [3] ["id"].AsInt;
+		// set blob IDs
+		blobId0 = result ["blobs"] [0] ["id"].Value;
+		blobId1 = result ["blobs"] [1] ["id"].Value;
+		blobId2 = result ["blobs"] [2] ["id"].Value;
+		blobId3 = result ["blobs"] [3] ["id"].Value;
 	}
 
-	public void SetHeader()
+
+	/*
+	 * Prints user info on the scene.
+	 */
+
+	public void SetHeader ()
 	{
 		nameLabel.text = username;
 		winsLabel.text = numWins;
-		blobCountLabel.text = numBlobs.ToString();
+		blobCountLabel.text = numBlobs.ToString ();
 	}
 
-	public void SetBlobNames() 
+	/*
+	 * Prints the blob names on the scene.
+	 */
+
+	public void SetBlobNames ()
 	{
 		if (String.IsNullOrEmpty (blobName0)) {
 			blob0_label.text = "Locked!";
@@ -133,20 +158,88 @@ public class UserProfileCtrl : MonoBehaviour {
 		if (String.IsNullOrEmpty (blobName1)) {
 			blob1_label.text = "Locked!";
 		} else {
-			blob1_label.text = blobName0;
+			blob1_label.text = blobName1;
 		}
 
 		if (String.IsNullOrEmpty (blobName2)) {
 			blob2_label.text = "Locked!";
 		} else {
-			blob2_label.text = blobName0;
+			blob2_label.text = blobName2;
 		}
 
 		if (String.IsNullOrEmpty (blobName3)) {
 			blob3_label.text = "Locked!";
 		} else {
-			blob3_label.text = blobName0;
+			blob3_label.text = blobName3;
 		}
+	}
+
+	/*
+	 * This is for the blob icons under "Your Blobs."
+	 * It stores the blob ID of the blob selected in PlayerPrefs.
+	 */
+
+	public void BlobButtonClick (string blobNum)
+	{
+		if (blobNum == "0" && !String.IsNullOrEmpty (blobName0)) {
+			playerPreferences.SetRequestedBlob (blobId0);
+		} else if (blobNum == "1" && !String.IsNullOrEmpty (blobName1)) {
+			playerPreferences.SetRequestedBlob (blobId1);
+		} else if (blobNum == "2" && !String.IsNullOrEmpty (blobName2)) {
+			playerPreferences.SetRequestedBlob (blobId2);
+		} else if (blobNum == "3" && !String.IsNullOrEmpty (blobName3)) {
+			playerPreferences.SetRequestedBlob (blobId3);
+		}
+	}
+
+	/*
+	 * Enable or disable blob icons based on the number of blobs owned.
+	 * numBlobs == 1, enable b0 icon.
+	 * numBlobs == 2, enable b0 and b1 icons. ... and so on.
+	 */ 
+	public void ManageBlobButtons()
+	{
+		if (numBlobs == 1) {
+			b0.enabled = true;
+			b1.enabled = false;
+			b2.enabled = false;
+			b3.enabled = false;
+		} else if (numBlobs == 2) {
+			b0.enabled = true;
+			b1.enabled = true;
+			b2.enabled = false;
+			b3.enabled = false;
+		} else if (numBlobs == 3) {
+			b0.enabled = true;
+			b1.enabled = true;
+			b2.enabled = true;
+			b3.enabled = false;
+		} else if (numBlobs == 4) {
+			b0.enabled = true;
+			b1.enabled = true;
+			b2.enabled = true;
+			b3.enabled = true;
+		} else {
+			b0.enabled = false;
+			b1.enabled = false;
+			b2.enabled = false;
+			b3.enabled = false;
+		}
+	}
+
+	/*
+	 * Erase values saved in PlayerPrefs at log out.
+	 */
+
+	public void LogOutButtonClick()
+	{
+		playerPreferences.ResetNumBlobs ();
+		playerPreferences.ResetRequestedBlob ();
+		playerPreferences.ResetUser ();
+
+		//Debug.Log ("numBlobs after reset: " + playerPreferences.GetNumBlobs ());
+		//Debug.Log ("requested blob ID after reset: " + playerPreferences.GetRequestedBlob ());
+		//Debug.Log ("userID after reset: " + playerPreferences.GetUser ());
 	}
 
 

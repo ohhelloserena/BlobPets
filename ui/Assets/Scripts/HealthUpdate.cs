@@ -23,7 +23,7 @@ public class HealthUpdate : MonoBehaviour {
 	void Update () {
 //		health -= coef * Time.deltaTime;
 		healthBar.fillAmount -= 0.0010f;
-		Debug.Log("Health : " + health);
-		Debug.Log("fill: " + healthBar.fillAmount);
+		//Debug.Log("Health : " + health);
+		//Debug.Log("fill: " + healthBar.fillAmount);
 	}        
 }
