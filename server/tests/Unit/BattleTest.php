@@ -98,24 +98,70 @@ class BattleTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Invalid blobs, either own both or none', $response_json->error);
 
+        // Blobs are not near each other
+        $uc = new UserController();
+
+        $user = $uc->getUser(1);
+        $user->latitude = 49.184148163083;
+        $user->longitude = -123.11260905865;
+
+        $user->save();
+
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/battles', ['blob1'=>1, 'blob2'=>3], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Blob(s) are not near each other', $response_json->error);
     }
 
     public function testCreateBattleRecord(){
 
         $bc = new BlobController();
-        $blob = $bc->getBlob(1);
+        $bac = new BattleController();
 
-        // Creates record
+        // Creates record where initator blob wins
+        $blob = $bc->getBlob(5);
+        $blob->level = 10;
+        $blob->save();
+
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/battles', ['blob1'=>5, 'blob2'=>2], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(1, $response_json->BattleRecordID);
+
+        $record = $bac->getBattleRecord($response_json->BattleRecordID);
+        $this->assertEquals(5, $record->winnerBlobID);
+        $this->assertEquals(2, $record->loserBlobID);
+
+        // Creates record where passive blob wins
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/battles', ['blob1'=>2, 'blob2'=>5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(2, $response_json->BattleRecordID);
+
+        $record = $bac->getBattleRecord($response_json->BattleRecordID);
+        $this->assertEquals(5, $record->winnerBlobID);
+        $this->assertEquals(2, $record->loserBlobID);
+
+        // Creates record where blobs have the same default stats
+        $blob = $bc->getBlob(1);
         $prev_time = $blob->end_rest;
         $this->refreshApplication();
         $response = $this->call('POST','/api/battles', ['blob1'=>1, 'blob2'=>3], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals(1, $response_json->BattleRecordID);
+        $this->assertEquals(3, $response_json->BattleRecordID);
+
+        $record = $bac->getBattleRecord($response_json->BattleRecordID);
+        $this->assertEquals(3, $record->winnerBlobID);
+        $this->assertEquals(1, $record->loserBlobID);
+
         $post_time = $blob->end_rest;
         $this->assertSame($prev_time, $post_time);
 
-        // Creates record anc checks that rest flag is updated
+        // Creates multiple battle record and checks that rest flag is updated
         $prev_time = $blob->end_rest;
         for( $i = 0; $i<5; $i++ ) {
             $this->refreshApplication();

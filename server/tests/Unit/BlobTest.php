@@ -8,7 +8,6 @@
 
 namespace tests\Unit;
 
-use app\Blob;
 use Tests\TestCase;
 use App\Http\Controllers\BlobController;
 
@@ -74,9 +73,30 @@ class BlobTest extends TestCase
         $this->assertEquals('testy', $blob->name);
         $this->assertEquals('type A', $blob->type);
         $this->assertEquals('yellow', $blob->color);
+
+        // Hit max number of blobs
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(7, $response_json->blobID);
+
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy2', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('User has max number of blobs', $response_json->error);
+
     }
 
     public function testDeleteBlob(){
+        // Missing Token
+        $this->refreshApplication();
+        $response = $this->call('DELETE','/api/blobs/50', [], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
+
         // Invalid BlobID, blob doesn't exist
         $this->refreshApplication();
         $response = $this->call('DELETE','/api/blobs/50', [], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
@@ -109,5 +129,213 @@ class BlobTest extends TestCase
         json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testGetBlob(){
+        $response = $this->call('GET','/api/blobs/1');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testGetBlobInvalidId(){
+        $response = $this->call('GET','/api/blobs/-1');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+//| - PATCH serverAddress.com/api/blobs/1?name=Blobby
+//|     change the name of blob with id 1 to 'Blobby'
+    public function testUpdateBlob(){
+        $response = $this->call('GET','/api/blobs/1');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $name = $response_json->name;
+        $cleanliness_level = $response_json->cleanliness_level;
+        $health_level = $response_json->health_level;
+
+        // Failing example
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', [], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('token_not_provided', $response_json->error);
+
+
+        $response = $this->call('POST', '/api/users/authenticate', array('email' => 'chris@scotch.io', 'password' => 'secret'));
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $user_token = $response_json->token;
+        $user_id = $response_json->id;
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', [], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('Unauthorized action', $response_json->error);
+
+
+        // Valid example
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['name'=>'testy'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals('testy', $blob->name);
+
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['cleanliness_level'=> $cleanliness_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals($cleanliness_level + 10, $blob->cleanliness_level);
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['cleanliness_level'=> $cleanliness_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals('Request rejected', $response_json->error);
+
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals($health_level + 10, $blob->health_level);
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals('Request rejected', $response_json->error);
+
+
+        $this->artisan("migrate:refresh");
+        $this->artisan("db:seed");
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['name'=>'testy', 'cleanliness_level'=> $cleanliness_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals('testy', $blob->name);
+        $this->assertEquals($cleanliness_level + 10, $blob->cleanliness_level);
+
+
+        $this->artisan("migrate:refresh");
+        $this->artisan("db:seed");
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['cleanliness_level'=> $cleanliness_level + 10, 'health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals($cleanliness_level + 10, $blob->cleanliness_level);
+        $this->assertEquals($health_level + 10, $blob->health_level);
+
+
+        $this->artisan("migrate:refresh");
+        $this->artisan("db:seed");
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['name'=>'testy', 'health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals('testy', $blob->name);
+        $this->assertEquals($health_level + 10, $blob->health_level);
+
+
+        $this->artisan("migrate:refresh");
+        $this->artisan("db:seed");
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/blobs/1', ['name'=>'testy', 'cleanliness_level'=> $cleanliness_level + 10, 'health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $bc = new BlobController();
+        $blob = $bc->getBlob(1);
+        $this->assertEquals('testy', $blob->name);
+        $this->assertEquals($cleanliness_level + 10, $blob->cleanliness_level);
+        $this->assertEquals($health_level + 10, $blob->health_level);
+
+        // invalid id
+        $response = $this->call('PUT','/api/blobs/-1', ['name'=>'testy', 'cleanliness_level'=> $cleanliness_level + 10, 'health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());        
+        $this->assertEquals('Blob ID invalid', $response_json->error);
+
+        // invalid token
+        $response = $this->call('PUT','/api/blobs/1', [], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
+    }
+
+    public function testBreedBlob(){
+
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . "token"]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
+
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Did not have all required inputs', $response_json->error);
+
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => -1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Invalid blob id', $response_json->error);
+
+        $this->artisan("migrate:refresh");
+        $this->artisan("db:seed");
+        $response = $this->call('POST','/api/users', ['name' => 'maxBlobUser', 'email' => 'maxBlobUser@gmail.com', 'password' => 'secret'], [], [], []);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $response = $this->call('POST', '/api/users/authenticate', array('email' => 'maxBlobUser@gmail.com', 'password' => 'secret'));
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $user_token = $response_json->token;
+        $user_id = $response_json->id;
+
+        $response = $this->call('POST','/api/blobs', ['name'=>'maxBlobUserBlob1', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $blobIdOne = $response_json->blobID;
+
+        $response = $this->call('POST','/api/blobs', ['name'=>'maxBlobUserBlob2', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $blobIdTwo = $response_json->blobID;
+
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => $blobIdOne, 'id2' => $blobIdTwo], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals('User has max number of blobs', $response_json->error);
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => $blobIdOne, 'id2' => $blobIdTwo], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => $blobIdOne, 'id2' => $blobIdTwo], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('User has max number of blobs', $response_json->error);
+    }
+
+
 
 }
