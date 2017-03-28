@@ -81,15 +81,15 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        try {
+        // try {
             // verify the credentials and create a token for the user
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
-        } catch (JWTException $e) {
-            // something went wrong
-            return response()->json(['error' => 'could_not_create_token'], 500);
-        }
+        // } catch (JWTException $e) {
+        //     // something went wrong
+        //     return response()->json(['error' => 'could_not_create_token'], 500);
+        // }
 
         // if no errors are encountered we can return a JWT
         $associatedUser = JWTAuth::toUser($token);
@@ -177,15 +177,15 @@ class UserController extends Controller
     // debug function
     // return the user associated with the token
     // input:   'token': the token of a user
-    public function getTokenOwner(Request $request)
-    {
-        $token = $request->input('token');
+    // public function getTokenOwner(Request $request)
+    // {
+    //     $token = $request->input('token');
 
-        $associatedUser = JWTAuth::toUser($token);
+    //     $associatedUser = JWTAuth::toUser($token);
 
-        $users = \App\User::all();
-        return $users->find($associatedUser->id);
-    }
+    //     $users = \App\User::all();
+    //     return $users->find($associatedUser->id);
+    // }
 
     /**
      * Get users within a boxed area

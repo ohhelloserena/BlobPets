@@ -16,7 +16,7 @@ class BlobController extends Controller
 {
     public function __construct()
 	{
-		$this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'deleteBlob']]);
+		$this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'breedBlob', 'createBlob', 'deleteBlob']]);
 	}
 
     // return a list of all the blobs in the database
@@ -49,8 +49,10 @@ class BlobController extends Controller
     // input:   'id': the id of a blob
     //          'name': new name for the blob
     public function updateBlob(Request $request, $id) {
+
         $ret = $this->verifyUser();
-        $blob = BlobController::getBlob($id);
+        $blob = \App\Blob::find($id);
+
         if(is_int($ret)){
             $user = $ret;
             if (!empty($blob)){
@@ -128,7 +130,7 @@ class BlobController extends Controller
     public function breedBlob(Request $request)
     {
         $maxNumBlobs = 4;
-        $expected = array('id1', 'id2', 'token');
+        $expected = array('id1', 'id2');
         // check for correct number of inputs
         if ($request->exists($expected)) {
             $parentBlob1 = $request->input('id1');
