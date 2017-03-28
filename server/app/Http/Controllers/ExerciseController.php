@@ -11,10 +11,8 @@ namespace App\Http\Controllers;
 use App\ExerciseRecord;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use \DateTime;
 use Carbon\Carbon;
 use \Response;
-use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
@@ -75,7 +73,7 @@ class ExerciseController extends Controller
      * Updates the exercise record for a user
      * @param Request $request
      * @param $id
-     * @return JsonResponse
+     * @return JsonResponse|\Illuminate\Http\Response
      */
     public function updateExerciseRecord(Request $request, $id)
     {
@@ -85,15 +83,15 @@ class ExerciseController extends Controller
                 $user = $ret;
                 $record = $this->getExerciseRecord($id);
                 // Check that the record exists and that the token owner owns it
-                if (is_a($record,'App\ExerciseRecord') and $record->owner_id == $user ) {
-                    $distance = $request->distance;
+                if (is_a($record,'App\ExerciseRecord') and $record->getAttribute('owner_id')== $user) {
+                    $distance = $request->input('distance');
 
                     // Check if it has been a week and the max_exercise needs to be updated
                     $record->updateRecord(Carbon::now());
 
                     // Update the record
-                    $totaldistance = $record->total_exercise;
-                    $goaldistance = $record->weekly_goal;
+                    $totaldistance = $record->getAttribute('total_exercise');
+                    $goaldistance = $record->getAttribute('weekly_goal');
                     $newdistance = $totaldistance + $distance;
                     if($newdistance > $goaldistance){
                         $remaining = 0;
@@ -101,12 +99,11 @@ class ExerciseController extends Controller
                     else{
                         $remaining = $goaldistance -$newdistance;
                     }
-                    $record->total_exercise = $newdistance;
-                    $record->remaining_exercise = $remaining;
+                    $record->setAttribute('total_exercise', $newdistance);
+                    $record->setAttribute('remaining_exercise', $remaining);
                     $record->save();
 
                     // Update user exercise level
-                    $distance = floor($distance);
                     $uc = new UserController();
                     $blobs = $uc->getUserBlobs($user);
                     foreach($blobs as $blob) {

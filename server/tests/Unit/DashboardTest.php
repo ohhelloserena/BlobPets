@@ -27,7 +27,6 @@ class DashboardTest extends TestCase
         $this->artisan("db:seed");
     }
 
-    // TODO complete
     public function testGetDashboard(){
         //Invalid
         $this->refreshApplication();
@@ -66,7 +65,39 @@ class DashboardTest extends TestCase
         $response = $this->call('GET','/api/dashboards/', array());
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
+        $playerDash = $response_json->userDashboard;
+        $blobDash = $response_json->blobDashboard;
+        $this->assertEquals(4, sizeof($playerDash));
+        $this->assertEquals(5, sizeof($blobDash));
 
+        // Verify user dash
+        $topPlayer= $playerDash[0];
+        $this->assertEquals(0, $topPlayer->battles_won);
+        $this->assertEquals(1, $topPlayer->id);
+
+        $secondPlayer = $playerDash[1];
+        $this->assertEquals(0, $secondPlayer->battles_won);
+        $this->assertEquals(2, $secondPlayer->id);
+
+        $thirdPlayer = $playerDash[2];
+        $this->assertEquals(0, $thirdPlayer->battles_won);
+        $this->assertEquals(3, $thirdPlayer->id);
+
+        $lastPlayer = $playerDash[3];
+        $this->assertEquals(0, $lastPlayer->battles_won);
+        $this->assertEquals(4, $lastPlayer->id);
+
+        // Verify blob dash
+        $top1 = $blobDash[0];
+        $this->assertEquals(1, $top1->id);
+        $top2 = $blobDash[1];
+        $this->assertEquals(2, $top2->id);
+        $top3 = $blobDash[2];
+        $this->assertEquals(3, $top3->id);
+        $top4 = $blobDash[3];
+        $this->assertEquals(4, $top4->id);
+        $top5 = $blobDash[4];
+        $this->assertEquals(5, $top5->id);
     }
 
     public function testGetTopPlayers(){
@@ -86,7 +117,6 @@ class DashboardTest extends TestCase
         $user->save();
 
         // One player better than everyone else
-        $this->refreshApplication();
         $dashboard = $dc->getTopPlayers();
         $this->assertEquals(4, count($dashboard));
         $topPlayer= $dashboard[0];
@@ -126,6 +156,65 @@ class DashboardTest extends TestCase
         $lastPlayer = $dashboard[3];
         $this->assertEquals(5, $lastPlayer->battles_won);
         $this->assertEquals(2, $lastPlayer->id);
+
+        // With 5 players
+        $this->refreshApplication();
+        $response = $this->call('POST', '/api/users', array('name' => 'testCreateUser1', 'email' => 'testCreateUser1@gmail.com', 'password' => 'test'));
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+        $fifthUser = $response_json;
+
+        $dashboard = $dc->getTopPlayers();
+        $this->assertEquals(5, sizeof($dashboard));
+
+        $topPlayer= $dashboard[0];
+        $this->assertEquals(60, $topPlayer->battles_won);
+        $this->assertEquals(3, $topPlayer->id);
+
+        $secondPlayer = $dashboard[1];
+        $this->assertEquals(34, $secondPlayer->battles_won);
+        $this->assertEquals(4, $secondPlayer->id);
+
+        $thirdPlayer = $dashboard[2];
+        $this->assertEquals(10, $thirdPlayer->battles_won);
+        $this->assertEquals(1, $thirdPlayer->id);
+
+        $fourthPlayer = $dashboard[3];
+        $this->assertEquals(5, $fourthPlayer->battles_won);
+        $this->assertEquals(2, $fourthPlayer->id);
+
+        $lastPlayer = $dashboard[4];
+        $this->assertEquals(0, $lastPlayer->battles_won);
+        $this->assertEquals($fifthUser, $lastPlayer->id);
+
+        // With 6 players
+        $this->refreshApplication();
+        $response = $this->call('POST', '/api/users', array('name' => 'testCreateUser2', 'email' => 'testCreateUser2@gmail.com', 'password' => 'test'));
+        json_decode($response->getContent());
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $dashboard = $dc->getTopPlayers();
+        $this->assertEquals(5, count($dashboard));
+
+        $topPlayer= $dashboard[0];
+        $this->assertEquals(60, $topPlayer->battles_won);
+        $this->assertEquals(3, $topPlayer->id);
+
+        $secondPlayer = $dashboard[1];
+        $this->assertEquals(34, $secondPlayer->battles_won);
+        $this->assertEquals(4, $secondPlayer->id);
+
+        $thirdPlayer = $dashboard[2];
+        $this->assertEquals(10, $thirdPlayer->battles_won);
+        $this->assertEquals(1, $thirdPlayer->id);
+
+        $fourthPlayer = $dashboard[3];
+        $this->assertEquals(5, $fourthPlayer->battles_won);
+        $this->assertEquals(2, $fourthPlayer->id);
+
+        $lastPlayer = $dashboard[4];
+        $this->assertEquals(0, $lastPlayer->battles_won);
+        $this->assertEquals($fifthUser, $lastPlayer->id);
     }
 
     public function testGetTopBlobs(){

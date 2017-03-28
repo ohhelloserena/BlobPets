@@ -177,6 +177,51 @@ class ExerciseTest extends TestCase
         $this->assertEquals(9, $response_json->total_exercise);
         $this->assertEquals(5, $response_json->weekly_goal);
         $this->assertEquals(0, $response_json->remaining_exercise);
+
+        // Update record with partial
+        $response = $this->call('POST', '/api/users/authenticate', array('email' => 'holly@scotch.io', 'password' => 'secret'));
+        $response_json = json_decode($response->getContent());
+        $token = $response_json->token;
+
+        $this->refreshApplication();
+        $this->call('POST','/api/exercises', [], [], [], ['HTTP_Authorization' => 'Bearer' . $token]);
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/exercises/4', ['distance'=>1.5], [], [], ['HTTP_Authorization' => 'Bearer' . $token]);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/exercises/4', [], [], [], ['HTTP_Authorization' => 'Bearer' . $token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(4, $response_json->id);
+        $this->assertEquals(3, $response_json->owner_id);
+        $this->assertEquals(1.5, $response_json->total_exercise);
+        $this->assertEquals(5, $response_json->weekly_goal);
+        $this->assertEquals(3.5, $response_json->remaining_exercise);
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/blobs/3');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(61.5, $response_json->exercise_level);
+
+        $this->refreshApplication();
+        $response = $this->call('PUT','/api/exercises/4', ['distance'=>5.23], [], [], ['HTTP_Authorization' => 'Bearer' . $token]);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/exercises/4', [], [], [], ['HTTP_Authorization' => 'Bearer' . $token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(4, $response_json->id);
+        $this->assertEquals(3, $response_json->owner_id);
+        $this->assertEquals(6.73, $response_json->total_exercise);
+        $this->assertEquals(5, $response_json->weekly_goal);
+        $this->assertEquals(0, $response_json->remaining_exercise);
+
+        $this->refreshApplication();
+        $response = $this->call('GET','/api/blobs/3');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(66.73, $response_json->exercise_level);
+
     }
 
 
