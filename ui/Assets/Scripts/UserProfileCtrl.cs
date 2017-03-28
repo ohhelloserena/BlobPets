@@ -197,6 +197,7 @@ public class UserProfileCtrl : MonoBehaviour
 	 * numBlobs == 1, enable b0 icon.
 	 * numBlobs == 2, enable b0 and b1 icons. ... and so on.
 	 */ 
+
 	public void ManageBlobButtons()
 	{
 		if (numBlobs == 1) {

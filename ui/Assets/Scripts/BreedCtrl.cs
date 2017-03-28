@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 using System;
-using UnityEngine.VR.WSA.WebCam;
+//using UnityEngine.VR.WSA.WebCam;
 using System.Runtime.Remoting;
 using System.ComponentModel;
 

@@ -10,7 +10,7 @@ public class LoginCtrl : MonoBehaviour {
 	public InputFieldCtrl ifctrl;
 	public ButtonCtrl buttonCtrl;
 
-	private string nameKey = "Name";
+	//private string nameKey = "Name";
 	private string emailKey = "Email";
 	private string passwordKey = "Password";
 	private string idKey = "UserId";

@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 
 // 2017-03-07 21:14:17
 
-// server uses UTC time 
+// server uses UTC time
 using UnityEngine.Rendering;
 
 public class FeedPoopCtrl : MonoBehaviour
@@ -81,7 +81,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		imgPoop.enabled = false;
 		imgHam.enabled = false;
 		imgThoughtBub.enabled = false;
-		SendTokenRequest(email, password);
+		SendTokenRequest (email, password);
 		GetBlob ();
 	}
 
@@ -104,11 +104,11 @@ public class FeedPoopCtrl : MonoBehaviour
 		
 	}
 
-/*
-	 * Sends POST request to the API to get token for the 
-	 * user with the given email and password.
-	 */
-
+	/// <summary>
+	/// Sends the token request via POST request to API.
+	/// </summary>
+	/// <param name="email">Email address of logged in user. </param>
+	/// <param name="password">Password of logged in user. </param>
 	public void SendTokenRequest (string email, string password)
 	{
 		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
@@ -121,13 +121,18 @@ public class FeedPoopCtrl : MonoBehaviour
 
 	}
 
+	/// <summary>
+	/// Waits for request.
+	/// </summary>
+	/// <returns>The for request.</returns>
+	/// <param name="www">Www.</param>
 	IEnumerator WaitForRequest (WWW www)
 	{
 		yield return www;
 
 		// check for errors
 		if (www.error == null) {
-			Debug.Log("!!! USER EXISTS.");
+			Debug.Log ("!!! USER EXISTS.");
 			userExists = true;
 			JSONNode N = JSON.Parse (www.text);
 			ParseJson (N);
@@ -135,27 +140,28 @@ public class FeedPoopCtrl : MonoBehaviour
 			PlayerPrefs.SetString (emailKey, email);
 			PlayerPrefs.SetString (passwordKey, password);
 			PlayerPrefs.SetInt (idKey, Int32.Parse (userId));
-			PlayerPrefs.Save();
+			PlayerPrefs.Save ();
 
 		} else {
-			Debug.Log("!!! USER DOESN'T EXIST.");
+			Debug.Log ("!!! USER DOESN'T EXIST.");
 			Debug.Log ("***WWW Error: " + www.error);
 			userExists = false;
 		
 		}    
 	}
 
-	public void ParseJson(JSONNode data) 
+	public void ParseJson (JSONNode data)
 	{
 		token = data ["token"].Value;
 		userId = data ["id"].Value;
 	}
 
-	public void GetBlob() {
-		WWW www = new WWW (url +blobId);
+	public void GetBlob ()
+	{
+		WWW www = new WWW (url + blobId);
 		StartCoroutine (GetBlobInfo (www));
 	}
-		
+
 
 	IEnumerator GetBlobInfo (WWW www)
 	{
@@ -185,7 +191,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		Debug.Log ("nextFeedTime: " + nextFeedTime);
 		Debug.Log ("cleanliness level: " + cleanlinessLevel);
 		Debug.Log ("health level: " + healthLevel);
-			}
+	}
 
 
 	public void CompareTimes ()
@@ -260,7 +266,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	// PUT request
 	IEnumerator UpdateBlob (string button)
 	{
-		string myData ="Hello";	// need to send a dummy string in UnityWebReqest.Put, otherwise it won't work
+		string myData = "Hello";	// need to send a dummy string in UnityWebReqest.Put, otherwise it won't work
 		string finalUrl;
 
 		if (button == "feed") {
