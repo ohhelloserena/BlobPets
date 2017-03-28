@@ -9,29 +9,30 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use \Response;
 
 
 class DashboardController extends Controller
 {
-    // GET DASHBOARD TYPE = BLOB/USER
 
     public function __construct()
     {
         $this->middleware('jwt.auth', ['except' => ['getDashboard']]);
     }
 
+    /**
+     * Gets list of users and blobs for dashboard
+     * @param Request $request
+     * @return array|\Illuminate\Http\JsonResponse|mixed
+     */
     public function getDashboard(Request $request){
         // Takes in type, no need for token
         $dashboard=[];
         if ($request->exists('type')) {
-            if ($request->type == 'blob'){
+            if ($request->input('type') == 'blob'){
                 $dashboard = $this->getTopBlobs();
             }
-            else if($request->type == 'user'){
+            else if($request->input('type') == 'user'){
                 $dashboard = $this->getTopPlayers();
             }
             else{
@@ -107,6 +108,14 @@ class DashboardController extends Controller
         return $records;
     }
 
+    /**
+     * Calculates the ranking value of the blobs
+     * @param $level
+     * @param $health_level
+     * @param $exercise_level
+     * @param $clean_level
+     * @return mixed
+     */
     public function calculateLevel($level, $health_level, $exercise_level, $clean_level){
         return ($level* ((0.005*$health_level) + (0.003*$exercise_level) +(0.002*$clean_level)));
     }

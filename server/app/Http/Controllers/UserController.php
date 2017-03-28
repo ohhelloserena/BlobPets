@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-use AppHttpRequests;
-use AppHttpControllersController;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuthExceptions\JWTException;
+//use Tymon\JWTAuthExceptions\JWTException;
 use \App\User;
 use \Hash;
 use \Response;
@@ -16,37 +16,33 @@ use \Response;
 class UserController extends Controller
 {
 
-	public function __construct()
-	{
-		$this->middleware('jwt.auth', ['except' => ['authenticate', 'getAllUsers', 'getUsers', 'getUser', 'getUserBlobs', 'createUser', 'getTopPlayers']]);
-	}
-
-    // return a list of all the users in the database
-    // include the list of blobs associated with each user
-    // input:   none
-	public function getAllUsers()
+    public function __construct()
     {
-    	$users = User::with("blobs")->get();
-    	return $users;
+        $this->middleware('jwt.auth', ['except' => ['authenticate', 'getUsers', 'getUser', 'getUserBlobs', 'createUser', 'getTopPlayers']]);
     }
 
     /**
-     * TODO determine if we want to just get lat long from user rather than have them as inputs, might make more sense
-     * Gets users near the specified location and returns them
+     * If no type specified, returns a list of all the users in the database
+     * If type, lat, long specified returns a list of nearby users
      * @param Request $request
-     * @return User|JsonResponse
+     * @return User|Collection|JsonResponse|static[]
      */
-    public function getUsers(Request $request){
-        //Check that lat long provided
-        $required = array('lat', 'long');
-        if ($request->exists($required)){
-            $lat = $request->lat;
-            $long = $request->long;
-            //Get users and return them
-            return $this->getCloseUsers($lat,$long);
+    public function getUsers(Request $request)
+    {
+        if ($request->exists('type')){
+            $latlong = array('lat', 'long');
+            if ($request->exists($latlong)and $request->input('type') == 'nearby'){
+                $lat = $request->input('lat');
+                $long = $request->input('long');
+                return $this->getCloseUsers($lat,$long);
+            }
+            else{
+                return response()->json(['error' => 'Missing required input fields'], 400);
+            }
         }
         else{
-            return response()->json(['error' => 'Missing required input fields'], 400);
+            $users = User::with("blobs")->get();
+            return $users;
         }
     }
 
@@ -81,15 +77,15 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        // try {
+        try {
             // verify the credentials and create a token for the user
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
-        // } catch (JWTException $e) {
-        //     // something went wrong
-        //     return response()->json(['error' => 'could_not_create_token'], 500);
-        // }
+        } catch (JWTException $e) {
+            // something went wrong
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
 
         // if no errors are encountered we can return a JWT
         $associatedUser = JWTAuth::toUser($token);
@@ -129,7 +125,7 @@ class UserController extends Controller
         else {
             return response()->json(['error' => 'Missing required input fields'], 400);
         }
-        
+
     }
 
     // Update an existing user
@@ -157,7 +153,7 @@ class UserController extends Controller
         else {
             return response()->json(['error' => 'User with specified id does not exist'], 400);
         }
-        
+
         if (!empty($newName)) {
             $user->name = $newName;
         }
@@ -177,15 +173,15 @@ class UserController extends Controller
     // debug function
     // return the user associated with the token
     // input:   'token': the token of a user
-    // public function getTokenOwner(Request $request)
-    // {
-    //     $token = $request->input('token');
+    public function getTokenOwner(Request $request)
+    {
+        $token = $request->input('token');
 
-    //     $associatedUser = JWTAuth::toUser($token);
+        $associatedUser = JWTAuth::toUser($token);
 
-    //     $users = \App\User::all();
-    //     return $users->find($associatedUser->id);
-    // }
+        $users = User::all();
+        return $users->find($associatedUser->id);
+    }
 
     /**
      * Get users within a boxed area
@@ -202,7 +198,7 @@ class UserController extends Controller
 
         // Return users that qualify
         return $users;
-	}
+    }
 
     /**
      * Checks if two users are close to each other

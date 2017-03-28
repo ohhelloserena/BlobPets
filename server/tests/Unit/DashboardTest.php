@@ -9,9 +9,7 @@
 namespace tests\Unit;
 
 use App\Http\Controllers\DashboardController;
-use Carbon\Carbon;
 use Tests\TestCase;
-use App\Http\Controllers\BattleController;
 use App\Http\Controllers\BlobController;
 use App\Http\Controllers\UserController;
 
@@ -29,6 +27,7 @@ class DashboardTest extends TestCase
         $this->artisan("db:seed");
     }
 
+    // TODO complete
     public function testGetDashboard(){
         //Invalid
         $this->refreshApplication();
@@ -48,8 +47,20 @@ class DashboardTest extends TestCase
 
         //Blobs
         $response = $this->call('GET','/api/dashboards/', array('type'=>'blob'));
-        $response_json = json_decode($response->getContent());
+        $dashboard = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
+        $records = $dashboard;
+        $this->assertEquals(5, sizeof($records));
+        $top1 = $records[0];
+        $this->assertEquals(1, $top1->id);
+        $top2 = $records[1];
+        $this->assertEquals(2, $top2->id);
+        $top3 = $records[2];
+        $this->assertEquals(3, $top3->id);
+        $top4 = $records[3];
+        $this->assertEquals(4, $top4->id);
+        $top5 = $records[4];
+        $this->assertEquals(5, $top5->id);
 
         //All
         $response = $this->call('GET','/api/dashboards/', array());

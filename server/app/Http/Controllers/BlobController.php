@@ -4,31 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Blob;
 use Illuminate\Http\Request;
-use \DateTime;
 use Carbon\Carbon;
 use \Response;
-
-use Illuminate\Support\Facades\DB;
-//use \App\Http\Controllers\BlobController;
 
 
 class BlobController extends Controller
 {
     public function __construct()
-	{
-		$this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'breedBlob', 'createBlob', 'deleteBlob']]);
-	}
+    {
+        $this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'deleteBlob']]);
+    }
 
     // return a list of all the blobs in the database
     // input:   none
-	public function getAllBlobs()
+    public function getAllBlobs()
     {
-    	$blobs = \App\Blob::all();
+        $blobs = Blob::all();
         foreach ($blobs as $blob)
         {
             $blob->updateBlob();
         }
-    	return $blobs;
+        return $blobs;
     }
 
     // return the blob with the specified blob id
@@ -36,10 +32,10 @@ class BlobController extends Controller
     // input:   'id': the id of a blob
     public function getBlob($id)
     {
-        $blob = \App\Blob::find($id);
+        $blob = Blob::find($id);
         if (empty($blob)) {
             return response()->json(['error' => 'Blob ID invalid'], 400);
-        }        
+        }
         $blob->updateBlob();
         return $blob;
     }
@@ -49,10 +45,8 @@ class BlobController extends Controller
     // input:   'id': the id of a blob
     //          'name': new name for the blob
     public function updateBlob(Request $request, $id) {
-
         $ret = $this->verifyUser();
-        $blob = \App\Blob::find($id);
-
+        $blob = BlobController::getBlob($id);
         if(is_int($ret)){
             $user = $ret;
             if (!empty($blob)){
@@ -86,12 +80,12 @@ class BlobController extends Controller
                                 $blob->next_cleanup_time = BlobController::generateNewTime();
                             } else {
                                 $rejectRequest = true;
-                            }                            
+                            }
                         } else {
                             $rejectRequest = true;
                         }
                     }
-                    
+
                     if (!empty($new_health_level)) {
                         if (BlobController::timeValueIsInThePast($blob->next_feed_time)) {
                             if ($new_health_level - $blob->health_level <= 11) {
@@ -100,17 +94,17 @@ class BlobController extends Controller
                             } else {
                                 $rejectRequest = true;
                             }
-                            
+
                         } else {
                             $rejectRequest = true;
                         }
                     }
-                  
+
                     if ($rejectRequest == false) {
                         $blob->save();
                     } else {
                         return response()->json(['error' => 'Request rejected'], 403);
-                    }                
+                    }
 
                     return Response::make('OK', 200);
                 } else {
@@ -130,7 +124,7 @@ class BlobController extends Controller
     public function breedBlob(Request $request)
     {
         $maxNumBlobs = 4;
-        $expected = array('id1', 'id2');
+        $expected = array('id1', 'id2', 'token');
         // check for correct number of inputs
         if ($request->exists($expected)) {
             $parentBlob1 = $request->input('id1');
@@ -145,7 +139,7 @@ class BlobController extends Controller
                 }
 
                 $user = $ret;
-                $numBlobs = DB::table('blobs')->where('owner_id', $user)->count();
+                $numBlobs = Blob::where('owner_id', $user)->count();
 
                 // check that user does not have the max number of blobs
                 if ($numBlobs < $maxNumBlobs){
@@ -192,7 +186,7 @@ class BlobController extends Controller
             $ret = $this->verifyUser();
             if (is_int($ret)) {
                 $user = $ret;
-                $numBlobs = DB::table('blobs')->where('owner_id', $user)->count();
+                $numBlobs = Blob::where('owner_id', $user)->count();
 
                 // check that user does not have the max number of blobs
                 if ($numBlobs<$maxNumBlobs){
@@ -225,7 +219,7 @@ class BlobController extends Controller
     /**
      * Deletes a blob if blob health = 0
      * @param $id - the id of the blob to delete
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function deleteBlob($id){
         $ret = $this->verifyUser();

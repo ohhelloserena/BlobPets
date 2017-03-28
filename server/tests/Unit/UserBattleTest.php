@@ -22,25 +22,37 @@ class UserBattleTest extends TestCase
 
     public function testGetUsers(){
         // GET without both lat and long
-        $response = $this->call('GET','/api/users/nearbyUsers', array());
+        $response = $this->call('GET','/api/users/', array());
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(4, count($response_json));
+
+        // GET with just type
+        $response = $this->call('GET','/api/users/', array('type'=>'nearby'));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Missing required input fields', $response_json->error);
 
-        // GET with just lat or long
-        $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=>0));
+        // GET with just type not nearby
+        $response = $this->call('GET','/api/users/', array('type'=>'asdf'));
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Missing required input fields', $response_json->error);
+
+        // GET with just type and lat or long
+        $response = $this->call('GET','/api/users/', array('type'=>'nearby', 'lat'=>0));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Missing required input fields', $response_json->error);
 
         // GET with both lat and long but no users found
-        $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=> 49.188857, 'long'=> -123.102681));
+        $response = $this->call('GET','/api/users/', array('type'=>'nearby', 'lat'=> 49.188857, 'long'=> -123.102681));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(0, count($response_json));
 
         // GET with users found
-        $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=> 0, 'long'=> 0));
+        $response = $this->call('GET','/api/users/', array('type'=>'nearby', 'lat'=> 0, 'long'=> 0));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(4, count($response_json));
@@ -52,7 +64,7 @@ class UserBattleTest extends TestCase
         $user->longitude = -123.102681;
         $user->save();
 
-        $response = $this->call('GET','/api/users/nearbyUsers', array('lat'=> 0, 'long'=> 0));
+        $response = $this->call('GET','/api/users/', array('type'=>'nearby', 'lat'=> 0, 'long'=> 0));
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(3, count($response_json));
@@ -135,5 +147,6 @@ class UserBattleTest extends TestCase
         $this->assertTrue($uc->checkCloseUser($user1, $user2));
         $this->assertTrue($uc->checkCloseUser($user2, $user1));
     }
+
 
 }

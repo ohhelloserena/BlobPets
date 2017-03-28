@@ -20,8 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'users'], function()
 {
-	Route::get('/', 'UserController@getAllUsers');	// return list of all users
-    Route::get('/nearbyUsers', 'UserController@getUsers'); // returns list of user near a specified lat long
+	Route::get('/', 'UserController@getUsers');	// return list of all users or a list of users filtered by lat long
     Route::get('/getTopUsers', 'UserController@getTopPlayers'); //returns a list of 10 players with the highest battles won
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
@@ -70,8 +69,10 @@ Route::group(['prefix' => 'dashboards'], function(){
 |--------------------------------------------------------------------------
 | Some examples for using the API
 |--------------------------------------------------------------------------
-| - GET serverAddress.com/api/users
+| - GET serverAddress.com/api/users/
 |		return a list of all users
+| - GET serverAddress.com/api/users/?type=nearby&lat=<>&long=<>
+|		return a list of all users close to the location
 | - GET serverAddress.com/api/users/1
 |		return the user with user id 1
 | - POST serverAddress.com/api/users/authenticate?email=mail@email.com&password=password
