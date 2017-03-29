@@ -250,7 +250,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(3, $top5->id);
 
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'orange'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals(6, $response_json->blobID);
