@@ -10,6 +10,8 @@ namespace tests\Unit;
 
 use Tests\TestCase;
 use App\Http\Controllers\BlobController;
+use Carbon\Carbon;
+use App\Blob;
 
 
 class BlobTest extends TestCase
@@ -373,6 +375,21 @@ class BlobTest extends TestCase
         $response = $this->call('GET','/api/blobs');
         $response_json = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testUpdateBlobFunction(){
+        $blob = Blob::find(1);
+        $blob->updateBLob();
+        $this->assertEquals($blob->alive, true);
+
+        $blob->last_levels_decrement = Carbon::yesterday();
+        $blob->updateBLob();
+        $this->assertEquals($blob->alive, true);
+
+        $blob->last_levels_decrement = Carbon::now()->subWeek(1);
+        $blob->updateBLob();
+        $this->assertEquals($blob->alive, false);
+        $blob->updateBLob();
     }
 
 
