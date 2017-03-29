@@ -10,6 +10,8 @@ public class CreateButtonScript : MonoBehaviour
 
 	private SelectBlob selectBlueScript;
 	private SelectBlob selectOrangeScript;
+	private SelectBlob selectPinkScript;
+	private SelectBlob selectGreenScript;
 
 	private GameObject selectedBlue;
 	private GameObject selectedOrange;
@@ -24,25 +26,17 @@ public class CreateButtonScript : MonoBehaviour
 		selectedOrange = GameObject.Find ("OrangeBlobSelectionScriptObject");
 		selectOrangeScript = (SelectBlob)selectedOrange.GetComponent (typeof(SelectBlob));
 
+		selectedPink = GameObject.Find ("PinkBlobSelectionScriptObject");
+		selectPinkScript = (SelectBlob)selectedPink.GetComponent (typeof(SelectBlob));
+
+		selectedGreen = GameObject.Find ("GreenBlobSelectionScriptObject");
+		selectGreenScript = (SelectBlob)selectedGreen.GetComponent (typeof(SelectBlob));
 	}
 
 	// Update is called once per frame
 	void Update () {
 
 	}
-
-//	public void chooseScene () {
-//		//if blue, if orange, if pink, if green
-//		if (selectScript.blueGuiEnable == true) {
-//			scene = "BlueMain";
-//			LoadScene (scene);
-//			Debug.Log ("Blue Scene load");
-//		} else if (selectScript.orangeGuiEnable == true) {
-//			scene = "OrangeMain";
-//			LoadScene (scene);
-//			Debug.Log ("Orange Scene load");
-//		}
-//	}
 
 	public void LoadScene () {
 		if (selectBlueScript.blueGuiEnable == true) {
@@ -56,18 +50,18 @@ public class CreateButtonScript : MonoBehaviour
 			Debug.Log (selectOrangeScript.orangeGuiEnable);
 			Debug.Log ("Orange Scene load");
 		}
-//
-//		if (selectScript.pinkGuiEnable == true) {
-//			scene = "BlueMain";
-//			Debug.Log (selectScript.pinkGuiEnable);
-//			Debug.Log ("Pink Scene load");
-//		}
-//
-//		if (selectScript.greenGuiEnable == true) {
-//			scene = "BlueMain";
-//			Debug.Log (selectScript.greenGuiEnable);
-//			Debug.Log ("Green Scene load");
-//		}
+
+		if (selectPinkScript.pinkGuiEnable == true) {
+			scene = "PinkMain";
+			Debug.Log (selectPinkScript.pinkGuiEnable);
+			Debug.Log ("Pink Scene load");
+		}
+
+		if (selectGreenScript.greenGuiEnable == true) {
+			scene = "GreenMain";
+			Debug.Log (selectGreenScript.greenGuiEnable);
+			Debug.Log ("Green Scene load");
+		}
 
 		SceneManager.LoadScene (scene);
 	}
