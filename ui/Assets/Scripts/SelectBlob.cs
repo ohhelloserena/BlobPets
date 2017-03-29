@@ -10,7 +10,10 @@ public class SelectBlob : MonoBehaviour {
 	private float yCoord;
 	private float width;
 	private float height;
-	private bool guiEnable = false;
+	private bool blueGuiEnable = false;
+	private bool orangeGuiEnable = false;
+	private bool pinkGuiEnable = false;
+	private bool greenGuiEnable = false;
 
 	// Use this for initialization
 	void Start () {
@@ -22,9 +25,36 @@ public class SelectBlob : MonoBehaviour {
 		
 	}
 
-	public void setTrue () {
-		guiEnable = true;
-		Debug.Log ("CLICKED");
+	public void setBlueTrue () {
+		blueGuiEnable = true;
+		orangeGuiEnable = false;
+	 	pinkGuiEnable = false;
+		greenGuiEnable = false;
+		Debug.Log ("BLUE CLICKED");
+	}
+
+	public void setOrangeTrue () {
+		orangeGuiEnable = true;
+		blueGuiEnable = false;
+		pinkGuiEnable = false;
+		greenGuiEnable = false;
+		Debug.Log ("ORANGE CLICKED");
+	}
+
+	public void setPinkTrue () {
+		pinkGuiEnable = true;
+		blueGuiEnable = false;
+		orangeGuiEnable = false;
+		greenGuiEnable = false;
+		Debug.Log ("PINK CLICKED");
+	}
+
+	public void setGreenTrue () {
+		greenGuiEnable = true;
+		blueGuiEnable = false;
+		orangeGuiEnable = false;
+		pinkGuiEnable = false;
+		Debug.Log ("GREEN CLICKED");
 	}
 
 	void OnGUI() {
@@ -33,10 +63,22 @@ public class SelectBlob : MonoBehaviour {
 			return;
 		}
 		//		xCoord = button.GetComponent<RectTransform>().position.x;
-		if (GameObject.Find("BlueBlobSelectButton") && guiEnable == true) {
-			xCoord = 30;
-			yCoord = 110;
-			GUI.DrawTexture (new Rect (xCoord, yCoord, 113, 79), selectTexture, ScaleMode.StretchToFill, true, 10.0F);
+		if (GameObject.Find("BlueBlobSelectButton") && blueGuiEnable == true) {
+			xCoord = 60;
+			yCoord = 180;
+			GUI.DrawTexture (new Rect (xCoord, yCoord, 200, 170), selectTexture, ScaleMode.StretchToFill, true, 10.0F);
+		} else if (GameObject.Find("OrangeBlobSelectButton") && orangeGuiEnable == true) {
+			xCoord = 270;
+			yCoord = 180;
+			GUI.DrawTexture (new Rect (xCoord, yCoord, 200, 170), selectTexture, ScaleMode.StretchToFill, true, 10.0F);
+		} else if (GameObject.Find("PinkBlobSelectButton") && pinkGuiEnable == true) {
+			xCoord = 60;
+			yCoord = 360;
+			GUI.DrawTexture (new Rect (xCoord, yCoord, 200, 170), selectTexture, ScaleMode.StretchToFill, true, 10.0F);
+		} else if (GameObject.Find("GreenBlobSelectButton") && greenGuiEnable == true) {
+			xCoord = 270;
+			yCoord = 360;
+			GUI.DrawTexture (new Rect (xCoord, yCoord, 200, 170), selectTexture, ScaleMode.StretchToFill, true, 10.0F);
 		}
 	}
 
