@@ -31,6 +31,7 @@ public class SelectBlob : MonoBehaviour {
 	 	pinkGuiEnable = false;
 		greenGuiEnable = false;
 		Debug.Log ("BLUE CLICKED");
+		Debug.Log (blueGuiEnable);
 	}
 
 	public void setOrangeTrue () {
@@ -39,6 +40,7 @@ public class SelectBlob : MonoBehaviour {
 		pinkGuiEnable = false;
 		greenGuiEnable = false;
 		Debug.Log ("ORANGE CLICKED");
+		Debug.Log (orangeGuiEnable);
 	}
 
 	public void setPinkTrue () {
@@ -47,6 +49,7 @@ public class SelectBlob : MonoBehaviour {
 		orangeGuiEnable = false;
 		greenGuiEnable = false;
 		Debug.Log ("PINK CLICKED");
+		Debug.Log (pinkGuiEnable);
 	}
 
 	public void setGreenTrue () {
@@ -55,6 +58,7 @@ public class SelectBlob : MonoBehaviour {
 		orangeGuiEnable = false;
 		pinkGuiEnable = false;
 		Debug.Log ("GREEN CLICKED");
+		Debug.Log (greenGuiEnable);
 	}
 
 	void OnGUI() {
