@@ -18,7 +18,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt.auth', ['except' => ['authenticate', 'getUsers', 'getUser', 'getUserBlobs', 'createUser', 'getTopPlayers']]);
+        $this->middleware('jwt.auth', ['except' => ['authenticate', 'getUsers', 'getUser', 'getUserBlobs', 'getDefendHistory', 'createUser', 'getTopPlayers']]);
     }
 
     /**
@@ -69,6 +69,14 @@ class UserController extends Controller
         return $user->blobs;
     }
 
+    public function getDefendHistory($id) {
+        $user = User::find($id);
+        if (empty($user)) {
+            return response()->json(['error' => 'User ID invalid'], 400);
+        }
+        return $user->defendHistory;
+    }
+
     // return a token that the user will include for subsequent API calls that require user authentication
     // return error if the credentials provided is invalid or if other errors are encountered
     // input:   'email': the email of the user
@@ -77,15 +85,15 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        try {
+        // try {
             // verify the credentials and create a token for the user
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
-        } catch (JWTException $e) {
-            // something went wrong
-            return response()->json(['error' => 'could_not_create_token'], 500);
-        }
+        // } catch (JWTException $e) {
+        //     // something went wrong
+        //     return response()->json(['error' => 'could_not_create_token'], 500);
+        // }
 
         // if no errors are encountered we can return a JWT
         $associatedUser = JWTAuth::toUser($token);
@@ -173,15 +181,15 @@ class UserController extends Controller
     // debug function
     // return the user associated with the token
     // input:   'token': the token of a user
-    public function getTokenOwner(Request $request)
-    {
-        $token = $request->input('token');
+    // public function getTokenOwner(Request $request)
+    // {
+    //     $token = $request->input('token');
 
-        $associatedUser = JWTAuth::toUser($token);
+    //     $associatedUser = JWTAuth::toUser($token);
 
-        $users = User::all();
-        return $users->find($associatedUser->id);
-    }
+    //     $users = User::all();
+    //     return $users->find($associatedUser->id);
+    // }
 
     /**
      * Get users within a boxed area

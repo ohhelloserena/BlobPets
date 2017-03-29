@@ -33,4 +33,12 @@ class User extends Authenticatable
         //return $this->hasMany("App\Blob", "owner_id", "id")->select('id', 'name');
         return $this->hasMany("App\Blob", "owner_id");
     }
+
+    public function defendHistory()
+    {
+        // return $this->hasMany("App\Blob");
+        //return $this->hasMany("App\Blob", "owner_id", "id")->select('id', 'name');
+        return $this->hasMany("App\BattleRecord", "defenderUserID");
+    }
+
 }

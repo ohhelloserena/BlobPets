@@ -17,7 +17,17 @@ class CreateBattleRecordsTable extends Migration
             $table->increments('id');
             $table->integer('loserBlobID')->unsigned();
             $table->integer('winnerBlobID')->unsigned();
+            $table->integer('attackerUserID')->unsigned();
+            $table->integer('defenderUserID')->unsigned();
             $table->timestamps();
+        });
+
+        Schema::table('battle_records', function (Blueprint $table) {
+            $table->foreign('attackerUserID')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('defenderUserID')->references('id')->on('users')->onDelete('cascade');
+            
+            $table->foreign('winnerBlobID')->references('id')->on('blobs')->onDelete('cascade');
+            $table->foreign('loserBlobID')->references('id')->on('blobs')->onDelete('cascade');
         });
 
 //        Schema::table('battle_records', function (Blueprint $table) {

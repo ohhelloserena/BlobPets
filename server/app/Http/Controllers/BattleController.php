@@ -65,8 +65,16 @@ class BattleController extends Controller
                                     $this->updateWinner($winner->owner_id);
                                     $this->punishLoser($loser);
 
+                                    $attacker = $user;
+                                    $defender = $user;
+                                    if ($user1_id == $user) {
+                                        $defender = $user2_id;
+                                    } else {
+                                        $defender = $user1_id;
+                                    }
+
                                     //Return battle record
-                                    $record = BattleRecord::create(array('loserBlobID' => $loser->id, 'winnerBlobID' => $winner->id));
+                                    $record = BattleRecord::create(array('loserBlobID' => $loser->id, 'winnerBlobID' => $winner->id, 'attackerUserID' => $attacker, 'defenderUserID' => $defender));
                                     $id = $record->id;
 
                                     //Update rest flags if needed

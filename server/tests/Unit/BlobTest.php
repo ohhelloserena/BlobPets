@@ -163,8 +163,10 @@ class BlobTest extends TestCase
         $this->refreshApplication();
         $response = $this->call('PUT','/api/blobs/1', [], [], [], []);
         $response_json = json_decode($response->getContent());
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals('token_not_provided', $response_json->error);
+        // $this->assertEquals(400, $response->getStatusCode());
+        // $this->assertEquals('token_not_provided', $response_json->error);        
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
 
 
         $response = $this->call('POST', '/api/users/authenticate', array('email' => 'chris@scotch.io', 'password' => 'secret'));
@@ -278,14 +280,8 @@ class BlobTest extends TestCase
         // invalid id
         $response = $this->call('PUT','/api/blobs/-1', ['name'=>'testy', 'cleanliness_level'=> $cleanliness_level + 10, 'health_level'=> $health_level + 10], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
-        $this->assertEquals(400, $response->getStatusCode());        
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Blob ID invalid', $response_json->error);
-
-        // invalid token
-        $response = $this->call('PUT','/api/blobs/1', [], [], [], []);
-        $response_json = json_decode($response->getContent());
-        $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals('The token could not be parsed from the request', $response_json->error);
     }
 
     public function testBreedBlob(){
@@ -306,43 +302,78 @@ class BlobTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Invalid blob id', $response_json->error);
 
-        $this->artisan("migrate:refresh");
-        $this->artisan("db:seed");
-        $response = $this->call('POST','/api/users', ['name' => 'maxBlobUser', 'email' => 'maxBlobUser@gmail.com', 'password' => 'secret'], [], [], []);
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
 
-        $response = $this->call('POST', '/api/users/authenticate', array('email' => 'maxBlobUser@gmail.com', 'password' => 'secret'));
-        $response_json = json_decode($response->getContent());
-        $this->assertEquals(200, $response->getStatusCode());
-        $user_token = $response_json->token;
-        $user_id = $response_json->id;
-
-        $response = $this->call('POST','/api/blobs', ['name'=>'maxBlobUserBlob1', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
-        $response_json = json_decode($response->getContent());
-        $this->assertEquals(201, $response->getStatusCode());
-        $blobIdOne = $response_json->blobID;
-
-        $response = $this->call('POST','/api/blobs', ['name'=>'maxBlobUserBlob2', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
-        $response_json = json_decode($response->getContent());
-        $this->assertEquals(201, $response->getStatusCode());
-        $blobIdTwo = $response_json->blobID;
-
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => $blobIdOne, 'id2' => $blobIdTwo], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
-        $response_json = json_decode($response->getContent());
-        $this->assertEquals('User has max number of blobs', $response_json->error);
-        $this->assertEquals(201, $response->getStatusCode());
-
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => $blobIdOne, 'id2' => $blobIdTwo], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
 
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => $blobIdOne, 'id2' => $blobIdTwo], [], [], ['HTTP_Authorization' => 'Bearer' . $user_token]);
+        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('User has max number of blobs', $response_json->error);
     }
 
+    public function testMixColor(){
+        $bc = new BlobController();
+
+        $value = $bc->mixColor('orange', 'orange');
+        $this->assertEquals('orange', $value);
+        $value = $bc->mixColor('orange', 'blue');
+        $this->assertEquals('blue', $value);
+        $value = $bc->mixColor('orange', 'green');
+        $this->assertEquals('green', $value);
+        $value = $bc->mixColor('orange', 'pink');
+        $this->assertEquals('pink', $value);
+
+        $value = $bc->mixColor('blue', 'orange');
+        $this->assertEquals('blue', $value);
+        $value = $bc->mixColor('blue', 'blue');
+        $this->assertEquals('green', $value);
+        $value = $bc->mixColor('blue', 'green');
+        $this->assertEquals('pink', $value);
+        $value = $bc->mixColor('blue', 'pink');
+        $this->assertEquals('orange', $value);
+
+        $value = $bc->mixColor('green', 'orange');
+        $this->assertEquals('green', $value);
+        $value = $bc->mixColor('green', 'blue');
+        $this->assertEquals('pink', $value);
+        $value = $bc->mixColor('green', 'green');
+        $this->assertEquals('orange', $value);
+        $value = $bc->mixColor('green', 'pink');
+        $this->assertEquals('blue', $value);
+
+        $value = $bc->mixColor('pink', 'orange');
+        $this->assertEquals('pink', $value);
+        $value = $bc->mixColor('pink', 'blue');
+        $this->assertEquals('orange', $value);
+        $value = $bc->mixColor('pink', 'green');
+        $this->assertEquals('blue', $value);
+        $value = $bc->mixColor('pink', 'pink');
+        $this->assertEquals('green', $value);
+    }
+
+    public function testColorToInt(){
+        $bc = new BlobController();
+
+        $value = $bc->colorToInt('orange');
+        $this->assertEquals(0, $value);
+        $value = $bc->colorToInt('blue');
+        $this->assertEquals(1, $value);
+        $value = $bc->colorToInt('green');
+        $this->assertEquals(2, $value);
+        $value = $bc->colorToInt('pink');
+        $this->assertEquals(3, $value);
+    }
+
+    public function testGetAllBlobs(){
+        $response = $this->call('GET','/api/blobs');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 
 
 }

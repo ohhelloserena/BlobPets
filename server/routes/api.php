@@ -24,6 +24,7 @@ Route::group(['prefix' => 'users'], function()
     Route::get('/getTopUsers', 'UserController@getTopPlayers'); //returns a list of 10 players with the highest battles won
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
+    Route::get('/{id}/defendHistory', 'UserController@getDefendHistory');   // return list of all defend history by user with user id
 
 
     Route::post('/', 'UserController@createUser');	// create a user

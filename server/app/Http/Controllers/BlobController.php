@@ -12,7 +12,7 @@ class BlobController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'deleteBlob']]);
+        $this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'breedBlob', 'deleteBlob']]);
     }
 
     // return a list of all the blobs in the database
@@ -46,7 +46,8 @@ class BlobController extends Controller
     //          'name': new name for the blob
     public function updateBlob(Request $request, $id) {
         $ret = $this->verifyUser();
-        $blob = BlobController::getBlob($id);
+        // $blob = BlobController::getBlob($id);
+        $blob = Blob::find($id);
         if(is_int($ret)){
             $user = $ret;
             if (!empty($blob)){
@@ -124,7 +125,7 @@ class BlobController extends Controller
     public function breedBlob(Request $request)
     {
         $maxNumBlobs = 4;
-        $expected = array('id1', 'id2', 'token');
+        $expected = array('id1', 'id2');
         // check for correct number of inputs
         if ($request->exists($expected)) {
             $parentBlob1 = $request->input('id1');
@@ -267,6 +268,26 @@ class BlobController extends Controller
         $randomMinutes = rand(0, 59);
         $randomSeconds = rand(0, 59);
         return Carbon::now()->addHours($minimumHour + $randomHours)->addMinutes($randomMinutes)->addSeconds($randomSeconds)->toDateTimeString();
+    }
+
+    public function mixColor($color1, $color2)
+    {
+        $colorInt = 0;
+        $colorInt = $colorInt + $this->colorToInt($color1);
+        $colorInt = $colorInt + $this->colorToInt($color2);
+        $colorInt = $colorInt % 4;
+        if ($colorInt == 0) {return 'orange';}
+        if ($colorInt == 1) {return 'blue';}
+        if ($colorInt == 2) {return 'green';}
+        return 'pink';
+    }
+
+    public function colorToInt($color)
+    {
+        if (str_is('orange', $color)) {return 0;}
+        if (str_is('blue', $color)) {return 1;}
+        if (str_is('green', $color)) {return 2;}
+        return 3;
     }
 
 }
