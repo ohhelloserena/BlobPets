@@ -10,10 +10,10 @@ public class SelectBlob : MonoBehaviour {
 	private float yCoord;
 	private float width;
 	private float height;
-	private bool blueGuiEnable = false;
-	private bool orangeGuiEnable = false;
-	private bool pinkGuiEnable = false;
-	private bool greenGuiEnable = false;
+	public bool blueGuiEnable = false;
+	public bool orangeGuiEnable = false;
+	public bool pinkGuiEnable = false;
+	public bool greenGuiEnable = false;
 
 	// Use this for initialization
 	void Start () {
