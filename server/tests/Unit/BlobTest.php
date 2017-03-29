@@ -48,21 +48,28 @@ class BlobTest extends TestCase
 
         // Missing token
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], []);
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'green'], [], [], []);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals('The token could not be parsed from the request', $response_json->error);
 
         // Invalid inputs, type is invalid
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'X', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'X', 'color'=>'green'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Invalid inputs', $response_json->error);
+
+        // Invalid inputs, color is invalid
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Invalid inputs', $response_json->error);
 
         // Create blob
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'green'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals(6, $response_json->blobID);
@@ -72,17 +79,17 @@ class BlobTest extends TestCase
         $this->assertEquals(1, $blob->owner_id);
         $this->assertEquals('testy', $blob->name);
         $this->assertEquals('type A', $blob->type);
-        $this->assertEquals('yellow', $blob->color);
+        $this->assertEquals('green', $blob->color);
 
         // Hit max number of blobs
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy', 'type'=>'A', 'color'=>'green'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals(7, $response_json->blobID);
 
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs', ['name'=>'testy2', 'type'=>'A', 'color'=>'yellow'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['name'=>'testy2', 'type'=>'A', 'color'=>'green'], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('User has max number of blobs', $response_json->error);

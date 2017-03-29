@@ -193,7 +193,8 @@ class BlobController extends Controller
 
                     //check if inputs are valid
                     $supportedTypes = array('A', 'B', 'C');
-                    if (in_array($blobType, $supportedTypes)) {
+                    $supportedColors = array('orange', 'blue', 'green', 'pink');
+                    if (in_array($blobType, $supportedTypes) and in_array($blobColor, $supportedColors)) {
                         $blob = Blob::create(array('name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor));
                         $id = $blob->id;
 
