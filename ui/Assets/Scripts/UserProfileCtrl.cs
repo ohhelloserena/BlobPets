@@ -132,10 +132,9 @@ public class UserProfileCtrl : MonoBehaviour
 	}
 
 
-	/*
-	 * Prints user info on the scene.
-	 */
-
+	/// <summary>
+	/// Prints user info on the scene.
+	/// </summary>
 	public void SetHeader ()
 	{
 		nameLabel.text = username;
@@ -143,10 +142,10 @@ public class UserProfileCtrl : MonoBehaviour
 		blobCountLabel.text = numBlobs.ToString ();
 	}
 
-	/*
-	 * Prints the blob names on the scene.
-	 */
 
+	/// <summary>
+	/// Prints blob names on the scene.
+	/// </summary>
 	public void SetBlobNames ()
 	{
 		if (String.IsNullOrEmpty (blobName0)) {
@@ -173,12 +172,12 @@ public class UserProfileCtrl : MonoBehaviour
 			blob3_label.text = blobName3;
 		}
 	}
-
-	/*
-	 * This is for the blob icons under "Your Blobs."
-	 * It stores the blob ID of the blob selected in PlayerPrefs.
-	 */
-
+		
+	/// <summary>
+	/// This is for he blob icons under "Your Blobs."
+	/// It stores the blob ID of the blob selected in PlayerPrefs.
+	/// </summary>
+	/// <param name="blobNum">Number of blobs owned by user. </param>
 	public void BlobButtonClick (string blobNum)
 	{
 		if (blobNum == "0" && !String.IsNullOrEmpty (blobName0)) {
@@ -192,12 +191,11 @@ public class UserProfileCtrl : MonoBehaviour
 		}
 	}
 
-	/*
-	 * Enable or disable blob icons based on the number of blobs owned.
-	 * numBlobs == 1, enable b0 icon.
-	 * numBlobs == 2, enable b0 and b1 icons. ... and so on.
-	 */ 
-
+	/// <summary>
+	/// Enable or disable blob icons based on the number of blobs owned.
+	/// If numBlobs == 1, then enable b0 ion. If numBlobs == 2, then enable 
+	/// b0 and b1 icons...and so on.
+	/// </summary>
 	public void ManageBlobButtons()
 	{
 		if (numBlobs == 1) {
@@ -227,11 +225,10 @@ public class UserProfileCtrl : MonoBehaviour
 			b3.enabled = false;
 		}
 	}
-
-	/*
-	 * Erase values saved in PlayerPrefs at log out.
-	 */
-
+		
+	/// <summary>
+	/// Erase values saved in PlayerPrefs when user clicks Log Out button.
+	/// </summary>
 	public void LogOutButtonClick()
 	{
 		playerPreferences.ResetNumBlobs ();

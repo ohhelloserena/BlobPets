@@ -75,11 +75,10 @@ public class NewUser : MonoBehaviour
 	}
 
 
-	/*
-	 * Sends post request to create new user if name, email, and 
-	 * password are valid.
-	 */
-
+	/// <summary>
+	/// Sends POST request to create new user if name, email, and password
+	/// are valid.
+	/// </summary>
 	private void CreateUser ()
 	{
 		if (validName && validEmail && validPW) {

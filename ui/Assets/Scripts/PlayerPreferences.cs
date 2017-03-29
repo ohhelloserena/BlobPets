@@ -9,8 +9,14 @@ using UnityEngine;
 public class PlayerPreferences : MonoBehaviour {
 	
 	public string requestedBlobKey = "RequestedBlobId";	// stores the blob ID of the selected blob
+
 	public string userKey = "UserId";	// stores the user ID for the logged in user
+	public string emailKey = "Email";
+	public string pwKey = "Password";
+
 	public string numKey = "numBlobs";	// stores the number of blobs owned by logged in user
+
+
 	public string alertKey0 = "AlertForBlob0";
 	public string alertKey1 = "AlertForBlob1";
 	public string alertKey2 = "AlertForBlob2";
@@ -29,10 +35,11 @@ public class PlayerPreferences : MonoBehaviour {
 			return false;
 		}
 	}
-
+		
 	/*
 	 * Sets string value for key = "UserId".
 	 */
+
 
 	public void SetUser(int id)
 	{
@@ -62,12 +69,76 @@ public class PlayerPreferences : MonoBehaviour {
 		PlayerPrefs.SetInt (userKey, -1);
 		PlayerPrefs.Save ();
 	}
-		
 
-	/*
-	 * Sets int value for key = "numBlobs".
-	 */
+	/// <summary>
+	/// Set string value for key = emailKey.
+	/// </summary>
+	/// <param name="email">The user's email address. </param>
+	public void SetEmail(string email)
+	{
+		PlayerPrefs.SetString (emailKey, email);
+		PlayerPrefs.Save ();
+	}
 
+	/// <summary>
+	/// Returns string value for key = emailKey.
+	/// </summary>
+	/// <returns>The email.</returns>
+	public string GetEmail() 
+	{
+		if (HasKey (emailKey)) {
+			return PlayerPrefs.GetString (emailKey);
+		} else {
+			return "invalid";
+		}
+	}
+
+	/// <summary>
+	/// Resets string value for key = emailKey.
+	/// </summary>
+	public void ResetEmail()
+	{
+		PlayerPrefs.SetString (emailKey, " ");
+		PlayerPrefs.Save ();
+	}
+
+	/// <summary>
+	/// Sets the password.
+	/// </summary>
+	/// <param name="pw">The user's password.</param>
+	public void SetPassword (string pw)
+	{
+		PlayerPrefs.SetString (pwKey, pw);
+		PlayerPrefs.Save ();
+	}
+
+	/// <summary>
+	/// Gets the password.
+	/// </summary>
+	/// <returns>The password.</returns>
+	public string GetPassword()
+	{
+		if (HasKey (pwKey)) {
+		 return PlayerPrefs.GetString (pwKey);
+		} else {
+			return "invalid";
+		}
+	}
+
+	/// <summary>
+	/// Resets the password.
+	/// </summary>
+	public void ResetPassword()
+	{
+		PlayerPrefs.SetString (pwKey, " ");
+		PlayerPrefs.Save ();
+	}
+
+
+	/// <summary>
+	/// Sets int value for key = numBlobs.
+	/// </summary>
+	/// <param name="num">The number of blobs. </param>
 	public void SetNumBlobs(int num)
 	{
 			PlayerPrefs.SetInt (numKey, num);
