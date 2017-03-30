@@ -232,9 +232,12 @@ class BlobController extends Controller
                 // check that user does not have the max number of blobs
                 if ($numBlobs < $maxNumBlobs){
 
+                    $parentBlob1Color = Blob::find($parentBlob1)->color;
+                    $parentBlob2Color = Blob::find($parentBlob2)->color;
+
                     $blobName = 'Juvenile Blob';
                     $blobType = 'A';
-                    $blobColor = 'red';
+                    $blobColor = mixColor($parentBlob1Color, $parentBlob2Color);
                     $blob = Blob::create(array('name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor));
                     $id = $blob->id;
 
