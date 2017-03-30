@@ -304,14 +304,23 @@ class BlobTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Invalid blob id', $response_json->error);
 
+        $this->refreshApplication();
+        $response = $this->call('POST','/api/blobs', ['id1' => 2, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Invalid blob id', $response_json->error);
+
+        $this->refreshApplication();
         $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
 
+        $this->refreshApplication();
         $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
 
+        $this->refreshApplication();
         $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
