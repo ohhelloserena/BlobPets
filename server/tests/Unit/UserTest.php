@@ -256,6 +256,18 @@ class UserTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
+    public function testgetDefendHistory()
+    {
+        $response = $this->call('GET', '/api/users/1/defendHistory');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $response = $this->call('GET', '/api/users/-1/defendHistory');
+        $response_json = json_decode($response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals($response_json->error, 'User ID invalid');
+    }
+
 
 
 
