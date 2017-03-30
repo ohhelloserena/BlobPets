@@ -35,11 +35,13 @@ public class TokenCtrl : MonoBehaviour
 		
 	}
 
-	/*
-	 * Sends POST request to the API to get token for the 
-	 * user with the given email and password.
-	 */
 
+
+	/// <summary>
+	/// Sends the token request via POST request to API.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
 	public void SendTokenRequest (string email, string password)
 	{
 		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
@@ -47,12 +49,12 @@ public class TokenCtrl : MonoBehaviour
 		form.AddField ("email", email);
 		form.AddField ("password", password);
 		WWW www = new WWW (tokenUrl, form);
-		StartCoroutine (WaitForRequest (www));
+		StartCoroutine (WaitForTokenRequest (www));
 
 	
 	}
 
-	IEnumerator WaitForRequest (WWW www)
+	IEnumerator WaitForTokenRequest (WWW www)
 	{
 		yield return www;
 
@@ -65,7 +67,7 @@ public class TokenCtrl : MonoBehaviour
 			userExists = true;
 			Debug.Log("!!! USER EXISTS.");
 
-			ParseJson (N);
+			ParseTokenJson (N);
 
 
 		} else {
@@ -78,7 +80,7 @@ public class TokenCtrl : MonoBehaviour
 		}    
 	}
 
-	public void ParseJson(JSONNode data) 
+	public void ParseTokenJson(JSONNode data) 
 	{
 		token = data ["token"].Value;
 		Debug.Log ("Parsed, token is: " + token);

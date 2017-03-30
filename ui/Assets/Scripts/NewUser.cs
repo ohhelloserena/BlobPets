@@ -20,12 +20,14 @@ public class NewUser : MonoBehaviour
 	public InputFieldCtrl ifctrl;
 	public ValidInputsCtrl validInputsCtrl;
 	public ButtonCtrl buttonCtrl;
+	public PlayerPreferences playerPreferences;
 
 
 	public string username = "-1";
 	public string email = "-1";
 	public string password = "-1";
 	public int userId;
+	public string token;
 
 	public string url = "http://104.131.144.86/api/users/";
 
@@ -111,6 +113,8 @@ public class NewUser : MonoBehaviour
 	private void CallAPI ()
 	{
 		Debug.Log ("SENDING API CALL...");
+		Debug.Log (username + " " + email + " " + password);
+
 		WWWForm form = new WWWForm ();
 		form.AddField ("name", username);
 		form.AddField ("email", email);
@@ -121,9 +125,11 @@ public class NewUser : MonoBehaviour
 
 	IEnumerator GetUserInfo (WWW www)
 	{
+		//Debug.Log("Entering GetUserInfo()");
+			
 		yield return www;
 
-		result = JSON.Parse (www.text);
+		//Debug.Log("Entering GetUserInfo()....2");
 
 		// check for errors
 		if (www.error == null) {
@@ -131,16 +137,17 @@ public class NewUser : MonoBehaviour
 
 			userId = Convert.ToInt32 (www.text);
 
-			SaveUserInfo (username, email, password, userId);
+			//Debug.Log ("userId after parse: " + userId);
 
-			if (PlayerPrefs.HasKey ("UserId")) {
-				Debug.Log ("PLAYER PREF ID: " + PlayerPrefs.GetInt ("UserId"));
-			}
+			SaveUserInfo (email, password, userId);
+			SendTokenRequest (email, password);
 
-			//SceneManager.LoadScene ("UserProfileUI");
+
+			Invoke ("ChangeScene", 5);
 
 		} else {
 			Debug.Log ("WWW Error: " + www.error);
+			result = JSON.Parse (www.text);
 			errorMsg = ParseJson ("error");
 
 			if (errorMsg == emailServerError) {
@@ -152,15 +159,39 @@ public class NewUser : MonoBehaviour
 			}
 		} 
 	}
-		
+
+	/// <summary>
+	/// Go to UserProfileUI scene.
+	/// </summary>
+	public void ChangeScene()
+	{
+		SceneManager.LoadScene ("UserProfileUI");
+	}
+
 	private string ParseJson (string name)
 	{
 		return result [name].Value;
 	}
 
-	private void SaveUserInfo(string user, string emailAddr, string passwrd, int userid) 
+	/// <summary>
+	/// Parses the string value for the given JSONNode and ID.
+	/// </summary>
+	/// <returns>String value</returns>
+	/// <param name="id">Identifier.</param>
+	/// <param name="data">Data.</param>
+	public string ParseJson(string id, JSONNode data)
 	{
-		//PlayerPrefs.SetString("Name", user);
+		return data [id].Value;
+	}
+
+	private void SaveUserInfo(string emailAddr, string passwrd, int userid) 
+	{
+		/*
+		playerPreferences.SetEmail (emailAddr);
+		playerPreferences.SetPassword (passwrd);
+		playerPreferences.SetUser (userid);
+		*/
+
 		PlayerPrefs.SetString ("Email", emailAddr);
 		PlayerPrefs.SetString ("Password", passwrd);
 		PlayerPrefs.SetInt ("UserId", userid);
@@ -197,5 +228,93 @@ public class NewUser : MonoBehaviour
 		passwordPanel.gameObject.SetActive (false);
 	}
 
-	
+
+
+	/// <summary>
+	/// Sends the exercise request via POST request to API.
+	/// </summary>
+	public void SendExerciseRequest()
+	{
+		Debug.Log ("In SendExerciseRequest()...");
+
+		Debug.Log ("token: " + token);
+		Debug.Log ("userId: " + userId);
+
+		string exerciseUrl = "http://104.131.144.86/api/exercises";
+		WWWForm form = new WWWForm ();
+		//form.AddField ("owner_id", userId);
+		form.AddField ("token", token);
+		WWW www = new WWW (exerciseUrl, form);
+		StartCoroutine (WaitForExerciseRequest(www));
+	}
+
+	IEnumerator WaitForExerciseRequest(WWW www)
+	{
+		Debug.Log ("In WaitForExerciseRequest()...");
+
+		yield return www;
+
+		if (www.error == null) {
+			JSONNode N = JSON.Parse (www.text);
+			string eid = ParseJson ("ExerciseRecordID", N);
+			int exerciseId = Int32.Parse (eid);
+			playerPreferences.SetExercise (exerciseId);
+
+			Debug.Log ("ExerciseRecordID created + saved...EID: " + exerciseId);
+		} else {
+			Debug.Log ("Exercise WWW error: " + www.error);
+			JSONNode N = JSON.Parse (www.text);
+			Debug.Log("error message: " + ParseJson ("error", N));
+			//JSONNode N = JSON.Parse (www.text);
+			//Debug.Log("Exercise API error: " + ParseJson ("error", N));
+		}
+	}
+
+	/// <summary>
+	/// Sends the token request via POST request to API.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
+	public void SendTokenRequest (string email, string password)
+	{
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForTokenRequest (www));
+
+
+	}
+
+	IEnumerator WaitForTokenRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+
+
+			JSONNode N = JSON.Parse (www.text);
+		
+			Debug.Log("USER EXISTS, TOKEN SUCCESSFUL");
+
+			token = ParseJson ("token", N);
+			SendExerciseRequest ();
+
+
+		} else {
+			Debug.Log ("***WWW Error: " + www.error);
+
+			Debug.Log("!!! USER DOESN'T EXIST.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+	}
+
+
+
 }
+
+

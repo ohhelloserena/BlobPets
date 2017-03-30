@@ -10,6 +10,9 @@ public class GPSCtrl : MonoBehaviour
 	public Text distance_label;
 	public GameObject distanceObject;
 
+	public Text end;
+	public GameObject endObject;
+
 
 	public double long1 = 0;
 	public double lat1 = 0;
@@ -25,8 +28,10 @@ public class GPSCtrl : MonoBehaviour
 	void Start ()
 	{
 		distance_label = distanceObject.GetComponent<Text> ();
+		end = endObject.GetComponent<Text> ();
 
 		distance_label.text = " ";
+		end.text = " ";
 
 	}
 
@@ -38,7 +43,7 @@ public class GPSCtrl : MonoBehaviour
 	/// </summary>
 	public void StartButtonClicked ()
 	{
-		Debug.Log ("Start button clicked...");
+		distance_label.text = "You and your blobs have walked " + Math.Round (distanceWalked, 2) + " km so far on this trip.";
 		StartCoroutine (StartLocationService ());
 	}
 
@@ -47,9 +52,8 @@ public class GPSCtrl : MonoBehaviour
 	/// </summary>
 	public void StopButtonClicked ()
 	{
-		Debug.Log ("Stop button clicked...");
 		Input.location.Stop ();
-		distance_label.text = "You've completed your trip. Good job! You walked your blobs " + Math.Round (distanceWalked, 2) + " km on this trip. This will be added to your exercise record.";
+		end.text = "You've ended your trip. Good job! " + Math.Round (distanceWalked, 2) + " will be added to your exercise record.";
 	}
 		
 
@@ -61,8 +65,7 @@ public class GPSCtrl : MonoBehaviour
 		// First, check if user has location service enabled
 		if (!Input.location.isEnabledByUser)
 			//yield break;
-			distance_label.text = "Not initialized";
-
+			distance_label.text = "Your phone's location setting is turned off. Go to your phone's Settings -> Location to turn on this service.";
 		// Start service before querying location
 		Input.location.Start (5f, 5f);	// accuracy = 5m, update frequency = 5m
 

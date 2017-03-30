@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\BreedCtrl.cs" />
      <Compile Include="Assets\Scripts\ButtonCtrl.cs" />
+     <Compile Include="Assets\Scripts\DashboardCtrl.cs" />
      <Compile Include="Assets\Scripts\EditCtrl.cs" />
      <Compile Include="Assets\Scripts\EmptyClass.cs" />
      <Compile Include="Assets\Scripts\ExerciseCtrl.cs" />

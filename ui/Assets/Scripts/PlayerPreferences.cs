@@ -13,6 +13,7 @@ public class PlayerPreferences : MonoBehaviour {
 	public string userKey = "UserId";	// stores the user ID for the logged in user
 	public string emailKey = "Email";
 	public string pwKey = "Password";
+	public string exerciseKey = "ExerciseRecordId";
 
 	public string numKey = "numBlobs";	// stores the number of blobs owned by logged in user
 
@@ -166,6 +167,32 @@ public class PlayerPreferences : MonoBehaviour {
 		PlayerPrefs.SetInt (numKey, 0);
 		PlayerPrefs.Save ();
 	}
+
+	/// <summary>
+	/// Sets the exericse record ID for the user.
+	/// </summary>
+	/// <param name="id">Exercise record ID.</param>
+	public void SetExercise(int id)
+	{
+		PlayerPrefs.SetInt (exerciseKey, id);
+		PlayerPrefs.Save ();
+	}
+
+	public int GetExercise()
+	{
+		if (HasKey (exerciseKey)) {
+			return PlayerPrefs.GetInt (exerciseKey);
+		} else {
+			return -1;
+		}
+	}
+
+	public void ResetExercise()
+	{
+		PlayerPrefs.SetInt (exerciseKey, -1);
+		PlayerPrefs.Save ();
+	}
+			
 
 	/*
 	 * Sets string value for key = "RequestedBlobId".

@@ -39,8 +39,16 @@ public class EditCtrl : MonoBehaviour
 	public ValidInputsCtrl validInputsCtrl;
 	public TokenCtrl tokenCtrl;
 
+	public Text invalid_name;
+	public Text invalid_password;
+	public GameObject nameObject;
+	public GameObject passwordObject;
+
 	public void Start ()
 	{
+		invalid_name = nameObject.GetComponent<Text> ();
+		invalid_password = passwordObject.GetComponent<Text> ();
+
 		Debug.Log ("EditCtrl start");
 
 		if (PlayerPrefs.HasKey (emailKey)) {
@@ -188,6 +196,15 @@ public class EditCtrl : MonoBehaviour
 
 		if (!isPWEmpty && isPWValid) {
 			pwChangeRequested = true;
+		}
+
+		if (!isNameEmpty && !isNameValid) {
+			invalid_name.text = "New name is invalid. Please select a name that's 1-25 characters long.";
+		}
+			
+		if (!isPWEmpty && !isPWValid) {
+			invalid_password.text = "New password is invalid. Please select a password with at least 6 characters and no spaces.";
+	
 		}
 	}
 		

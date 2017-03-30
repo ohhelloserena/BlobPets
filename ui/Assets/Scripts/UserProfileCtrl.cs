@@ -81,6 +81,8 @@ public class UserProfileCtrl : MonoBehaviour
 
 		userId = playerPreferences.GetUser ();
 
+
+
 		CallAPI ();
 	}
 		
@@ -198,6 +200,8 @@ public class UserProfileCtrl : MonoBehaviour
 	/// </summary>
 	public void ManageBlobButtons()
 	{
+		Debug.Log ("Exercise... " + playerPreferences.GetExercise ());
+
 		if (numBlobs == 1) {
 			b0.enabled = true;
 			b1.enabled = false;
