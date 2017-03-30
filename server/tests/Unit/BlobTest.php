@@ -288,31 +288,31 @@ class BlobTest extends TestCase
 
     public function testBreedBlob(){
 
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . "token"]);
+        $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . "token"]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals('The token could not be parsed from the request', $response_json->error);
 
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['id1' => 1], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Did not have all required inputs', $response_json->error);
 
         $this->refreshApplication();
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => -1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['id1' => -1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Invalid blob id', $response_json->error);
 
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
 
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
 
-        $response = $this->call('POST','/api/blobs/breed', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
+        $response = $this->call('POST','/api/blobs', ['id1' => 1, 'id2' => 5], [], [], ['HTTP_Authorization' => 'Bearer' . $this->user_token]);
         $response_json = json_decode($response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('User has max number of blobs', $response_json->error);
