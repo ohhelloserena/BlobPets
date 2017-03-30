@@ -12,7 +12,7 @@ class BlobController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getTopBlobs', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'breedBlob', 'deleteBlob']]);
+        $this->middleware('jwt.auth', ['except' => ['getAllBlobs', 'getBlob', 'getBlobUpdatedAt', 'updateBlob', 'createBlob', 'breedBlob', 'deleteBlob']]);
     }
 
     // return a list of all the blobs in the database

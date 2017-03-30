@@ -18,7 +18,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt.auth', ['except' => ['authenticate', 'getUsers', 'getUser', 'getUserBlobs', 'getDefendHistory', 'createUser', 'getTopPlayers']]);
+        $this->middleware('jwt.auth', ['except' => ['authenticate', 'getUsers', 'getUser', 'getUserBlobs', 'getDefendHistory', 'createUser']]);
     }
 
     /**
