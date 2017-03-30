@@ -21,7 +21,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'users'], function()
 {
 	Route::get('/', 'UserController@getUsers');	// return list of all users or a list of users filtered by lat long
-    Route::get('/getTopUsers', 'UserController@getTopPlayers'); //returns a list of 10 players with the highest battles won
 	Route::get('/{id}', 'UserController@getUser');	// return user with user id
 	Route::get('/{id}/blobs', 'UserController@getUserBlobs');	// return list of all blobs owned by user with user id
     Route::get('/{id}/defendHistory', 'UserController@getDefendHistory');   // return list of all defend history by user with user id
@@ -41,7 +40,6 @@ Route::group(['prefix' => 'blobs'], function()
 {
 	Route::get('/', 'BlobController@getAllBlobs');	// return list of all blobs
     Route::post('/', 'BlobController@createBlob'); // creates a blob
-	Route::get('/getTopBlobs', 'BlobController@getTopBlobs');	// return blob with blob id
 	Route::get('/{id}', 'BlobController@getBlob');	// return blob with blob id
 	Route::put('/{id}', 'BlobController@updateBlob');	// update blob's name or level attributes
     Route::delete('/{id}', 'BlobController@deleteBlob'); // deletes a blob
@@ -57,13 +55,13 @@ Route::group(['prefix' => 'exercises'], function()
 });
 
 Route::group(['prefix' => 'battles'], function(){
-    Route::post('/', 'BattleController@createBattleRecord');
-    Route::get('/', 'BattleController@getBattleRecords');
-    Route::get('/{id}', 'BattleController@getBattleRecord');
+    Route::post('/', 'BattleController@createBattleRecord'); //Creates a battle record given two valid blob ids
+    Route::get('/', 'BattleController@getBattleRecords'); //Gets the battle records for a user given a user id
+    Route::get('/{id}', 'BattleController@getBattleRecord'); //Gets a specific battle record
 });
 
 Route::group(['prefix' => 'dashboards'], function(){
-    Route::get('/', 'DashboardController@getDashboard');
+    Route::get('/', 'DashboardController@getDashboard'); //Gets a list of top blobs and/or users depending on type given
 });
 
 /*
