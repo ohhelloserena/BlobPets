@@ -122,50 +122,50 @@ class BlobController extends Controller
     }
 
 
-    public function breedBlob(Request $request)
-    {
-        $maxNumBlobs = 4;
-        $expected = array('id1', 'id2');
-        // check for correct number of inputs
-        if ($request->exists($expected)) {
-            $parentBlob1 = $request->input('id1');
-            $parentBlob2 = $request->input('id2');
+    // public function breedBlob(Request $request)
+    // {
+    //     $maxNumBlobs = 4;
+    //     $expected = array('id1', 'id2');
+    //     // check for correct number of inputs
+    //     if ($request->exists($expected)) {
+    //         $parentBlob1 = $request->input('id1');
+    //         $parentBlob2 = $request->input('id2');
 
-            // check if owner is valid
-            $ret = $this->verifyUser();
-            if (is_int($ret)) {
+    //         // check if owner is valid
+    //         $ret = $this->verifyUser();
+    //         if (is_int($ret)) {
 
-                if (empty(Blob::find($parentBlob1)) || empty(Blob::find($parentBlob2)) || Blob::find($parentBlob1)->owner_id != $ret || Blob::find($parentBlob2)->owner_id != $ret) {
-                    return response()->json(['error' => 'Invalid blob id'], 400);
-                }
+    //             if (empty(Blob::find($parentBlob1)) || empty(Blob::find($parentBlob2)) || Blob::find($parentBlob1)->owner_id != $ret || Blob::find($parentBlob2)->owner_id != $ret) {
+    //                 return response()->json(['error' => 'Invalid blob id'], 400);
+    //             }
 
-                $user = $ret;
-                $numBlobs = Blob::where('owner_id', $user)->count();
+    //             $user = $ret;
+    //             $numBlobs = Blob::where('owner_id', $user)->count();
 
-                // check that user does not have the max number of blobs
-                if ($numBlobs < $maxNumBlobs){
+    //             // check that user does not have the max number of blobs
+    //             if ($numBlobs < $maxNumBlobs){
 
-                    $blobName = 'Juvenile Blob';
-                    $blobType = 'A';
-                    $blobColor = 'red';
-                    $blob = Blob::create(array('name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor));
-                    $id = $blob->id;
+    //                 $blobName = 'Juvenile Blob';
+    //                 $blobType = 'A';
+    //                 $blobColor = 'red';
+    //                 $blob = Blob::create(array('name' => $blobName, 'type' => 'type ' .$blobType, 'owner_id' => $user, 'color' => $blobColor));
+    //                 $id = $blob->id;
 
-                    return response()->json(['blobID' => $id], 201);
+    //                 return response()->json(['blobID' => $id], 201);
 
-                }
-                else{
-                    return response()->json(['error' => 'User has max number of blobs'], 400);
-                }
-            }
-            else {
-                return $ret;
-            }
-        } else {
-            return response()->json(['error' => 'Did not have all required inputs'], 400);
-        }
+    //             }
+    //             else{
+    //                 return response()->json(['error' => 'User has max number of blobs'], 400);
+    //             }
+    //         }
+    //         else {
+    //             return $ret;
+    //         }
+    //     } else {
+    //         return response()->json(['error' => 'Did not have all required inputs'], 400);
+    //     }
 
-    }
+    // }
 
 
     /**
