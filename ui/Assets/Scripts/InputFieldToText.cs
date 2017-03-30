@@ -17,10 +17,27 @@ public class InputFieldToText : MonoBehaviour {
 	//	}
 	public string blobName = "";
 
-	public InputField Field;
+	public InputField blobNameField;
 	public Text TextBox;
 
-	public string url = "http://104.131.144.86/api/users/";
+	// Use this for initialization
+	void Start () {
+
+	}
+
+	public string getBlobName()
+	{
+		return blobName;
+	}
+		
+	public void setBlobName (string inputField)
+	{
+
+		blobName = name;
+		Debug.Log ("Name: " + blobName);
+	}
+
+//	public string url = "http://104.131.144.86/api/users/";
 
 	//	public void setName() {
 	//		blobName = TextBox.text;
@@ -28,23 +45,23 @@ public class InputFieldToText : MonoBehaviour {
 	//	}
 
 	// POST request
-	public void CreateBlob () {
-		blobName = TextBox.text;
-		Debug.Log ("blobname: " + blobName);
-		StartCoroutine (BlobPost ());
-	}
-
-	IEnumerator BlobPost () {
-		WWWForm form = new WWWForm();
-		form.AddField("name", blobName);
-		UnityWebRequest www = UnityWebRequest.Post(url, form);
-		yield return www.Send();
-
-		if(www.isError) {
-			Debug.Log(www.error);
-		}
-		else {
-			Debug.Log("Form upload complete!");
-		}
-	}
+//	public void CreateBlob () {
+//		blobName = TextBox.text;
+//		Debug.Log ("blobname: " + blobName);
+//		StartCoroutine (BlobPost ());
+//	}
+//
+//	IEnumerator BlobPost () {
+//		WWWForm form = new WWWForm();
+//		form.AddField("name", blobName);
+//		UnityWebRequest www = UnityWebRequest.Post(url, form);
+//		yield return www.Send();
+//
+//		if(www.isError) {
+//			Debug.Log(www.error);
+//		}
+//		else {
+//			Debug.Log("Form upload complete!");
+//		}
+//	}
 }
