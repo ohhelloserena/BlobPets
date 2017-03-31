@@ -1,3 +1,3 @@
 # Blob-Pets
 
-Ignore client/Blob Pets folder.
+Please disregard the client/Blob Pets folder.
