@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->decimal('latitude',10,7)->default(0);
             $table->decimal('longitude',10,7)->default(0);
             $table->integer('battles_won')->unsigned()->default(0);
+            $table->integer('er_id')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
