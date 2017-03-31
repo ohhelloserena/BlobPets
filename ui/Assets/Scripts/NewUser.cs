@@ -228,6 +228,43 @@ public class NewUser : MonoBehaviour
 		passwordPanel.gameObject.SetActive (false);
 	}
 
+	/// <summary>
+	/// Sends the token request via POST request to API.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
+	public void SendTokenRequest (string email, string password)
+	{
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForTokenRequest (www));
+	}
+
+	IEnumerator WaitForTokenRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+			JSONNode N = JSON.Parse (www.text);
+
+			Debug.Log("USER EXISTS, TOKEN SUCCESSFUL");
+
+			token = ParseJson ("token", N);
+
+			//SendExerciseRequest ();
+		} else {
+			Debug.Log ("***WWW Error: " + www.error);
+
+			Debug.Log("!!! USER DOESN'T EXIST.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+	}
 
 
 	/// <summary>
@@ -235,17 +272,21 @@ public class NewUser : MonoBehaviour
 	/// </summary>
 	public void SendExerciseRequest()
 	{
+
+
+
 		Debug.Log ("In SendExerciseRequest()...");
 
 		Debug.Log ("token: " + token);
-		Debug.Log ("userId: " + userId);
 
 		string exerciseUrl = "http://104.131.144.86/api/exercises";
+
 		WWWForm form = new WWWForm ();
-		//form.AddField ("owner_id", userId);
 		form.AddField ("token", token);
 		WWW www = new WWW (exerciseUrl, form);
+
 		StartCoroutine (WaitForExerciseRequest(www));
+
 	}
 
 	IEnumerator WaitForExerciseRequest(WWW www)
@@ -270,48 +311,7 @@ public class NewUser : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// Sends the token request via POST request to API.
-	/// </summary>
-	/// <param name="email">Email.</param>
-	/// <param name="password">Password.</param>
-	public void SendTokenRequest (string email, string password)
-	{
-		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
-		WWWForm form = new WWWForm ();
-		form.AddField ("email", email);
-		form.AddField ("password", password);
-		WWW www = new WWW (tokenUrl, form);
-		StartCoroutine (WaitForTokenRequest (www));
 
-
-	}
-
-	IEnumerator WaitForTokenRequest (WWW www)
-	{
-		yield return www;
-
-		// check for errors
-		if (www.error == null) {
-
-
-			JSONNode N = JSON.Parse (www.text);
-		
-			Debug.Log("USER EXISTS, TOKEN SUCCESSFUL");
-
-			token = ParseJson ("token", N);
-			SendExerciseRequest ();
-
-
-		} else {
-			Debug.Log ("***WWW Error: " + www.error);
-
-			Debug.Log("!!! USER DOESN'T EXIST.");
-			if (www.error == "400 Bad Request") {
-				// alert for duplicate email address
-			}
-		}    
-	}
 
 
 

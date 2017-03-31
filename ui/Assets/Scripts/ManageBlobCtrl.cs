@@ -47,7 +47,7 @@ public class ManageBlobCtrl : MonoBehaviour {
 			addBtn.enabled = false;
 		}
 
-		if (numBlobs < MAX_BLOBS && numBlobs > 2) {
+		if (numBlobs < MAX_BLOBS && numBlobs >= 2) {
 			// enable breed button
 			Debug.Log("Breed button enabled...");
 			breedBtn.enabled = true;

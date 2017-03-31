@@ -7,6 +7,7 @@ using System;
 //using UnityEngine.VR.WSA.WebCam;
 using System.Runtime.Remoting;
 using System.ComponentModel;
+using UnityEngine.SceneManagement;
 
 public class BreedCtrl : MonoBehaviour
 {
@@ -124,6 +125,10 @@ public class BreedCtrl : MonoBehaviour
 		if (PlayerPrefs.HasKey (passwordPPKey)) {
 			password = PlayerPrefs.GetString (passwordPPKey);
 		}
+
+		Debug.Log (userId);
+		Debug.Log (email);
+		Debug.Log (password);
 	
 	}
 
@@ -307,13 +312,15 @@ public class BreedCtrl : MonoBehaviour
 		}
 	}
 
-	/*
-	 * Sends POST request to the API to get token for the 
-	 * user with the given email and password.
-	 */
-
+	/// <summary>
+	/// Sends the token request.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
 	public void SendTokenRequest (string email, string password)
 	{
+		Debug.Log ("In token request...");
+
 		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
 		WWWForm form = new WWWForm ();
 		form.AddField ("email", email);
@@ -379,17 +386,21 @@ public class BreedCtrl : MonoBehaviour
 
 	public void CallBreedAPI ()
 	{
-		Debug.Log ("Entering CallBreedAPI()...");
-		Debug.Log ("id1: " + id1);
-		Debug.Log ("id2: " + id2);
-		Debug.Log ("token: " + token);
+		string test_id1 = "1";
+		string test_id2 = "5";
+		string test_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEwNC4xMzEuMTQ0Ljg2XC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0OTA4OTk0NDEsImV4cCI6MTQ5MDkwMzA0MSwibmJmIjoxNDkwODk5NDQxLCJqdGkiOiIzZDc3ZDk5ODk5MGE5YTM4MTRjZGE5NzgwZDM3ZDY4OSJ9.5ehhlR1stVZynGG470M9pyHdwlW1Ih8aUXwAMVPTKUg";
 
-		string breedUrl = "http://104.131.144.86/api/blobs/breed";
+		Debug.Log ("Entering CallBreedAPI()...");
+		Debug.Log ("test_id1: " + test_id1);
+		Debug.Log ("test_id2: " + test_id2);
+		Debug.Log ("test_token: " + test_token);
+
+		string breedUrl = "http://104.131.144.86/api/blobs";
 
 		WWWForm form = new WWWForm ();
-		form.AddField ("id1", id1);
-		form.AddField ("id2", id2);
-		form.AddField ("token", token);
+		form.AddField ("id1", test_id1);
+		form.AddField ("id2", test_id1);
+		form.AddField ("token", test_token);
 		WWW www = new WWW (breedUrl, form);
 
 		StartCoroutine (WaitForRequest2 (www));
@@ -403,6 +414,7 @@ public class BreedCtrl : MonoBehaviour
 
 		if (www.error == null) {
 			ParseNewBlobJson (N);
+			SceneManager.LoadScene ("BreedNameChange");
 		} else {
 			string err = N ["error"].Value;
 

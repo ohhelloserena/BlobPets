@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using SimpleJSON;
 
 public class GPSCtrl : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class GPSCtrl : MonoBehaviour
 	public double currLat;
 
 	public double distanceWalked = 0;
+
+	public string token;
 
 	void Start ()
 	{
@@ -152,6 +155,55 @@ public class GPSCtrl : MonoBehaviour
 
 		return d;
 	}
+
+	/// <summary>
+	/// Sends the token request.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
+	public void SendTokenRequest (string email, string password)
+	{
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForRequest (www));
+	}
+
+	IEnumerator WaitForRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+			JSONNode N = JSON.Parse (www.text);
+			Debug.Log ("User exists.");
+
+			ParseTokenJson (N);
+			//StartCoroutine (UpdateExerciseRecord());
+
+		} else {
+			Debug.Log ("Token WWW Error: " + www.error);
+
+			Debug.Log ("User doesn't exist.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+	}
+
+	public void ParseTokenJson (JSONNode data)
+	{
+		token = data ["token"].Value;
+		//Debug.Log ("Parsed, token is: " + token);
+	}
+
+	/// <summary>
+	/// Update exercise distance in API via PUT request.
+	/// </summary>
+	/// /*
+
 
 
 
