@@ -24,6 +24,10 @@ public class UserProfileCtrl : MonoBehaviour
 	public string blobName2;
 	public string blobName3;
 
+	public string blobColor0;
+	public string blobColor1;
+	public string blobColor2;
+	public string blobColor3;
 
 	public string blobId0;
 	public string blobId1;
@@ -46,6 +50,23 @@ public class UserProfileCtrl : MonoBehaviour
 	public Button b1;
 	public Button b2;
 	public Button b3;
+
+	public Image img0;
+	public Image img1;
+	public Image img2;
+	public Image img3;
+
+	public Sprite blueBlob;
+	public Sprite orangeBlob;
+	public Sprite greenBlob;
+	public Sprite pinkBlob;
+	public Sprite lockIcon;
+
+	public GameObject imageGO0;
+	public GameObject imageGO1;
+	public GameObject imageGO2;
+	public GameObject imageGO3;
+
 
 	public GameObject nameGameObject;
 	public GameObject winsGameObject;
@@ -71,15 +92,23 @@ public class UserProfileCtrl : MonoBehaviour
 		blobCountLabel = blobCountGameObject.GetComponent<Text> ();
 		exercise = exerciseGameObject.GetComponent<Text> ();
 
+		// blob names text labels
 		blob0_label = blob0_GameObject.GetComponent<Text> ();
 		blob1_label = blob1_GameObject.GetComponent<Text> ();
 		blob2_label = blob2_GameObject.GetComponent<Text> ();
 		blob3_label = blob3_GameObject.GetComponent<Text> ();
 
+		// blob icon buttons
 		b0 = b0GO.GetComponent<Button> ();
 		b1 = b1GO.GetComponent<Button> ();
 		b2 = b2GO.GetComponent<Button> ();
 		b3 = b3GO.GetComponent<Button> ();
+
+		// blob icon images
+		img0 = imageGO0.GetComponent<Image> ();
+		img1 = imageGO1.GetComponent<Image> ();
+		img2 = imageGO2.GetComponent<Image> ();
+		img3 = imageGO3.GetComponent<Image> ();
 
 		// Reset RequestedBlobId
 		playerPreferences.ResetRequestedBlob ();
@@ -137,6 +166,12 @@ public class UserProfileCtrl : MonoBehaviour
 		blobId2 = result ["blobs"] [2] ["id"].Value;
 		blobId3 = result ["blobs"] [3] ["id"].Value;
 
+		// set blob colors
+		blobColor0 = result ["blobs"] [0] ["color"].Value;
+		blobColor1 = result ["blobs"] [1] ["color"].Value;
+		blobColor2 = result ["blobs"] [2] ["color"].Value;
+		blobColor3 = result ["blobs"] [3] ["color"].Value;
+
 		// set exercise level
 		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
 	}
@@ -160,27 +195,36 @@ public class UserProfileCtrl : MonoBehaviour
 	public void SetBlobNames ()
 	{
 		if (String.IsNullOrEmpty (blobName0)) {
-			blob0_label.text = "Locked!";
+			blob0_label.text = " ";
+			img0.sprite = lockIcon;
 		} else {
 			blob0_label.text = blobName0;
+			PrintBlobImage (blobColor0, 0);
+
 		}
 
 		if (String.IsNullOrEmpty (blobName1)) {
-			blob1_label.text = "Locked!";
+			blob1_label.text = " ";
+			img1.sprite = lockIcon;
 		} else {
 			blob1_label.text = blobName1;
+			PrintBlobImage (blobColor1, 1);
 		}
 
 		if (String.IsNullOrEmpty (blobName2)) {
-			blob2_label.text = "Locked!";
+			blob2_label.text = " ";
+			img2.sprite = lockIcon;
 		} else {
 			blob2_label.text = blobName2;
+			PrintBlobImage (blobColor2, 2);
 		}
 
 		if (String.IsNullOrEmpty (blobName3)) {
-			blob3_label.text = "Locked!";
+			blob3_label.text = " ";
+			img3.sprite = lockIcon;
 		} else {
 			blob3_label.text = blobName3;
+			PrintBlobImage (blobColor3, 3);
 		}
 	}
 		
@@ -216,21 +260,25 @@ public class UserProfileCtrl : MonoBehaviour
 			b1.enabled = false;
 			b2.enabled = false;
 			b3.enabled = false;
+
 		} else if (numBlobs == 2) {
 			b0.enabled = true;
 			b1.enabled = true;
 			b2.enabled = false;
 			b3.enabled = false;
+
 		} else if (numBlobs == 3) {
 			b0.enabled = true;
 			b1.enabled = true;
 			b2.enabled = true;
 			b3.enabled = false;
+
 		} else if (numBlobs == 4) {
 			b0.enabled = true;
 			b1.enabled = true;
 			b2.enabled = true;
 			b3.enabled = true;
+
 		} else {
 			b0.enabled = false;
 			b1.enabled = false;
@@ -240,49 +288,53 @@ public class UserProfileCtrl : MonoBehaviour
 	}
 
 
-	/// <summary>
-	/// Sends GET request to get blob information.
-	/// </summary>
-	/// <param name="blobId">Blob ID</param>
-	public void SendGetBlobCall(string blobId)
+	public void PrintBlobImage(string blobColor, int imageNumber)
 	{
-		string url = "http://www.google.com";
+		if (imageNumber == 0) {
+			if (blobColor == "orange") {
+				img0.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img0.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img0.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img0.sprite = blueBlob;
+			}
 
-		WWW www = new WWW(url);
-		StartCoroutine (WaitForGetBlobRequest(www));
-	}
+		} else if (imageNumber == 1) {
+			if (blobColor == "orange") {
+				img1.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img1.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img1.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img1.sprite = blueBlob;
+			}
+		
+		} else if (imageNumber == 2) {
+			if (blobColor == "orange") {
+				img2.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img2.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img2.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img2.sprite = blueBlob;
+			}
 
-	IEnumerator WaitForGetBlobRequest(WWW www)
-	{
-		yield return www;
-
-		if (www.error == null) {
-			JSONNode data = JSON.Parse (www.text);
-			string blobColor = ParseBlobJson (data);
-			PrintBlobImage (blobColor);
-
-		} else {
-
+		} else if (imageNumber == 3) {
+			if (blobColor == "orange") {
+				img3.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img3.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img3.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img3.sprite = blueBlob;
+			}
 		}
-
-	}
-
-	public string ParseBlobJson(JSONNode data)
-	{
-		return data ["color"].Value;
-	}
-
-	public void PrintBlobImage(string blobColor)
-	{
-		if (blobColor == "orange") {
-
-		} else if (blobColor == "pink") {
-
-		} else if (blobColor == "green") {
-
-		} else if (blobColor == "blue") {
-
-		}
+		
 	}
 		
 	/// <summary>
