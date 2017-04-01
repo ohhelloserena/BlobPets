@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\ExerciseRecord;
+use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -36,6 +37,9 @@ class ExerciseController extends Controller
                 // Create and return RecordID
                 $record = ExerciseRecord::create(array('owner_id' => $user));
                 $id = $record->id;
+                $user = User::where('id', $user)->first();
+                $user->er_id = $id;
+                $user->save();
                 return response()->json(['ExerciseRecordID' => $id], 201);
             }
             else{

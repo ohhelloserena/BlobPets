@@ -10,6 +10,7 @@ namespace tests\Unit;
 
 use App\ExerciseRecord;
 use App\Http\Controllers\BlobController;
+use App\Http\Controllers\UserController;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Http\Controllers\ExerciseController;
@@ -56,6 +57,10 @@ class ExerciseTest extends TestCase
         $response_json = json_decode($response->getContent());
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals($response_json->ExerciseRecordID, 3);
+
+        $uc = new UserController();
+        $user = $uc->getUser(4);
+        $this->assertEquals($response_json->ExerciseRecordID, $user->er_id);
 
         //Try to create record again
         $this->refreshApplication();
