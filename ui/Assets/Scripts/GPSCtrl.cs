@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using SimpleJSON;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class GPSCtrl : MonoBehaviour
 {
+	public PlayerPreferences pp;
 
 	public Text distance_label;
 	public GameObject distanceObject;
@@ -30,6 +33,7 @@ public class GPSCtrl : MonoBehaviour
 
 	void Start ()
 	{
+		
 		distance_label = distanceObject.GetComponent<Text> ();
 		end = endObject.GetComponent<Text> ();
 
@@ -37,8 +41,6 @@ public class GPSCtrl : MonoBehaviour
 		end.text = " ";
 
 	}
-
-
 
 
 	/// <summary>
@@ -55,10 +57,19 @@ public class GPSCtrl : MonoBehaviour
 	/// </summary>
 	public void StopButtonClicked ()
 	{
+		double roundedDistance = RoundDistanceWalked ();
 		Input.location.Stop ();
-		end.text = "You've ended your trip. Good job! " + Math.Round (distanceWalked, 2) + " will be added to your exercise record.";
+		end.text = "You've ended your trip. Good job! " + roundedDistance + " km will be added to your exercise record.";
+
+
+		//StartCoroutine(UpdateExerciseRecord (eid, roundedDistance));
+		string email = pp.GetEmail ();
+		string password = pp.GetPassword ();
+		SendTokenRequest (email, password);
 	}
-		
+
+
+
 
 	/// <summary>
 	/// Starts the location service.
@@ -105,7 +116,7 @@ public class GPSCtrl : MonoBehaviour
 	/// <summary>
 	/// Gets the current location.
 	/// </summary>
-	public void GetCurrentLocation()
+	public void GetCurrentLocation ()
 	{
 
 		if (Input.location.status == LocationServiceStatus.Running) {
@@ -117,12 +128,13 @@ public class GPSCtrl : MonoBehaviour
 	/// <summary>
 	/// Calculates distance traveled by user. Sets current geo coordinates as the original geo coordinates.
 	/// </summary>
-	public void HasTraveled()
+	public void HasTraveled ()
 	{
-			distanceWalked += CalculateDistance (lat1, long1, lat2, long2);
-			distance_label.text = "You and your blobs have walked " + Math.Round (distanceWalked, 2) + " km so far on this trip.";
-			long1 = long2;
-			lat1 = lat2;
+		distanceWalked += CalculateDistance (lat1, long1, lat2, long2);
+		double roundedDistance = RoundDistanceWalked ();
+		distance_label.text = "You and your blobs have walked " + roundedDistance + " km so far on this trip.";
+		long1 = long2;
+		lat1 = lat2;
 	}
 
 
@@ -179,10 +191,15 @@ public class GPSCtrl : MonoBehaviour
 		if (www.error == null) {
 			JSONNode N = JSON.Parse (www.text);
 			Debug.Log ("User exists.");
-
 			ParseTokenJson (N);
-			//StartCoroutine (UpdateExerciseRecord());
 
+			double roundedDistance = RoundDistanceWalked ();
+			string exerciseKey = "ExerciseRecordId";
+			if (PlayerPrefs.HasKey (exerciseKey)) {
+				int eid = PlayerPrefs.GetInt (exerciseKey);
+				Debug.Log ("eid: " + eid);
+				StartCoroutine (UpdateExerciseRecord(eid, roundedDistance));
+			}
 		} else {
 			Debug.Log ("Token WWW Error: " + www.error);
 
@@ -200,9 +217,36 @@ public class GPSCtrl : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Update exercise distance in API via PUT request.
+	/// Rounds the distance walked to 2 decimal places.
 	/// </summary>
-	/// /*
+	/// <returns>The distance walked.</returns>
+	public double RoundDistanceWalked ()
+	{
+		return Math.Round (distanceWalked, 2);
+	}
+
+	// PUT request
+	IEnumerator UpdateExerciseRecord (int eid, double roundedDistance)
+	{
+		Debug.Log ("In UpdateExerciseRecord()...");
+
+		string exerciseUrl = "http://104.131.144.86/api/exercises/" + eid + "?distance=" + roundedDistance + "&token=" + token;
+		Debug.Log ("Update exercise URL: " + exerciseUrl);
+
+		using (UnityWebRequest www = UnityWebRequest.Put (exerciseUrl, "Hello")) {
+			yield return www.Send ();
+
+			if (www.isError) {
+				Debug.Log ("Put error: " + www.error);
+			} else {
+				Debug.Log ("Update OK.");
+
+			}
+		}
+
+	}
+
+
 
 
 

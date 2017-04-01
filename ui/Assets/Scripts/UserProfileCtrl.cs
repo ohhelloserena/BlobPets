@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using SimpleJSON;
 //using UnityEditor.Sprites;
 using System;
+using System.Security.Policy;
 
 public class UserProfileCtrl : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class UserProfileCtrl : MonoBehaviour
 	public string username = "-1";
 	public string numWins = "-1";
 	public int numBlobs = -1;
+	public string exerciseLevel;
 
 	public string blobName0;
 	public string blobName1;
@@ -33,6 +35,7 @@ public class UserProfileCtrl : MonoBehaviour
 	public Text nameLabel;
 	public Text winsLabel;
 	public Text blobCountLabel;
+	public Text exercise;
 
 	public Text blob0_label;
 	public Text blob1_label;
@@ -47,6 +50,7 @@ public class UserProfileCtrl : MonoBehaviour
 	public GameObject nameGameObject;
 	public GameObject winsGameObject;
 	public GameObject blobCountGameObject;
+	public GameObject exerciseGameObject;
 
 	public GameObject blob0_GameObject;
 	public GameObject blob1_GameObject;
@@ -65,6 +69,7 @@ public class UserProfileCtrl : MonoBehaviour
 		nameLabel = nameGameObject.GetComponent<Text> ();
 		winsLabel = winsGameObject.GetComponent<Text> ();
 		blobCountLabel = blobCountGameObject.GetComponent<Text> ();
+		exercise = exerciseGameObject.GetComponent<Text> ();
 
 		blob0_label = blob0_GameObject.GetComponent<Text> ();
 		blob1_label = blob1_GameObject.GetComponent<Text> ();
@@ -131,6 +136,9 @@ public class UserProfileCtrl : MonoBehaviour
 		blobId1 = result ["blobs"] [1] ["id"].Value;
 		blobId2 = result ["blobs"] [2] ["id"].Value;
 		blobId3 = result ["blobs"] [3] ["id"].Value;
+
+		// set exercise level
+		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
 	}
 
 
@@ -142,6 +150,7 @@ public class UserProfileCtrl : MonoBehaviour
 		nameLabel.text = username;
 		winsLabel.text = numWins;
 		blobCountLabel.text = numBlobs.ToString ();
+		exercise.text = exerciseLevel;
 	}
 
 
@@ -227,6 +236,52 @@ public class UserProfileCtrl : MonoBehaviour
 			b1.enabled = false;
 			b2.enabled = false;
 			b3.enabled = false;
+		}
+	}
+
+
+	/// <summary>
+	/// Sends GET request to get blob information.
+	/// </summary>
+	/// <param name="blobId">Blob ID</param>
+	public void SendGetBlobCall(string blobId)
+	{
+		string url = "http://www.google.com";
+
+		WWW www = new WWW(url);
+		StartCoroutine (WaitForGetBlobRequest(www));
+	}
+
+	IEnumerator WaitForGetBlobRequest(WWW www)
+	{
+		yield return www;
+
+		if (www.error == null) {
+			JSONNode data = JSON.Parse (www.text);
+			string blobColor = ParseBlobJson (data);
+			PrintBlobImage (blobColor);
+
+		} else {
+
+		}
+
+	}
+
+	public string ParseBlobJson(JSONNode data)
+	{
+		return data ["color"].Value;
+	}
+
+	public void PrintBlobImage(string blobColor)
+	{
+		if (blobColor == "orange") {
+
+		} else if (blobColor == "pink") {
+
+		} else if (blobColor == "green") {
+
+		} else if (blobColor == "blue") {
+
 		}
 	}
 		

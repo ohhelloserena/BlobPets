@@ -255,7 +255,7 @@ public class NewUser : MonoBehaviour
 
 			token = ParseJson ("token", N);
 
-			//SendExerciseRequest ();
+			SendExerciseRequest ();
 		} else {
 			Debug.Log ("***WWW Error: " + www.error);
 
@@ -270,23 +270,21 @@ public class NewUser : MonoBehaviour
 	/// <summary>
 	/// Sends the exercise request via POST request to API.
 	/// </summary>
-	public void SendExerciseRequest()
+	public void SendExerciseRequest ()
 	{
-
-
-
-		Debug.Log ("In SendExerciseRequest()...");
-
+		Debug.Log ("In SendExerciseRequest()...");        
 		Debug.Log ("token: " + token);
-
+		Debug.Log ("userId: " + userId);
+		Dictionary<string, string> headers = new Dictionary<string, string> ();
+		headers.Add ("Content-Type", "application/json");
+		headers.Add ("Authorization", "Bearer " + token);
 		string exerciseUrl = "http://104.131.144.86/api/exercises";
-
 		WWWForm form = new WWWForm ();
+		//form.AddField ("owner_id", userId);
 		form.AddField ("token", token);
-		WWW www = new WWW (exerciseUrl, form);
-
-		StartCoroutine (WaitForExerciseRequest(www));
-
+		byte[] rawData = form.data;
+		WWW www = new WWW (exerciseUrl, rawData, headers);
+		StartCoroutine (WaitForExerciseRequest (www));
 	}
 
 	IEnumerator WaitForExerciseRequest(WWW www)
@@ -299,7 +297,13 @@ public class NewUser : MonoBehaviour
 			JSONNode N = JSON.Parse (www.text);
 			string eid = ParseJson ("ExerciseRecordID", N);
 			int exerciseId = Int32.Parse (eid);
-			playerPreferences.SetExercise (exerciseId);
+			//playerPreferences.SetExercise (exerciseId);
+
+
+			string exerciseKey = "ExerciseRecordId";
+			PlayerPrefs.SetInt (exerciseKey, exerciseId);
+			PlayerPrefs.Save ();
+
 
 			Debug.Log ("ExerciseRecordID created + saved...EID: " + exerciseId);
 		} else {
