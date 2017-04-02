@@ -1,8 +1,4 @@
 sceneSetups:
-<<<<<<< HEAD
-- path: Assets/_Scenes/Exercise.unity
-=======
 - path: Assets/_Scenes/CreateBlob.unity
->>>>>>> 57598b6970300e6108ccb52d56fbbfae00d55c20
   isLoaded: 1
   isActive: 1
