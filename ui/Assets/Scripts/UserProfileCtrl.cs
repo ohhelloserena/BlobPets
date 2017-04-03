@@ -20,6 +20,7 @@ public class UserProfileCtrl : MonoBehaviour
 	public string numWins = "-1";
 	public int numBlobs = -1;
 	public string exerciseLevel;
+	public int eid;
 
 	public string blobName0;
 	public string blobName1;
@@ -117,8 +118,6 @@ public class UserProfileCtrl : MonoBehaviour
 
 		userId = playerPreferences.GetUser ();
 
-
-
 		CallAPI ();
 	}
 
@@ -152,11 +151,14 @@ public class UserProfileCtrl : MonoBehaviour
 		username = result ["name"].Value;
 		numWins = result ["battles_won"].Value;
 		numBlobs = result ["blobs"].Count;
+		string er_id = result ["er_id"].Value;
+		Int32.TryParse (er_id, out eid);
 
 		// save number of blobs owned by user in memory
 		playerPreferences.SetNumBlobs (numBlobs);
+		playerPreferences.SetExercise (eid);
 
-		// set blob names
+		// set blob names	
 		blobName0 = result ["blobs"] [0] ["name"].Value;
 		blobName1 = result ["blobs"] [1] ["name"].Value;
 		blobName2 = result ["blobs"] [2] ["name"].Value;
@@ -276,7 +278,7 @@ public class UserProfileCtrl : MonoBehaviour
 	/// </summary>
 	public void ManageBlobButtons ()
 	{
-		Debug.Log ("Exercise... " + playerPreferences.GetExercise ());
+		//Debug.Log ("Exercise... " + playerPreferences.GetExercise ());
 
 		if (numBlobs == 1) {
 			b0.enabled = true;

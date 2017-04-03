@@ -11,6 +11,8 @@ public class GPSCtrl : MonoBehaviour
 {
 	public PlayerPreferences pp;
 
+	public int eid;
+
 	public Text distance_label;
 	public GameObject distanceObject;
 
@@ -33,6 +35,7 @@ public class GPSCtrl : MonoBehaviour
 
 	void Start ()
 	{
+		
 		
 		distance_label = distanceObject.GetComponent<Text> ();
 		end = endObject.GetComponent<Text> ();
@@ -197,12 +200,16 @@ public class GPSCtrl : MonoBehaviour
 			ParseTokenJson (N);
 
 			double roundedDistance = RoundDistanceWalked ();
+			/*
 			string exerciseKey = "ExerciseRecordId";
 			if (PlayerPrefs.HasKey (exerciseKey)) {
 				int eid = PlayerPrefs.GetInt (exerciseKey);
-				Debug.Log ("eid: " + eid);
-				StartCoroutine (UpdateExerciseRecord(eid, roundedDistance));
-			}
+				*/
+			eid = pp.GetExercise ();
+
+			Debug.Log ("eid: " + eid);
+			StartCoroutine (UpdateExerciseRecord (eid, roundedDistance));
+
 		} else {
 			Debug.Log ("Token WWW Error: " + www.error);
 
