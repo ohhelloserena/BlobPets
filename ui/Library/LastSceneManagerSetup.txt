@@ -1,4 +1,8 @@
 sceneSetups:
+<<<<<<< HEAD
 - path: Assets/_Scenes/CreateBlob2.unity
+=======
+- path: Assets/_Scenes/TopPlayersDashboard.unity
+>>>>>>> 602b6989829aef8747c0761953ff0a60b09da6f7
   isLoaded: 1
   isActive: 1
