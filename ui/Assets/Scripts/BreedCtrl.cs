@@ -492,14 +492,15 @@ public class BreedCtrl : MonoBehaviour
 		Debug.Log ("email: " + email);
 		Debug.Log ("password: " + password);
 
-		string test_tok = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwXC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0OTExNzgzMzUsImV4cCI6MTQ5MTE4MTkzNSwibmJmIjoxNDkxMTc4MzM1LCJqdGkiOiJkNWEzMWUxNGQ0NzA2MmQ2OGRjOTljN2NjM2Q2MTQ2OSJ9.RHMMZrcp3kj2B-apGn7A95mz-nHvlTjT1HVeSljy4CA";
+		//string test_tok = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwXC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0OTExNzgzMzUsImV4cCI6MTQ5MTE4MTkzNSwibmJmIjoxNDkxMTc4MzM1LCJqdGkiOiJkNWEzMWUxNGQ0NzA2MmQ2OGRjOTljN2NjM2Q2MTQ2OSJ9.RHMMZrcp3kj2B-apGn7A95mz-nHvlTjT1HVeSljy4CA";
 
 		Dictionary<string, string> headers = new Dictionary<string, string> ();
-		headers.Add ("Content-Type", "application/json");
-		headers.Add ("Authorization", "Bearer " + test_tok);
+		//headers.Add ("Content-Type", "application/json");
+		headers.Add("Content-Type", "application/x-www-form-urlencoded");
+		headers.Add ("Authorization", "Bearer " + token);
 		string breedUrl = "http://104.131.144.86/api/blobs";
 		WWWForm form = new WWWForm ();
-		form.AddField ("token", test_tok);
+		form.AddField ("token", token);
 		form.AddField ("id1", id1);
 		form.AddField ("id2", id2);
 		byte[] rawData = form.data;
