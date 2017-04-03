@@ -4,14 +4,30 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
+using SimpleJSON;
 
 public class RenameBlobCtrl : MonoBehaviour {
 
 	public InputFieldCtrl ifCtrl;
+	public PlayerPreferences pp;
 	public string newName;
+	public string token;
+	public string userId;
+	public string email;
+	public string password;
 
 	// Use this for initialization
 	void Start () {
+		email = pp.GetEmail ();
+		password = pp.GetPassword ();
+
+		Debug.Log ("RenameBlobCtrl - email: " + email);
+		Debug.Log ("RenameBlobCtrl - password: " + password);
+
+
+	
+
+
 		
 	}
 	
@@ -30,7 +46,9 @@ public class RenameBlobCtrl : MonoBehaviour {
 
 		newName = ifCtrl.getName ();
 
-		StartCoroutine (UpdateBlobName());
+		SendTokenRequest (email, password);
+
+
 	}
 
 	/*
@@ -43,7 +61,7 @@ public class RenameBlobCtrl : MonoBehaviour {
 		string myData = "dummy";
 		string newBlobId = GetNewBlobId();
 
-		string finalUrl = url + newBlobId + "?name=" + newName;
+		string finalUrl = url + newBlobId + "?token=" + token + "&name=" + newName;
 
 		Debug.Log ("final URL: " + finalUrl);
 
@@ -64,9 +82,60 @@ public class RenameBlobCtrl : MonoBehaviour {
 	}
 
 	/*
-	 * Retrieve the blob ID of the newly created blob from PlayerPrefs.
+	 * Sends POST request to the API to get token for the 
+	 * user with the given email and password.
 	 */
 
+	public void SendTokenRequest (string email, string password)
+	{
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForRequest (www));
+
+
+	}
+
+	IEnumerator WaitForRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+			JSONNode N = JSON.Parse (www.text);
+
+			Debug.Log("Token request OK. User found.");
+
+			ParseJson (N);
+
+			StartCoroutine (UpdateBlobName());
+
+
+		} else {
+			Debug.Log ("Token request error: " + www.error);
+
+			Debug.Log("!!! USER DOESN'T EXIST.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+	}
+
+	public void ParseJson(JSONNode data) 
+	{
+		Debug.Log ("token parsed... " + token);
+
+		token = data ["token"].Value;
+		userId = data ["id"].Value;
+	}
+
+
+	/// <summary>
+	/// Gets the new BLOB identifier.
+	/// </summary>
+	/// <returns>The new BLOB identifier.</returns>
 	public string GetNewBlobId() 
 	{
 		string key = "NewBlobID";
