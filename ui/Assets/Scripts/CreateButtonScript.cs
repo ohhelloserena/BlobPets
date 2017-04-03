@@ -26,6 +26,7 @@ public class CreateButtonScript : MonoBehaviour
 
 	public string url = "http://104.131.144.86/api/users/";
 	public string token;
+	public bool userExists;
 	public string blobName = "";
 	public string blobColor = "";
 	public string blobType = "type A";
@@ -103,7 +104,7 @@ public class CreateButtonScript : MonoBehaviour
 			Debug.Log ("Error: no name");
 		}
 
-		GetPlayerPrefs ();
+		//		GetPlayerPrefs ();
 		CreateBlob ();
 		SceneManager.LoadScene (scene);
 	}
@@ -114,10 +115,6 @@ public class CreateButtonScript : MonoBehaviour
 
 	private void GetPlayerPrefs ()
 	{
-		if (PlayerPrefs.HasKey (userIdPPKey)) {
-			userId = PlayerPrefs.GetInt (userIdPPKey);
-		}
-
 		if (PlayerPrefs.HasKey (emailPPKey)) {
 			email = PlayerPrefs.GetString (emailPPKey);
 		}
@@ -125,49 +122,156 @@ public class CreateButtonScript : MonoBehaviour
 		if (PlayerPrefs.HasKey (passwordPPKey)) {
 			password = PlayerPrefs.GetString (passwordPPKey);
 		}
-
-		Debug.Log (userId);
 		Debug.Log (email);
 		Debug.Log (password);
-
 	}
+
 
 	// POST request
 	public void CreateBlob ()
 	{
 		Debug.Log ("blobname: " + blobName);
-		if (blobName != null) {
-			CallAPI ();
+		if (blobName != "") {
+			GetPlayerPrefs ();
+			SendTokenRequest (email, password);
+			//			CallAPI ();
 		} else {
 			Debug.Log ("No name entered");
 		}
 	}
 
+
+	//
 	public void CallAPI ()
 	{
-		string fullUrl = url + userId;
+		//		string fullUrl = url + userId;
+		//
+		//		Debug.Log (fullUrl);
+		//
+		//		WWW www = new WWW (fullUrl);
+		//		StartCoroutine (GetUserInfo (www)); 
+		//		Debug.Log ("SENDING API CALL...");
+		//		Debug.Log (blobName + " " + blobColor + " " + blobType);
+		string blobURL = "http://104.131.144.86/api/blobs";
 
-		Debug.Log (fullUrl);
-
-		WWW www = new WWW (fullUrl);
-		StartCoroutine (GetUserInfo (www)); 
+		WWWForm form = new WWWForm ();
+		form.AddField ("name", blobName);
+		form.AddField ("type", blobType);
+		form.AddField ("color", blobColor);
+		WWW www = new WWW (blobURL, form);
+		Debug.Log ("sent call");
+		StartCoroutine (WaitForRequest (www));
 	}
 
-	IEnumerator GetUserInfo (WWW www)
+	// !!!
+	public void CallBreedAPI ()
+	{
+
+		Debug.Log ("Entering CallBreedAPI()...");
+
+		/*
+		WWWForm form = new WWWForm ();
+		form.AddField ("id1", test_id1);
+		form.AddField ("id2", test_id1);
+		form.AddField ("token", test_token);
+		WWW www = new WWW (breedUrl, form);
+
+		StartCoroutine (WaitForRequest2 (www));
+		*/
+		Debug.Log ("token: " + token);
+		Debug.Log ("email: " + email);
+		Debug.Log ("password: " + password);
+
+		//string test_tok = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwXC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0OTExNzgzMzUsImV4cCI6MTQ5MTE4MTkzNSwibmJmIjoxNDkxMTc4MzM1LCJqdGkiOiJkNWEzMWUxNGQ0NzA2MmQ2OGRjOTljN2NjM2Q2MTQ2OSJ9.RHMMZrcp3kj2B-apGn7A95mz-nHvlTjT1HVeSljy4CA";
+
+		Dictionary<string, string> headers = new Dictionary<string, string> ();
+		//headers.Add ("Content-Type", "application/json");
+		headers.Add("Content-Type", "application/x-www-form-urlencoded");
+		headers.Add ("Authorization", "Bearer " + token);
+		string breedUrl = "http://104.131.144.86/api/blobs";
+		WWWForm form = new WWWForm ();
+		form.AddField ("token", token);
+		form.AddField ("name", blobName);
+		form.AddField ("type", blobType);
+		form.AddField ("color", blobColor);
+		byte[] rawData = form.data;
+		WWW www = new WWW (breedUrl, rawData, headers);
+		StartCoroutine (WaitForRequest (www));
+	}
+
+	//orig
+	//	IEnumerator WaitForRequest (WWW www)
+	//	{
+	//		yield return www;
+	//
+	//		if (www.error == null) {
+	//			Debug.Log ("WWW ok");
+	////			result = JSON.Parse (www.text);
+	//			//			ParseJson (result);
+	//			//			SetBlobName ();
+	//			Debug.Log("Data: " + www.text);
+	//		} else {
+	//			Debug.Log (www.error);
+	//			// do nothing?
+	//		}
+	//	}
+
+	/// <summary>
+	/// Sends the token request.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
+	public void SendTokenRequest (string email, string password)
+	{
+		Debug.Log ("In token request...");
+
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForRequest (www));
+	}
+
+	IEnumerator WaitForRequest (WWW www)
 	{
 		yield return www;
 
+		// check for errors
 		if (www.error == null) {
-			Debug.Log ("WWW ok");
-			result = JSON.Parse (www.text);
-			//			ParseJson (result);
-			//			SetBlobName ();
-			Debug.Log(result);
+
+			JSONNode N = JSON.Parse (www.text);
+
+			userExists = true;
+			Debug.Log ("User exists.");
+
+			ParseTokenJson (N);
+			//			PostBlob ();
+			// serena try
+			//			CallBreedAPI();
+			CallAPI();
 		} else {
-			Debug.Log (www.error);
-			// do nothing?
-		}
+			Debug.Log ("Token WWW Error: " + www.error);
+			userExists = false;
+			Debug.Log ("User doesn't exist.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
 	}
+
+	public void ParseTokenJson (JSONNode data)
+	{
+		token = data ["token"].Value;
+		//Debug.Log ("Parsed, token is: " + token);
+	}
+
+
+	//	// SEND POST
+	//	public void PostBlob ()
+	//	{
+	//		string blobURL = "http://104.131.144.86/api/blobs";
+	//	}
 
 	//	private void CallAPI ()
 	//	{
