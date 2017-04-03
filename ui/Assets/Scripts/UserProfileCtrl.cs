@@ -9,6 +9,7 @@ using SimpleJSON;
 using System;
 using System.Security.Policy;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
 
 public class UserProfileCtrl : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class UserProfileCtrl : MonoBehaviour
 	public int numBlobs = -1;
 	public string exerciseLevel;
 	public int eid;
+	public string token;
 
 	public string blobName0;
 	public string blobName1;
@@ -118,7 +120,12 @@ public class UserProfileCtrl : MonoBehaviour
 
 		userId = playerPreferences.GetUser ();
 
+		//string email = playerPreferences.GetEmail ();
+		//string password = playerPreferences.GetPassword ();
+
+		//SendTokenRequest (email, password);
 		CallAPI ();
+
 	}
 
 	public void CallAPI ()
@@ -137,6 +144,7 @@ public class UserProfileCtrl : MonoBehaviour
 		if (www.error == null) {
 			result = JSON.Parse (www.text);
 			ParseJson (result);
+			//CallExerciseAPI ();
 			SetHeader ();
 			SetBlobNames ();
 			ManageBlobButtons ();
@@ -179,6 +187,50 @@ public class UserProfileCtrl : MonoBehaviour
 		// set exercise level
 		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
 	}
+
+	/*
+	public void CallExerciseAPI() 
+	{
+		
+		string url = "http://104.131.144.86/api/exercises/" + eid + "?token=" + token;
+		string fullUrl = url + userId;
+		Debug.Log ("FULL URL: " + fullUrl);
+		WWW www = new WWW (fullUrl);
+		StartCoroutine (GetExerciseInfo (www)); 
+	}
+
+	IEnumerator GetExerciseInfo(WWW www) 
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+
+
+			JSONNode N = JSON.Parse (www.text);
+
+
+			Debug.Log (www.text);
+
+			CallAPI ();
+
+
+		} else {
+			Debug.Log ("***WWW Error: " + www.error);
+			Debug.Log("!!! USER DOESN'T EXIST.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+
+	}
+
+	public void ParseExerciseJson(JSONNode N)
+	{
+
+	}
+
+*/
 
 
 	/// <summary>
@@ -376,6 +428,55 @@ public class UserProfileCtrl : MonoBehaviour
 		//Debug.Log ("requested blob ID after reset: " + playerPreferences.GetRequestedBlob ());
 		//Debug.Log ("userID after reset: " + playerPreferences.GetUser ());
 	}
+
+	/// <summary>
+	/// Sends the token request via POST request to API.
+	/// </summary>
+	/// <param name="email">Email.</param>
+	/// <param name="password">Password.</param>
+	public void SendTokenRequest (string email, string password)
+	{
+		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
+		WWWForm form = new WWWForm ();
+		form.AddField ("email", email);
+		form.AddField ("password", password);
+		WWW www = new WWW (tokenUrl, form);
+		StartCoroutine (WaitForTokenRequest (www));
+
+
+	}
+
+	IEnumerator WaitForTokenRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+
+
+			JSONNode N = JSON.Parse (www.text);
+
+			Debug.Log("!!! USER EXISTS.");
+
+			ParseTokenJson (N);
+			CallAPI ();
+
+
+		} else {
+			Debug.Log ("***WWW Error: " + www.error);
+			Debug.Log("!!! USER DOESN'T EXIST.");
+			if (www.error == "400 Bad Request") {
+				// alert for duplicate email address
+			}
+		}    
+	}
+
+	public void ParseTokenJson(JSONNode data) 
+	{
+		token = data ["token"].Value;
+		Debug.Log ("Parsed, token is: " + token);
+	}
+
 
 
 		
