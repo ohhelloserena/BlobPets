@@ -48,7 +48,10 @@ public class GPSCtrl : MonoBehaviour
 	/// </summary>
 	public void StartButtonClicked ()
 	{
-		distance_label.text = "You and your blobs have walked " + Math.Round (distanceWalked, 2) + " km so far on this trip.";
+		if (Input.location.isEnabledByUser) {
+			distance_label.text = "You and your blobs have walked " + Math.Round (distanceWalked, 2) + " km so far on this trip.";
+		}
+
 		StartCoroutine (StartLocationService ());
 	}
 

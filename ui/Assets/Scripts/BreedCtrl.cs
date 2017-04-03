@@ -41,6 +41,11 @@ public class BreedCtrl : MonoBehaviour
 	public string blobId2;
 	public string blobId3;
 
+	public string blobColor0;
+	public string blobColor1;
+	public string blobColor2;
+	public string blobColor3;
+
 	public Text blobname0_label;
 	public Text blobname1_label;
 	public Text blobname2_label;
@@ -61,11 +66,6 @@ public class BreedCtrl : MonoBehaviour
 	public GameObject blobLabel2_GO;
 	public GameObject blobLabel3_GO;
 
-	public GameObject blobImg0_GO;
-	public GameObject blobImg1_GO;
-	public GameObject blobImg2_GO;
-	public GameObject blobImg3_GO;
-
 	public bool b0Selected = false;
 	public bool b1Selected = false;
 	public bool b2Selected = false;
@@ -76,6 +76,22 @@ public class BreedCtrl : MonoBehaviour
 
 
 	public JSONNode result;
+
+	public Sprite orangeBlob;
+	public Sprite blueBlob;
+	public Sprite greenBlob;
+	public Sprite pinkBlob;
+	public Sprite locked;
+
+	public Image img0;
+	public Image img1;
+	public Image img2;
+	public Image img3;
+
+	public GameObject imgGO0;
+	public GameObject imgGO1;
+	public GameObject imgGO2;
+	public GameObject imgGO3;
 
 
 
@@ -94,6 +110,12 @@ public class BreedCtrl : MonoBehaviour
 		b1 = b1GO.GetComponent<Button> ();
 		b2 = b2GO.GetComponent<Button> ();
 		b3 = b3GO.GetComponent<Button> ();
+
+		// blob images
+		img0 = imgGO0.GetComponent<Image> ();
+		img1 = imgGO1.GetComponent<Image> ();
+		img2 = imgGO2.GetComponent<Image> ();
+		img3 = imgGO3.GetComponent<Image> ();
 
 		// PlayerPrefs
 		PlayerPrefs.SetInt (blobPPKey, -1);
@@ -163,8 +185,6 @@ public class BreedCtrl : MonoBehaviour
 
 	public void ParseJson (JSONNode userResult)
 	{
-
-
 		// get blob names
 		blobName0 = result ["blobs"] [0] ["name"].Value;
 		blobName1 = result ["blobs"] [1] ["name"].Value;
@@ -176,42 +196,115 @@ public class BreedCtrl : MonoBehaviour
 		blobId1 = result ["blobs"] [1] ["id"].Value;
 		blobId2 = result ["blobs"] [2] ["id"].Value;
 		blobId3 = result ["blobs"] [3] ["id"].Value;
+
+		// get blob colors
+		blobColor0 = result ["blobs"] [0] ["color"].Value;
+		blobColor1 = result ["blobs"] [1] ["color"].Value;
+		blobColor2 = result ["blobs"] [2] ["color"].Value;
+		blobColor3 = result ["blobs"] [3] ["color"].Value;
 	}
 
-	/*
-	 * Prints the blob names on the scene.
-	 */
+	/// <summary>
+	/// Set blob names and images.
+	/// </summary>
 
 	public void SetBlobNames ()
 	{
 		if (String.IsNullOrEmpty (blobName0)) {
 			HideTextLabel (blobname0_label);
+			img0.sprite = locked;
+			b0.enabled = false;
 		} else {
 			ShowTextLabel (blobname0_label);
 			blobname0_label.text = blobName0;
+			PrintBlobImage (blobColor0, 0);
 		}
 
 		if (String.IsNullOrEmpty (blobName1)) {
 			HideTextLabel (blobname1_label);
+			img1.sprite = locked;
+			b1.enabled = false;
 		} else {
 			ShowTextLabel (blobname1_label);
 			blobname1_label.text = blobName1;
+			PrintBlobImage (blobColor1, 1);
 		}
 
 		if (String.IsNullOrEmpty (blobName2)) {
 			HideTextLabel (blobname2_label);
+			img2.sprite = locked;
+			b2.enabled = false;
 		} else {
 			ShowTextLabel (blobname2_label);
 			blobname2_label.text = blobName2;
+			PrintBlobImage (blobColor2, 2);
 		}
 
 		if (String.IsNullOrEmpty (blobName3)) {
 			HideTextLabel (blobname3_label);
+			img3.sprite = locked;
+			b3.enabled = false;
 		} else {
 			ShowTextLabel (blobname3_label);
 			blobname3_label.text = blobName3;
+			PrintBlobImage (blobColor3, 3);
 		}
 	}
+
+	/// <summary>
+	/// Prints the BLOB image.
+	/// </summary>
+	/// <param name="blobColor">BLOB color.</param>
+	/// <param name="imageNumber">Icon number (0 through 4)</param>
+	public void PrintBlobImage (string blobColor, int imageNumber)
+	{
+		if (imageNumber == 0) {
+			if (blobColor == "orange") {
+				img0.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img0.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img0.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img0.sprite = blueBlob;
+			}
+
+		} else if (imageNumber == 1) {
+			if (blobColor == "orange") {
+				img1.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img1.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img1.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img1.sprite = blueBlob;
+			}
+
+		} else if (imageNumber == 2) {
+			if (blobColor == "orange") {
+				img2.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img2.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img2.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img2.sprite = blueBlob;
+			}
+
+		} else if (imageNumber == 3) {
+			if (blobColor == "orange") {
+				img3.sprite = orangeBlob;
+			} else if (blobColor == "pink") {
+				img3.sprite = pinkBlob;
+			} else if (blobColor == "green") {
+				img3.sprite = greenBlob;
+			} else if (blobColor == "blue") {
+				img3.sprite = blueBlob;
+			}
+		}
+
+	}
+
 
 	public void HideTextLabel (Text label)
 	{
@@ -222,16 +315,12 @@ public class BreedCtrl : MonoBehaviour
 	{
 		label.enabled = true;
 	}
+		
 
-	public void GetSelectedBlobs ()
-	{
-
-	}
-
-	/*
-	 * Tracks which blob buttons were selected.
-	 */
-
+	/// <summary>
+	/// Buttons the clicked.
+	/// </summary>
+	/// <param name="selected">Selected.</param>
 	public void ButtonClicked (string selected)
 	{
 		if (selected == "0") {
@@ -251,10 +340,10 @@ public class BreedCtrl : MonoBehaviour
 		}
 	}
 
-	/*
-	 * Returns true if 2 blobs were selected, else false.
-	 */
-
+	/// <summary>
+	/// Selecteds the two blobs.
+	/// </summary>
+	/// <returns><c>true</c>, if two blobs was selecteded, <c>false</c> otherwise.</returns>
 	public bool SelectedTwoBlobs ()
 	{
 		int count = 0;
@@ -285,7 +374,6 @@ public class BreedCtrl : MonoBehaviour
 	/*
 	 * Store the blob IDs of the two selected blobs in id1 and id2.
 	 */
-
 	public void GetSelectedIds ()
 	{
 		if (b0Selected == true) {
@@ -386,23 +474,36 @@ public class BreedCtrl : MonoBehaviour
 
 	public void CallBreedAPI ()
 	{
-		string test_id1 = "1";
-		string test_id2 = "5";
-		string test_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEwNC4xMzEuMTQ0Ljg2XC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0OTA4OTk0NDEsImV4cCI6MTQ5MDkwMzA0MSwibmJmIjoxNDkwODk5NDQxLCJqdGkiOiIzZDc3ZDk5ODk5MGE5YTM4MTRjZGE5NzgwZDM3ZDY4OSJ9.5ehhlR1stVZynGG470M9pyHdwlW1Ih8aUXwAMVPTKUg";
 
 		Debug.Log ("Entering CallBreedAPI()...");
-		Debug.Log ("test_id1: " + test_id1);
-		Debug.Log ("test_id2: " + test_id2);
-		Debug.Log ("test_token: " + test_token);
 
-		string breedUrl = "http://104.131.144.86/api/blobs";
-
+		/*
 		WWWForm form = new WWWForm ();
 		form.AddField ("id1", test_id1);
 		form.AddField ("id2", test_id1);
 		form.AddField ("token", test_token);
 		WWW www = new WWW (breedUrl, form);
 
+		StartCoroutine (WaitForRequest2 (www));
+		*/
+		Debug.Log ("id1: " + id1);
+		Debug.Log ("id2: " + id2);
+		Debug.Log ("token: " + token);
+		Debug.Log ("email: " + email);
+		Debug.Log ("password: " + password);
+
+		string test_tok = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwXC9hcGlcL3VzZXJzXC9hdXRoZW50aWNhdGUiLCJpYXQiOjE0OTExNzgzMzUsImV4cCI6MTQ5MTE4MTkzNSwibmJmIjoxNDkxMTc4MzM1LCJqdGkiOiJkNWEzMWUxNGQ0NzA2MmQ2OGRjOTljN2NjM2Q2MTQ2OSJ9.RHMMZrcp3kj2B-apGn7A95mz-nHvlTjT1HVeSljy4CA";
+
+		Dictionary<string, string> headers = new Dictionary<string, string> ();
+		headers.Add ("Content-Type", "application/json");
+		headers.Add ("Authorization", "Bearer " + test_tok);
+		string breedUrl = "http://104.131.144.86/api/blobs";
+		WWWForm form = new WWWForm ();
+		form.AddField ("token", test_tok);
+		form.AddField ("id1", id1);
+		form.AddField ("id2", id2);
+		byte[] rawData = form.data;
+		WWW www = new WWW (breedUrl, rawData, headers);
 		StartCoroutine (WaitForRequest2 (www));
 	}
 
