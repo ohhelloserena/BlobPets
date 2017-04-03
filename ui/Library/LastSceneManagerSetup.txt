@@ -1,8 +1,4 @@
 sceneSetups:
-<<<<<<< HEAD
-- path: Assets/_Scenes/UserProfileUI.unity
-=======
-- path: Assets/_Scenes/CreateBlob.unity
->>>>>>> 25fd1bfdae17fa92dfd079d8ddbe6cd2de53ad71
+- path: Assets/_Scenes/BlueMain.unity
   isLoaded: 1
   isActive: 1

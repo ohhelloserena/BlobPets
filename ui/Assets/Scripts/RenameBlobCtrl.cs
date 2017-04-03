@@ -23,17 +23,6 @@ public class RenameBlobCtrl : MonoBehaviour {
 
 		Debug.Log ("RenameBlobCtrl - email: " + email);
 		Debug.Log ("RenameBlobCtrl - password: " + password);
-
-
-	
-
-
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 
 	/*

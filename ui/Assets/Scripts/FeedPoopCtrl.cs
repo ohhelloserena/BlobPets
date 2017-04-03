@@ -14,6 +14,8 @@ using UnityEngine.Networking;
 
 // server uses UTC time
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
+using System.Security.Cryptography;
 
 public class FeedPoopCtrl : MonoBehaviour
 {
@@ -25,6 +27,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	public string level;
 	public string cleanlinessLevel;
 	public string healthLevel;
+	public string exerciseLevel;
 
 	//private string nameKey = "Name";
 	private string emailKey = "Email";
@@ -60,9 +63,51 @@ public class FeedPoopCtrl : MonoBehaviour
 	public int cleanComp;
 	public int feedComp;
 
+	// level bars
+	public Text h;
+	public Text e;
+	public Text c;
+	public GameObject hGO;
+	public GameObject eGO;
+	public GameObject cGO;
+
+	public Button battleBtn;
+	public GameObject blueBattleBtnGO;
+
+	// battle notification warning
+	public Image battleWarning;
+	public GameObject battleGO;
+
+	public Text warning_label;
+	public GameObject WL_GO;
+
+	public Text warning_body;
+	public GameObject WB_GO;
+
+	public Button yes_button;
+	public GameObject yes_GO;
+
+	public Button no_button;
+	public GameObject no_GO;
+
 	// Use this for initialization
 	void Start ()
 	{
+		battleBtn = blueBattleBtnGO.GetComponent<Button> ();
+
+		battleWarning = battleGO.GetComponent<Image> ();
+		warning_label = WL_GO.GetComponent<Text> ();
+		warning_body = WB_GO.GetComponent<Text> ();
+		yes_button = yes_GO.GetComponent<Button> ();
+		no_button = no_GO.GetComponent<Button> ();
+
+		h = hGO.GetComponent<Text> ();
+		c = cGO.GetComponent<Text> ();
+		e = eGO.GetComponent<Text> ();
+
+
+		DisableWarningWindow ();
+
 		string blobIdKey = "RequestedBlobId";
 		if (PlayerPrefs.HasKey (blobIdKey)) {
 			blobId = PlayerPrefs.GetString (blobIdKey);
@@ -125,8 +170,6 @@ public class FeedPoopCtrl : MonoBehaviour
 		form.AddField ("password", password);
 		WWW www = new WWW (tokenUrl, form);
 		StartCoroutine (WaitForRequest (www));
-
-
 	}
 
 	/// <summary>
@@ -179,6 +222,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		if (www.error == null) {
 			N = JSON.Parse (www.text);
 			ParseJson ();
+			PrintLevelBars ();
 			CompareTimes ();
 			Debug.Log ("GetBlobInfo OK: " + www.text);
 		} else {
@@ -192,6 +236,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		nextFeedTime = N ["next_feed_time"].Value;
 		cleanlinessLevel = N ["cleanliness_level"].Value;
 		healthLevel = N ["health_level"].Value;
+		exerciseLevel = N ["exercise_level"].Value;
 		blobName0 = N ["name"].Value;
 
 
@@ -325,6 +370,64 @@ public class FeedPoopCtrl : MonoBehaviour
 	{
 		imgThoughtBub.enabled = false;
 	}
+
+	public void BattleButtonClicked ()
+	{
+		Debug.Log ("Battle Button clicked...");
+
+		int healthLevelInt;
+		int cleanlinessLevelInt;
+		int exerciseLevelInt;
+
+		Int32.TryParse (healthLevel, out healthLevelInt);	// feed
+		Int32.TryParse (cleanlinessLevel, out cleanlinessLevelInt);	// poop
+		Int32.TryParse (exerciseLevel, out exerciseLevelInt);	// exercise
+
+
+		if (healthLevelInt < 10 || cleanlinessLevelInt < 10 || exerciseLevelInt < 10) {
+			EnableWarningWindow ();
+		} else {
+			SceneManager.LoadScene ("BattleMain");
+		}
+	}
+		
+
+	public void WarningButtonClicked(string cmd)
+	{
+		if (cmd == "yes") {
+			SceneManager.LoadScene ("BattleMain"); 
+		} else if (cmd == "no") {
+			DisableWarningWindow ();
+		}
+	}
+
+	public void DisableWarningWindow()
+	{
+		battleWarning.enabled = false;
+		warning_label.enabled = false;
+		warning_body.enabled = false;
+		yes_GO.SetActive (false);
+		no_GO.SetActive (false);
+	}
+
+	public void EnableWarningWindow()
+	{
+		battleWarning.enabled = true;
+		warning_label.enabled = true;
+		warning_body.enabled = true;
+		yes_GO.SetActive (true);
+		no_GO.SetActive (true);
+
+	}
+
+	public void PrintLevelBars()
+	{
+		h.text = healthLevel;
+		c.text = cleanlinessLevel;
+		e.text = exerciseLevel;
+	}
+
+
 
 
 
