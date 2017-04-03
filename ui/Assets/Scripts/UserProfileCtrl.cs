@@ -265,7 +265,7 @@ public class UserProfileCtrl : MonoBehaviour
 		} else if (blobColor == "green") {
 			SceneManager.LoadScene ("GreenMain");
 		} else if (blobColor == "pink") {
-			SceneManager.LoadScene ("PinkMain1");
+			SceneManager.LoadScene ("PinkMain");
 		}
 	}
 

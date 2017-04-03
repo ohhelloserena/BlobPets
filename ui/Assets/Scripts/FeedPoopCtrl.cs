@@ -100,7 +100,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	{
 
 		dateTime = DateTime.Now.ToUniversalTime ();
-		Debug.Log ("Current time in UTC: " + dateTime.ToString ());
+		//Debug.Log ("Current time in UTC: " + dateTime.ToString ());
 
 		cleanTime = Convert.ToDateTime (nextCleanTime);
 

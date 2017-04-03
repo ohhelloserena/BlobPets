@@ -78,7 +78,7 @@ public class CreateButtonScript : MonoBehaviour
 			}
 
 			if (selectPinkScript.pinkGuiEnable == true) {
-				scene = "PinkMain 1";
+				scene = "PinkMain";
 				blobColor = "pink";
 				Debug.Log (selectPinkScript.pinkGuiEnable);
 				Debug.Log ("Pink Scene load");
