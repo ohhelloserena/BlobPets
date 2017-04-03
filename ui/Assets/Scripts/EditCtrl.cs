@@ -194,16 +194,20 @@ public class EditCtrl : MonoBehaviour
 			nameChangeRequested = true;
 		}
 
-		if (!isPWEmpty && isPWValid) {
+		if (!isPWEmpty && isPWValid ) {
 			pwChangeRequested = true;
 		}
 
 		if (!isNameEmpty && !isNameValid) {
 			invalid_name.text = "New name is invalid. Please select a name that's 1-25 characters long.";
+			nameChangeRequested = false;
+			pwChangeRequested = false;
 		}
 			
 		if (!isPWEmpty && !isPWValid) {
 			invalid_password.text = "New password is invalid. Please select a password with at least 6 characters and no spaces.";
+			nameChangeRequested = false;
+			pwChangeRequested = false;
 	
 		}
 	}
