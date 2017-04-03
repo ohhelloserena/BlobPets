@@ -239,11 +239,12 @@ public class FeedPoopCtrl : MonoBehaviour
 		exerciseLevel = N ["exercise_level"].Value;
 		blobName0 = N ["name"].Value;
 
-
+		/*
 		Debug.Log ("nextCleanTime: " + nextCleanTime);
 		Debug.Log ("nextFeedTime: " + nextFeedTime);
 		Debug.Log ("cleanliness level: " + cleanlinessLevel);
 		Debug.Log ("health level: " + healthLevel);
+		*/
 	}
 
 
@@ -379,9 +380,20 @@ public class FeedPoopCtrl : MonoBehaviour
 		int cleanlinessLevelInt;
 		int exerciseLevelInt;
 
+		decimal val = Decimal.Parse (exerciseLevel);
+		exerciseLevelInt = Convert.ToInt32 (val);
+
+
 		Int32.TryParse (healthLevel, out healthLevelInt);	// feed
 		Int32.TryParse (cleanlinessLevel, out cleanlinessLevelInt);	// poop
-		Int32.TryParse (exerciseLevel, out exerciseLevelInt);	// exercise
+		//Int32.TryParse (exerciseLevel, out exerciseLevelInt);	// exercise
+
+		Debug.Log ("battle button clicked");
+		Debug.Log ("string exercise: " + exerciseLevel);
+
+		Debug.Log ("health: " + healthLevelInt);
+		Debug.Log ("clean: " + cleanlinessLevelInt);
+		Debug.Log ("exercise: " + exerciseLevelInt);
 
 
 		if (healthLevelInt < 10 || cleanlinessLevelInt < 10 || exerciseLevelInt < 10) {
