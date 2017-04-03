@@ -4,9 +4,11 @@ using UnityEngine;
 
 using UnityEngine.UI;
 using SimpleJSON;
+
 //using UnityEditor.Sprites;
 using System;
 using System.Security.Policy;
+using UnityEngine.SceneManagement;
 
 public class UserProfileCtrl : MonoBehaviour
 {
@@ -119,7 +121,7 @@ public class UserProfileCtrl : MonoBehaviour
 
 		CallAPI ();
 	}
-		
+
 	public void CallAPI ()
 	{
 		string url = "http://104.131.144.86/api/users/";
@@ -227,22 +229,43 @@ public class UserProfileCtrl : MonoBehaviour
 			PrintBlobImage (blobColor3, 3);
 		}
 	}
-		
+
 	/// <summary>
 	/// This is for he blob icons under "Your Blobs."
 	/// It stores the blob ID of the blob selected in PlayerPrefs.
 	/// </summary>
-	/// <param name="blobNum">Number of blobs owned by user. </param>
+	/// <param name="blobNum">Blob number selected (from 0 thru 3).</param>
 	public void BlobButtonClick (string blobNum)
 	{
 		if (blobNum == "0" && !String.IsNullOrEmpty (blobName0)) {
+			Debug.Log ("blob 0 selected. color: " + blobColor0);
 			playerPreferences.SetRequestedBlob (blobId0);
+			ChangeBlobRoom (blobColor0);
 		} else if (blobNum == "1" && !String.IsNullOrEmpty (blobName1)) {
+			Debug.Log ("blob 1 selected. color: " + blobColor1);
 			playerPreferences.SetRequestedBlob (blobId1);
+			ChangeBlobRoom (blobColor1);
 		} else if (blobNum == "2" && !String.IsNullOrEmpty (blobName2)) {
+			Debug.Log ("blob 2 selected. color: " + blobColor2);
 			playerPreferences.SetRequestedBlob (blobId2);
+			ChangeBlobRoom (blobColor2);
 		} else if (blobNum == "3" && !String.IsNullOrEmpty (blobName3)) {
+			Debug.Log ("blob 3 selected. color: " + blobColor3);
 			playerPreferences.SetRequestedBlob (blobId3);
+			ChangeBlobRoom (blobColor3);
+		}
+	}
+
+	public void ChangeBlobRoom (string blobColor)
+	{
+		if (blobColor == "orange") {
+			SceneManager.LoadScene ("OrangeMain");
+		} else if (blobColor == "blue") {
+			SceneManager.LoadScene ("BlueMain");
+		} else if (blobColor == "green") {
+			SceneManager.LoadScene ("GreenMain");
+		} else if (blobColor == "pink") {
+			SceneManager.LoadScene ("PinkMain1");
 		}
 	}
 
@@ -251,7 +274,7 @@ public class UserProfileCtrl : MonoBehaviour
 	/// If numBlobs == 1, then enable b0 ion. If numBlobs == 2, then enable 
 	/// b0 and b1 icons...and so on.
 	/// </summary>
-	public void ManageBlobButtons()
+	public void ManageBlobButtons ()
 	{
 		Debug.Log ("Exercise... " + playerPreferences.GetExercise ());
 
@@ -288,7 +311,7 @@ public class UserProfileCtrl : MonoBehaviour
 	}
 
 
-	public void PrintBlobImage(string blobColor, int imageNumber)
+	public void PrintBlobImage (string blobColor, int imageNumber)
 	{
 		if (imageNumber == 0) {
 			if (blobColor == "orange") {
@@ -336,11 +359,12 @@ public class UserProfileCtrl : MonoBehaviour
 		}
 		
 	}
+
 		
 	/// <summary>
 	/// Erase values saved in PlayerPrefs when user clicks Log Out button.
 	/// </summary>
-	public void LogOutButtonClick()
+	public void LogOutButtonClick ()
 	{
 		playerPreferences.ResetNumBlobs ();
 		playerPreferences.ResetRequestedBlob ();

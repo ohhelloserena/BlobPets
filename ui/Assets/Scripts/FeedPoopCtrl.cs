@@ -47,6 +47,10 @@ public class FeedPoopCtrl : MonoBehaviour
 	public Image imgHam;
 	public Image imgThoughtBub;
 
+	public GameObject poopGO;
+	public GameObject hamGO;
+	public GameObject thoughtGO;
+
 	public bool needsCleaning = false;
 	public bool needsFeeding = false;
 
@@ -77,6 +81,10 @@ public class FeedPoopCtrl : MonoBehaviour
 		if (PlayerPrefs.HasKey (idKey)) {
 			userId = PlayerPrefs.GetString (idKey);
 		}
+
+		imgPoop = poopGO.GetComponent<Image> ();
+		imgHam = hamGO.GetComponent<Image> ();
+		imgThoughtBub = thoughtGO.GetComponent<Image> ();
 
 		imgPoop.enabled = false;
 		imgHam.enabled = false;
