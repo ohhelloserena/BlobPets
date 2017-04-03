@@ -1,22 +1,8 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-<<<<<<< HEAD
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/FeedPoopCtrl.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/UserProfileCtrl.cs">
     <Files>
-      <File FileName="Assets/Scripts/UserProfileCtrl.cs" Line="127" Column="14" />
-      <File FileName="Assets/Scripts/FeedPoopCtrl.cs" Line="385" Column="32" />
-      <File FileName="Assets/Scripts/EditCtrl.cs" Line="210" Column="30" />
-      <File FileName="Assets/Scripts/GPSCtrl.cs" Line="120" Column="2" />
-      <File FileName="Assets/Scripts/CreateButtonScript.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/PlayerPreferences.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/BreedCtrl.cs" Line="508" Column="42" NotebookId="1" />
-      <File FileName="Assets/Scripts/TokenCtrl.cs" Line="95" Column="3" NotebookId="1" />
-      <File FileName="Assets/CreateNewBlobCtrl.cs" Line="22" Column="21" NotebookId="1" />
-=======
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/BattleCtrl.cs">
-    <Files>
-      <File FileName="Assets/BattleCtrl.cs" Line="1" Column="1" />
->>>>>>> 602b6989829aef8747c0761953ff0a60b09da6f7
+      <File FileName="Assets/Scripts/UserProfileCtrl.cs" Line="226" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

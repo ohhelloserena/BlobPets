@@ -99,11 +99,13 @@ public class CreateNewBlobCtrl : MonoBehaviour {
 
 	public void CallBlobAPI() 
 	{
+		/*
 		Debug.Log ("create scene - entering CallBlobAPI()...");
 		Debug.Log ("token: " + token);
 		Debug.Log ("blob name: " + blobName);
 		Debug.Log ("type: " + type);
 		Debug.Log ("blob color: " + blobColor);
+		*/
 
 		Dictionary<string, string> headers = new Dictionary<string, string> ();
 		//headers.Add ("Content-Type", "application/json");

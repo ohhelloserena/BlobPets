@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
 using SimpleJSON;
+using UnityEngine.UI;
+using System;
 
 public class RenameBlobCtrl : MonoBehaviour {
 
@@ -16,8 +18,15 @@ public class RenameBlobCtrl : MonoBehaviour {
 	public string email;
 	public string password;
 
+	public Text missing_name;
+	public GameObject MissingGO;
+
 	// Use this for initialization
 	void Start () {
+
+		missing_name = MissingGO.GetComponent<Text> ();
+		missing_name.enabled = false;
+
 		email = pp.GetEmail ();
 		password = pp.GetPassword ();
 
@@ -35,7 +44,11 @@ public class RenameBlobCtrl : MonoBehaviour {
 
 		newName = ifCtrl.getName ();
 
-		SendTokenRequest (email, password);
+		if (String.IsNullOrEmpty (newName)) {
+			missing_name.enabled = true;
+		} else {
+			SendTokenRequest (email, password);
+		}
 
 
 	}

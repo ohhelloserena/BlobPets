@@ -229,8 +229,9 @@ public class UserProfileCtrl : MonoBehaviour
 	{
 
 	}
+	*/
 
-*/
+
 
 
 	/// <summary>
@@ -459,6 +460,7 @@ public class UserProfileCtrl : MonoBehaviour
 			Debug.Log("!!! USER EXISTS.");
 
 			ParseTokenJson (N);
+			//CallExerciseAPI ();
 			CallAPI ();
 
 
