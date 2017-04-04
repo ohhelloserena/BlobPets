@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/_Scenes/BattleMain.unity
+- path: Assets/_Scenes/ManageBlobs.unity
   isLoaded: 1
   isActive: 1
