@@ -10,6 +10,7 @@ using System;
 using System.Security.Policy;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
+using System.Security.Cryptography;
 
 public class UserProfileCtrl : MonoBehaviour
 {
@@ -23,6 +24,10 @@ public class UserProfileCtrl : MonoBehaviour
 	public string exerciseLevel;
 	public int eid;
 	public string token;
+	public string email;
+	public string password;
+	public string weeklyGoal;
+	public string remainingExercise;
 
 	public string blobName0;
 	public string blobName1;
@@ -120,116 +125,15 @@ public class UserProfileCtrl : MonoBehaviour
 
 		userId = playerPreferences.GetUser ();
 
-		//string email = playerPreferences.GetEmail ();
-		//string password = playerPreferences.GetPassword ();
+		email = playerPreferences.GetEmail ();
+		password = playerPreferences.GetPassword ();
 
 		//SendTokenRequest (email, password);
 		CallAPI ();
 
 	}
 
-	public void CallAPI ()
-	{
-		string url = "http://104.131.144.86/api/users/";
-		string fullUrl = url + userId;
-		Debug.Log ("FULL URL: " + fullUrl);
-		WWW www = new WWW (fullUrl);
-		StartCoroutine (GetUserInfo (www)); 
-	}
 
-	IEnumerator GetUserInfo (WWW www)
-	{
-		yield return www;
-
-		if (www.error == null) {
-			result = JSON.Parse (www.text);
-			ParseJson (result);
-			//CallExerciseAPI ();
-			SetHeader ();
-			SetBlobNames ();
-			ManageBlobButtons ();
-		} else {
-			
-		}
-	}
-
-	public void ParseJson (JSONNode userResult)
-	{
-		// set user info
-		username = result ["name"].Value;
-		numWins = result ["battles_won"].Value;
-		numBlobs = result ["blobs"].Count;
-		string er_id = result ["er_id"].Value;
-		Int32.TryParse (er_id, out eid);
-
-		// save number of blobs owned by user in memory
-		playerPreferences.SetNumBlobs (numBlobs);
-		playerPreferences.SetExercise (eid);
-
-		// set blob names	
-		blobName0 = result ["blobs"] [0] ["name"].Value;
-		blobName1 = result ["blobs"] [1] ["name"].Value;
-		blobName2 = result ["blobs"] [2] ["name"].Value;
-		blobName3 = result ["blobs"] [3] ["name"].Value;
-
-		// set blob IDs
-		blobId0 = result ["blobs"] [0] ["id"].Value;
-		blobId1 = result ["blobs"] [1] ["id"].Value;
-		blobId2 = result ["blobs"] [2] ["id"].Value;
-		blobId3 = result ["blobs"] [3] ["id"].Value;
-
-		// set blob colors
-		blobColor0 = result ["blobs"] [0] ["color"].Value;
-		blobColor1 = result ["blobs"] [1] ["color"].Value;
-		blobColor2 = result ["blobs"] [2] ["color"].Value;
-		blobColor3 = result ["blobs"] [3] ["color"].Value;
-
-		// set exercise level
-		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
-	}
-
-	/*
-	public void CallExerciseAPI() 
-	{
-		
-		string url = "http://104.131.144.86/api/exercises/" + eid + "?token=" + token;
-		string fullUrl = url + userId;
-		Debug.Log ("FULL URL: " + fullUrl);
-		WWW www = new WWW (fullUrl);
-		StartCoroutine (GetExerciseInfo (www)); 
-	}
-
-	IEnumerator GetExerciseInfo(WWW www) 
-	{
-		yield return www;
-
-		// check for errors
-		if (www.error == null) {
-
-
-			JSONNode N = JSON.Parse (www.text);
-
-
-			Debug.Log (www.text);
-
-			CallAPI ();
-
-
-		} else {
-			Debug.Log ("***WWW Error: " + www.error);
-			Debug.Log("!!! USER DOESN'T EXIST.");
-			if (www.error == "400 Bad Request") {
-				// alert for duplicate email address
-			}
-		}    
-
-	}
-
-	public void ParseExerciseJson(JSONNode N)
-	{
-
-	}
-	*/
 
 
 
@@ -242,7 +146,7 @@ public class UserProfileCtrl : MonoBehaviour
 		nameLabel.text = username;
 		winsLabel.text = numWins;
 		blobCountLabel.text = numBlobs.ToString ();
-		exercise.text = exerciseLevel;
+		exercise.text = remainingExercise;
 	}
 
 
@@ -430,6 +334,68 @@ public class UserProfileCtrl : MonoBehaviour
 		//Debug.Log ("userID after reset: " + playerPreferences.GetUser ());
 	}
 
+	public void CallAPI ()
+	{
+		string url = "http://104.131.144.86/api/users/";
+		string fullUrl = url + userId;
+		Debug.Log ("FULL URL: " + fullUrl);
+		WWW www = new WWW (fullUrl);
+		StartCoroutine (GetUserInfo (www)); 
+	}
+
+	IEnumerator GetUserInfo (WWW www)
+	{
+		yield return www;
+
+		if (www.error == null) {
+			result = JSON.Parse (www.text);
+			ParseJson (result);
+			//CallExerciseAPI ();
+			//SetHeader ();
+			SetBlobNames ();
+			ManageBlobButtons ();
+			SendTokenRequest (email, password);
+		} else {
+
+		}
+	}
+
+	public void ParseJson (JSONNode userResult)
+	{
+		// set user info
+		username = result ["name"].Value;
+		numWins = result ["battles_won"].Value;
+		numBlobs = result ["blobs"].Count;
+		string er_id = result ["er_id"].Value;
+		Int32.TryParse (er_id, out eid);
+
+		// save number of blobs owned by user in memory
+		playerPreferences.SetNumBlobs (numBlobs);
+		playerPreferences.SetExercise (eid);
+
+		// set blob names	
+		blobName0 = result ["blobs"] [0] ["name"].Value;
+		blobName1 = result ["blobs"] [1] ["name"].Value;
+		blobName2 = result ["blobs"] [2] ["name"].Value;
+		blobName3 = result ["blobs"] [3] ["name"].Value;
+
+		// set blob IDs
+		blobId0 = result ["blobs"] [0] ["id"].Value;
+		blobId1 = result ["blobs"] [1] ["id"].Value;
+		blobId2 = result ["blobs"] [2] ["id"].Value;
+		blobId3 = result ["blobs"] [3] ["id"].Value;
+
+		// set blob colors
+		blobColor0 = result ["blobs"] [0] ["color"].Value;
+		blobColor1 = result ["blobs"] [1] ["color"].Value;
+		blobColor2 = result ["blobs"] [2] ["color"].Value;
+		blobColor3 = result ["blobs"] [3] ["color"].Value;
+
+		// set exercise level
+		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
+	}
+
+
 	/// <summary>
 	/// Sends the token request via POST request to API.
 	/// </summary>
@@ -457,16 +423,16 @@ public class UserProfileCtrl : MonoBehaviour
 
 			JSONNode N = JSON.Parse (www.text);
 
-			Debug.Log("!!! USER EXISTS.");
+			Debug.Log("User exists, token found.");
 
 			ParseTokenJson (N);
-			//CallExerciseAPI ();
-			CallAPI ();
+			CallExerciseAPI ();
+			//CallAPI ();
 
 
 		} else {
 			Debug.Log ("***WWW Error: " + www.error);
-			Debug.Log("!!! USER DOESN'T EXIST.");
+			Debug.Log("User doesn't exist, token not found.");
 			if (www.error == "400 Bad Request") {
 				// alert for duplicate email address
 			}
@@ -478,6 +444,47 @@ public class UserProfileCtrl : MonoBehaviour
 		token = data ["token"].Value;
 		Debug.Log ("Parsed, token is: " + token);
 	}
+
+	/// <summary>
+	/// Call API to get exercise record.
+	/// </summary>
+	public void CallExerciseAPI() 
+	{
+
+		string url = "http://104.131.144.86/api/exercises/" + eid + "?token=" + token;
+		//string fullUrl = url + userId;
+		Debug.Log ("Call exercise API url: " + url);
+		WWW www = new WWW (url);
+		StartCoroutine (GetExerciseInfo (www)); 
+	}
+
+	IEnumerator GetExerciseInfo(WWW www) 
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+			Debug.Log ("Exercise record found.");
+			JSONNode N = JSON.Parse (www.text);
+			ParseExerciseJson (N);
+			Debug.Log (www.text);
+			Debug.Log ("exercise weekly goal: " + weeklyGoal);
+			Debug.Log ("exercise remaining: " + remainingExercise);
+			SetHeader ();
+		} else {
+			Debug.Log ("Exercise record error: " + www.error);
+		}    
+
+	}
+
+	public void ParseExerciseJson(JSONNode N)
+	{
+		weeklyGoal = N ["weekly_goal"].Value;
+		remainingExercise = N ["remaining_exercise"].Value;
+	}
+
+
+
 
 
 

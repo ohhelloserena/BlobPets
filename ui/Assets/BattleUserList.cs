@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class BattleUserList : MonoBehaviour {
 	
-	Button[] buttons = this.GetComponentsInChildren<Button>();
+	//Button[] buttons = this.GetComponentsInChildren<Button>();
 
 	// Use this for initialization
 	void Start () {
@@ -19,9 +19,11 @@ public class BattleUserList : MonoBehaviour {
 
 	public void BuildList ()
 	{
+		/*
 		for(int i = 0; i < buttons.Length;i++ )
 		{
 
 		}
+		*/
 	}
 }

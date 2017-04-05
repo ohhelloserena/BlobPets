@@ -435,7 +435,7 @@ public class FeedPoopCtrl : MonoBehaviour
 				Debug.Log ("PUT REQUEST SUCCESSFUL.");
 				Debug.Log (www.url.ToString ());
 				string battleGetURL = userURL + "?type=nearby&lat=" + currentLat + "&long=" + currentLong;
-				StartCoroutine (BattleGetRequest (battleGetURL));
+				//StartCoroutine (BattleGetRequest (battleGetURL));
 //				SceneManager.LoadScene ("BattleMain");
 			}
 		}
