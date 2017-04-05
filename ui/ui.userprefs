@@ -1,9 +1,14 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/UserProfileCtrl.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/BattleUserList.cs">
     <Files>
-      <File FileName="Assets/NewBehaviourScript.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/UserProfileCtrl.cs" Line="226" Column="3" />
+      <File FileName="Assets/BattleCtrl.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/UserProfileCtrl.cs" Line="364" Column="3" />
+      <File FileName="Assets/BlobRoomCtrl.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/FeedPoopCtrl.cs" Line="456" Column="33" />
+      <File FileName="Assets/BattleUserList.cs" Line="10" Column="8" />
+      <File FileName="Assets/Scripts/CreateButtonScript.cs" Line="30" Column="30" />
+      <File FileName="Assets/Plugins/SimpleJSON.cs.cs" Line="931" Column="30" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

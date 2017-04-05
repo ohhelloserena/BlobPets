@@ -94,6 +94,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	private GameObject gpsObject;
 	public double currentLat;
 	public double currentLong;
+	public JSONNode battleListResult;
 
 	// Use this for initialization
 	void Start ()
@@ -413,8 +414,6 @@ public class FeedPoopCtrl : MonoBehaviour
 			currentLat = battleGPS.lat2;
 			currentLong = battleGPS.long2;
 			StartCoroutine (BattlePutRequest ());
-
-//			SceneManager.LoadScene ("BattleMain");
 		}
 	}
 
@@ -435,55 +434,43 @@ public class FeedPoopCtrl : MonoBehaviour
 				Debug.Log ("PUT REQUEST SUCCESSFUL.");
 				Debug.Log (www.url.ToString ());
 				string battleGetURL = userURL + "?type=nearby&lat=" + currentLat + "&long=" + currentLong;
-				//StartCoroutine (BattleGetRequest (battleGetURL));
+				GetBattleUsers (battleGetURL);
 //				SceneManager.LoadScene ("BattleMain");
 			}
 		}
 	}
 
-//	public void GetBlob ()
-//	{
-//		WWW www = new WWW (url + blobId);
-//		StartCoroutine (GetBlobInfo (www));
-//	}
-//
-//
-//	IEnumerator GetBlobInfo (WWW www)
-//	{
-//		yield return www;
-//
-//		// check for errors
-//		if (www.error == null) {
-//			N = JSON.Parse (www.text);
-//			ParseJson ();
-//			PrintLevelBars ();
-//			CompareTimes ();
-//			Debug.Log ("GetBlobInfo OK: " + www.text);
-//		} else {
-//			Debug.Log ("WWW Error: " + www.error);
-//		}    
-//	}
+	public void GetBattleUsers (string url)
+	{
+		WWW www = new WWW (url);
+		StartCoroutine (BattleGetRequest (www));
+	}
 
 	IEnumerator BattleGetRequest (WWW www)
 	{
 		yield return www;
 
 		// check for errors
-		if (www.error == null)
-		{
-			N = JSON.Parse (www.text);
+		if (www.error == null) {
+			battleListResult = JSON.Parse (www.text);
+			Debug.Log (battleListResult);
+			Debug.Log ("WWW Ok!: " + www.text);
 			SceneManager.LoadScene ("BattleMain");
-			Debug.Log("WWW Ok!: " + www.data);
 		} else {
-			Debug.Log("WWW Error: "+ www.error);
+			Debug.Log ("WWW Error: " + www.error);
 		}    
 	}
-		
 
 	public void WarningButtonClicked(string cmd)
 	{
 		if (cmd == "yes") {
-			SceneManager.LoadScene ("BattleMain"); 
+			gpsObject = GameObject.Find ("GPSCTRL");
+			battleGPS = (GPSCtrl)gpsObject.GetComponent (typeof(GPSCtrl));
+			battleGPS.StartLocationService ();
+			battleGPS.GetCurrentLocation ();
+			currentLat = battleGPS.lat2;
+			currentLong = battleGPS.long2;
+			StartCoroutine (BattlePutRequest ());
 		} else if (cmd == "no") {
 			DisableWarningWindow ();
 		}
@@ -505,7 +492,6 @@ public class FeedPoopCtrl : MonoBehaviour
 		warning_body.enabled = true;
 		yes_GO.SetActive (true);
 		no_GO.SetActive (true);
-
 	}
 
 	public void PrintLevelBars()
@@ -514,10 +500,4 @@ public class FeedPoopCtrl : MonoBehaviour
 		c.text = cleanlinessLevel;
 		e.text = exerciseLevel;
 	}
-
-
-
-
-
-
 }
