@@ -202,7 +202,7 @@ class UserController extends Controller
         $users = User::where('latitude', '>=', $box['minLAT'])
             ->where('latitude', '<=', $box['maxLAT'])
             ->where('longitude', '>=', $box['minLON'])
-            ->where('longitude', '<=', $box['maxLON'])->get();
+            ->where('longitude', '<=', $box['maxLON'])->with("blobs")->get();
 
         // Return users that qualify
         return $users;
