@@ -24,10 +24,21 @@ class CreateBlobsTable extends Migration
             $table->float('exercise_level')->default(60);
             $table->integer('cleanliness_level')->default(60);
             $table->integer('health_level')->default(60);
-            $table->dateTime('next_cleanup_time')->default(Carbon::now());
-            $table->dateTime('next_feed_time')->default(Carbon::now());
-            $table->dateTime('last_levels_decrement')->default(Carbon::now());
-            $table->dateTime('end_rest')->default(Carbon::now());
+
+            $table->dateTime('next_cleanup_time')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->dateTime('next_feed_time')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->dateTime('last_levels_decrement')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->dateTime('end_rest')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+            // $table->dateTime('next_cleanup_time')->default(date("Y-m-d H:i:s"));
+            // $table->dateTime('next_cleanup_time')->default(Carbon::now());
+            // $table->dateTime('next_feed_time')->default(date("Y-m-d H:i:s"));
+            // $table->dateTime('next_feed_time')->default(Carbon::now());
+            // $table->dateTime('last_levels_decrement')->default(date("Y-m-d H:i:s"));
+            // $table->dateTime('last_levels_decrement')->default(Carbon::now());
+            // $table->dateTime('end_rest')->default(date("Y-m-d H:i:s"));
+            // $table->dateTime('end_rest')->default(Carbon::now());
+
             $table->integer('owner_id')->unsigned();
             $table->timestamps();
         });
