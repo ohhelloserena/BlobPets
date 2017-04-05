@@ -90,6 +90,11 @@ public class FeedPoopCtrl : MonoBehaviour
 	public Button no_button;
 	public GameObject no_GO;
 
+	public GPSCtrl battleGPS;
+	private GameObject gpsObject;
+	public double currentLat;
+	public double currentLong;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -388,6 +393,8 @@ public class FeedPoopCtrl : MonoBehaviour
 		Int32.TryParse (cleanlinessLevel, out cleanlinessLevelInt);	// poop
 		//Int32.TryParse (exerciseLevel, out exerciseLevelInt);	// exercise
 
+		Debug.Log ("Lat: " + currentLat + " Long: " + currentLong);
+
 		Debug.Log ("battle button clicked");
 		Debug.Log ("string exercise: " + exerciseLevel);
 
@@ -399,7 +406,38 @@ public class FeedPoopCtrl : MonoBehaviour
 		if (healthLevelInt < 10 || cleanlinessLevelInt < 10 || exerciseLevelInt < 10) {
 			EnableWarningWindow ();
 		} else {
-			SceneManager.LoadScene ("BattleMain");
+			gpsObject = GameObject.Find ("GPSCTRL");
+			battleGPS = (GPSCtrl)gpsObject.GetComponent (typeof(GPSCtrl));
+			battleGPS.StartLocationService ();
+			battleGPS.GetCurrentLocation ();
+			currentLat = battleGPS.lat2;
+			currentLong = battleGPS.long2;
+			StartCoroutine (BattlePutRequest ());
+
+//			SceneManager.LoadScene ("BattleMain");
+		}
+	}
+
+	// PUT request
+	IEnumerator BattlePutRequest ()
+	{
+		string myData = "Hello";	// need to send a dummy string in UnityWebReqest.Put, otherwise it won't work
+		string userURL = "http://104.131.144.86/api/users/";
+		string finalUrl = userURL + userId + "?token=" + token + "&latitude=" + currentLat + "&longitude=" + currentLong;
+
+		Debug.Log ("final URL... " + finalUrl);
+
+		using (UnityWebRequest www = UnityWebRequest.Put (finalUrl, myData)) {
+			yield return www.Send ();
+
+			if (www.isError) {
+				Debug.Log ("PUT ERROR: " + www.error);
+			} else {
+				Debug.Log ("PUT REQUEST SUCCESSFUL.");
+				Debug.Log (www.url.ToString ());
+				SceneManager.LoadScene ("BattleMain");
+			}
+
 		}
 	}
 		

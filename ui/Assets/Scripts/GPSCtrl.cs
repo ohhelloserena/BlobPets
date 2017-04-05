@@ -80,7 +80,7 @@ public class GPSCtrl : MonoBehaviour
 	/// <summary>
 	/// Starts the location service.
 	/// </summary>
-	IEnumerator StartLocationService ()
+	public IEnumerator StartLocationService ()
 	{
 		// First, check if user has location service enabled
 		if (!Input.location.isEnabledByUser)
