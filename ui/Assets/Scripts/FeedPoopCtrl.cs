@@ -424,7 +424,6 @@ public class FeedPoopCtrl : MonoBehaviour
 		string myData = "Hello";	// need to send a dummy string in UnityWebReqest.Put, otherwise it won't work
 		string userURL = "http://104.131.144.86/api/users/";
 		string finalUrl = userURL + userId + "?token=" + token + "&latitude=" + currentLat + "&longitude=" + currentLong;
-
 		Debug.Log ("final URL... " + finalUrl);
 
 		using (UnityWebRequest www = UnityWebRequest.Put (finalUrl, myData)) {
@@ -435,10 +434,49 @@ public class FeedPoopCtrl : MonoBehaviour
 			} else {
 				Debug.Log ("PUT REQUEST SUCCESSFUL.");
 				Debug.Log (www.url.ToString ());
-				SceneManager.LoadScene ("BattleMain");
+				string battleGetURL = userURL + "?type=nearby&lat=" + currentLat + "&long=" + currentLong;
+				StartCoroutine (BattleGetRequest (battleGetURL));
+//				SceneManager.LoadScene ("BattleMain");
 			}
-
 		}
+	}
+
+//	public void GetBlob ()
+//	{
+//		WWW www = new WWW (url + blobId);
+//		StartCoroutine (GetBlobInfo (www));
+//	}
+//
+//
+//	IEnumerator GetBlobInfo (WWW www)
+//	{
+//		yield return www;
+//
+//		// check for errors
+//		if (www.error == null) {
+//			N = JSON.Parse (www.text);
+//			ParseJson ();
+//			PrintLevelBars ();
+//			CompareTimes ();
+//			Debug.Log ("GetBlobInfo OK: " + www.text);
+//		} else {
+//			Debug.Log ("WWW Error: " + www.error);
+//		}    
+//	}
+
+	IEnumerator BattleGetRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null)
+		{
+			N = JSON.Parse (www.text);
+			SceneManager.LoadScene ("BattleMain");
+			Debug.Log("WWW Ok!: " + www.data);
+		} else {
+			Debug.Log("WWW Error: "+ www.error);
+		}    
 	}
 		
 
