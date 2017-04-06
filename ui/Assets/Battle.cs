@@ -27,6 +27,7 @@ public class Battle : MonoBehaviour
 	public Button ok_button;
 	public GameObject ok_GO;
 
+	public JSONNode results;
 
 	string url = "http://104.131.144.86/api/battles";
 
@@ -49,11 +50,8 @@ public class Battle : MonoBehaviour
 
 		DisableWarningWindow (0);
 
-//		SendTokenRequest (email, password);
-		CallBattleAPI();
+		SendTokenRequest (email, password);
 	}
-
-	// playerprefs string "RequestedBlobId" --> current user's blob that will battle
 
 	// Update is called once per frame
 	void Update ()
@@ -101,18 +99,25 @@ public class Battle : MonoBehaviour
 	public void ParseTokenJson (JSONNode data)
 	{
 		token = data ["token"].Value;
-		//Debug.Log ("Parsed, token is: " + token);
 	}
 
-	public void CallBattleAPI ()
+	public void CallBattleAPI() 
 	{
-		// serverAddress.com/api/battles?blob1=<>&blob2=<> (POST TO THIS)
-		// add to url ---> ?blob1=<>&blob2=<>
+		
+		Debug.Log ("create scene - entering CallBlobAPI()...");
+		Debug.Log ("token: " + token);
+		Debug.Log ("blob1 : " + blobID1);
+		Debug.Log ("blob2: " + blobID2);
+
+		Dictionary<string, string> headers = new Dictionary<string, string> ();
+		headers.Add("Content-Type", "application/x-www-form-urlencoded");
+		headers.Add ("Authorization", "Bearer " + token);
 		WWWForm form = new WWWForm ();
+		form.AddField ("token", token);
 		form.AddField ("blob1", blobID1);
 		form.AddField ("blob2", blobID2);
-		WWW www = new WWW (url, form);
-		
+		byte[] rawData = form.data;
+		WWW www = new WWW (url, rawData, headers);
 		StartCoroutine (WaitForBattleRequest (www));
 	}
 
@@ -122,17 +127,48 @@ public class Battle : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-			Debug.Log ("!!! USER EXISTS.");
-//			SceneManager.LoadScene ("BattleResult");
-			Debug.Log ("battleresults: " + www.text);
-//			SceneManager.LoadScene ("BattleResult"); // TEMP SCENE
-			SetWarningWindowText (0);
-			EnableWarningWindow(0);
+			Debug.Log ("!!! BATTLE OK.");
+			results = JSON.Parse(www.text);
+			string battleRecordID = results ["BattleRecordID"].Value;
+			string recordURL = url + "/" + battleRecordID;
+			getResults (recordURL);
 		} else {
-			Debug.Log ("!!! USER DOESN'T EXIST.");
+			Debug.Log ("!!! BATTLE ERROR.");
 			Debug.Log ("***WWW Error: " + www.error);
 		}    
 	}
+
+	public void getResults(string url){
+		// serveraddress.com/api/battles/[id]
+		WWW www = new WWW (url);
+		StartCoroutine (GetResultRequest (www));
+	}
+
+	IEnumerator GetResultRequest (WWW www)
+	{
+		yield return www;
+
+		// check for errors
+		if (www.error == null) {
+			results = JSON.Parse (www.text);
+			string winner = results ["winnerBlobID"].Value;
+			string loser = results ["loserBlobID"].Value;
+			Debug.Log ("winner: " + winner);
+			Debug.Log ("loser: " + loser);
+			if (blobID1 == winner) {
+				SetWarningWindowText (0);
+			} else {
+				SetWarningWindowText (1);
+			}
+			yield return new WaitForSeconds (2);
+			EnableWarningWindow (0);
+			Debug.Log ("WWW Ok!: " + www.text);
+		} else {
+			Debug.Log ("WWW Error: " + www.error);
+		}    
+	}
+
+	// loserBlobID":2,"winnerBlobID":5
 
 	public void SetWarningWindowText (int msgCode)
 	{
