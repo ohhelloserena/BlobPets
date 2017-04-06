@@ -94,6 +94,9 @@ public class FeedPoopCtrl : MonoBehaviour
 	public Button no_button;
 	public GameObject no_GO;
 
+
+
+	// battle 
 	public GPSCtrl battleGPS;
 	private GameObject gpsObject;
 	public double currentLat;
@@ -470,6 +473,15 @@ public class FeedPoopCtrl : MonoBehaviour
 			StartCoroutine (BattlePutRequest ());
 		} else if (cmd == "no") {
 			DisableWarningWindow ();
+		}
+	}
+
+	public void SetWarningWindowText(int msgCode)
+	{
+		if (msgCode == 0) {
+			warning_body.text = "Your blob is too weak to battle. Would you like to do it anyway?";
+		} else if (msgCode == 1) {
+			warning_body.text = "Your blob is tired and needs to rest before it can battle again. Try again later.";
 		}
 	}
 
