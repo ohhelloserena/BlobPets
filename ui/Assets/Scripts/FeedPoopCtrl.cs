@@ -156,6 +156,11 @@ public class FeedPoopCtrl : MonoBehaviour
 			userId = PlayerPrefs.GetString (idKey);
 		}
 
+		Debug.Log ("IN FEEDPOOP START()...");
+
+		Debug.Log ("email: " + email);
+		Debug.Log ("password: " + password);
+
 		imgPoop = poopGO.GetComponent<Image> ();
 		imgHam = hamGO.GetComponent<Image> ();
 		imgThoughtBub = thoughtGO.GetComponent<Image> ();
@@ -163,8 +168,9 @@ public class FeedPoopCtrl : MonoBehaviour
 		imgPoop.enabled = false;
 		imgHam.enabled = false;
 		imgThoughtBub.enabled = false;
+
 		SendTokenRequest (email, password);
-		GetBlob ();
+		//GetBlob ();
 	}
 
 
@@ -193,6 +199,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	/// <param name="password">Password of logged in user. </param>
 	public void SendTokenRequest (string email, string password)
 	{
+		Debug.Log ("IN SENDTOKENREQUEST...");
 		string tokenUrl = "http://104.131.144.86/api/users/authenticate";
 		WWWForm form = new WWWForm ();
 		form.AddField ("email", email);
@@ -212,10 +219,13 @@ public class FeedPoopCtrl : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-			Debug.Log ("!!! USER EXISTS.");
+			
 			userExists = true;
 			JSONNode N = JSON.Parse (www.text);
 			ParseJson (N);
+
+			Debug.Log ("Got token. Token: " + token);
+			GetBlob ();
 
 			PlayerPrefs.SetString (emailKey, email);
 			PlayerPrefs.SetString (passwordKey, password);
@@ -223,7 +233,7 @@ public class FeedPoopCtrl : MonoBehaviour
 			PlayerPrefs.Save ();
 
 		} else {
-			Debug.Log ("!!! USER DOESN'T EXIST.");
+			Debug.Log ("Didn't get token.");
 			Debug.Log ("***WWW Error: " + www.error);
 			userExists = false;
 
@@ -238,6 +248,8 @@ public class FeedPoopCtrl : MonoBehaviour
 
 	public void GetBlob ()
 	{
+		Debug.Log ("IN GETBLOB()....");
+
 		WWW www = new WWW (url + blobId);
 		StartCoroutine (GetBlobInfo (www));
 	}
@@ -250,6 +262,8 @@ public class FeedPoopCtrl : MonoBehaviour
 		// check for errors
 		if (www.error == null) {
 			N = JSON.Parse (www.text);
+			Debug.Log("GetBlobInfo: " + www.text);
+
 			ParseJson ();
 			PrintLevelBars ();
 			CompareTimes ();
@@ -268,6 +282,13 @@ public class FeedPoopCtrl : MonoBehaviour
 		exerciseLevel = N ["exercise_level"].Value;
 		blobName0 = N ["name"].Value;
 		blobLevel = N ["level"].Value;
+		endRestTime = N ["end_rest"].Value;
+
+		Debug.Log ("Parsing blob info in ParseJson()...");
+		Debug.Log ("nextCleanTime: " + nextCleanTime);
+		Debug.Log ("nextFeedTime: " + nextFeedTime);
+		Debug.Log ("endRestTime: " + endRestTime);
+	
 	}
 
 
@@ -284,6 +305,10 @@ public class FeedPoopCtrl : MonoBehaviour
 		int cleanComp = DateTime.Compare (dateTime, cleanTime);
 		int feedComp = DateTime.Compare (dateTime, feedTime);
 		int endComp = DateTime.Compare (dateTime, endTime);
+
+		Debug.Log ("cleanComp: " + cleanComp);
+		Debug.Log ("feedComp: " + feedComp);
+		Debug.Log ("endComp: " + endComp);
 
 		if (cleanComp < 0) {
 			// dateTime is earlier than cleanTime
@@ -319,6 +344,7 @@ public class FeedPoopCtrl : MonoBehaviour
 			Invoke ("EnableHam", 1);
 		}
 
+
 		if (endComp < 0) {
 			// dateTime is earlier than end_rest
 			SetWarningWindowText (1);
@@ -326,9 +352,9 @@ public class FeedPoopCtrl : MonoBehaviour
 		} else if (endComp == 0 || cleanComp > 0) {
 			// == 0 : dateTime same as CleanTime
 			// > 0 : dateTime is later than cleanTime
-
-
+			DisableWarningWindow (0);
 		}
+
 	}
 
 
