@@ -160,6 +160,7 @@ public class Battle : MonoBehaviour
 			} else {
 				SetWarningWindowText (1);
 			}
+			yield return new WaitForSeconds (2);
 			EnableWarningWindow (0);
 			Debug.Log ("WWW Ok!: " + www.text);
 		} else {
