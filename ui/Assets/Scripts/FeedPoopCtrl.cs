@@ -98,7 +98,6 @@ public class FeedPoopCtrl : MonoBehaviour
 	private GameObject gpsObject;
 	public double currentLat;
 	public double currentLong;
-	public JSONNode battleListResult;
 
 	// Use this for initialization
 	void Start ()
@@ -150,7 +149,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	}
 
 
-	
+
 	// Update is called once per frame
 	void Update ()
 	{
@@ -165,7 +164,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		cleanComp = DateTime.Compare (dateTime, cleanTime);
 		feedComp = DateTime.Compare (dateTime, feedTime);
 
-		
+
 	}
 
 	/// <summary>
@@ -208,7 +207,7 @@ public class FeedPoopCtrl : MonoBehaviour
 			Debug.Log ("!!! USER DOESN'T EXIST.");
 			Debug.Log ("***WWW Error: " + www.error);
 			userExists = false;
-		
+
 		}    
 	}
 
@@ -255,7 +254,7 @@ public class FeedPoopCtrl : MonoBehaviour
 
 	public void CompareTimes ()
 	{
-		
+
 		DateTime dateTime = DateTime.Now.ToUniversalTime ();
 		Debug.Log ("Current time in UTC: " + dateTime.ToString ());
 
@@ -309,7 +308,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		if (needsFeeding) {
 			Debug.Log ("Feed button clicked.");
 			StartCoroutine (UpdateBlob ("feed"));
-	
+
 		}
 	}
 
@@ -361,7 +360,7 @@ public class FeedPoopCtrl : MonoBehaviour
 
 				//GetBlob ();
 			}
-	
+
 		}
 	}
 
@@ -434,7 +433,6 @@ public class FeedPoopCtrl : MonoBehaviour
 				Debug.Log (www.url.ToString ());
 				string battleGetURL = userURL + "?type=nearby&lat=" + currentLat + "&long=" + currentLong;
 				GetBattleUsers (battleGetURL);
-//				SceneManager.LoadScene ("BattleMain");
 			}
 		}
 	}
@@ -451,8 +449,7 @@ public class FeedPoopCtrl : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-			battleListResult = JSON.Parse (www.text);
-			Debug.Log (battleListResult);
+			PlayerPrefs.SetString("battleUserList", www.text);
 			Debug.Log ("WWW Ok!: " + www.text);
 			SceneManager.LoadScene ("BattleMain");
 			Debug.Log("WWW Ok!: " + www.text);

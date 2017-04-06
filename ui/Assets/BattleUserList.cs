@@ -3,69 +3,66 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
-using System.Linq;
 
 public class BattleUserList : MonoBehaviour
 {
-	public FeedPoopCtrl fpctrl;
-	private GameObject fpObject;
-	public JSONNode battleJsonData;
+	public string battleData;
+	private JSONNode battleListData;
 
 	// User info
 	private string userName;
-	public ArrayList userList;
+	private List<string> userList;
+
+	//	public ArrayList userList;
 
 	// Blob info
 
 	// Use this for initialization
 	void Start ()
 	{
-		fpObject = GameObject.Find ("FEED_POOP_CTRL");
-		fpctrl = (FeedPoopCtrl)fpObject.GetComponent (typeof(FeedPoopCtrl));
-		battleJsonData = fpctrl.battleListResult;
-		Debug.Log ("Battlejson: " + battleJsonData);
-//		BuildList ();
+		battleData = PlayerPrefs.GetString ("battleUserList");
+		battleListData = JSON.Parse (battleData);
+
+		if (battleListData != null) {
+			Debug.Log ("DATA IS NOT NULL");
+		} else {
+			Debug.Log ("DATA IS NULL");
+		}
+		userList = new List<string> ();
+		BuildList ();
 	}
-	
+
 	// Update is called once per frame
 	void Update ()
 	{
-		
+
 	}
 
 	public void BuildList ()
 	{
-//		Button[] buttons = this.GetComponentsInChildren<Button> ();
+		Button[] buttons = this.GetComponentsInChildren<Button> ();
+		Debug.Log ("NUMBER OF BUTTONS: " + buttons.Length);
 
-//		for (int i = 0; i < buttons.Length; i++) {
-//			// for # of users returned, 
-//			// add info to button i
-//			ProcessJson(battleJsonData);
-//		}
+		ProcessJson(battleListData);
+
+		for (int i = 0; i < buttons.Length; i++) {
+			string buttonName = buttons [i].name;
+			// for # of users returned, 
+			// add info to button i
+			GameObject.Find(buttonName).GetComponentInChildren<Text>().text = userList[i];
+		}
+		ProcessJson(battleListData);
 	}
 
-	private void ProcessJson(JSONNode battleData)
+	private void ProcessJson (JSONNode battleData)
 	{
-//		int count = battleData.Count;
-		Debug.Log ("battledata: " + battleData);
-//		JSONClass j = (JSONClass) battleData.AsObject ["user"];
-//		foreach (string k in j.keys){
-//			Debug.Log (k);
-//			Debug.Log (j[k]);
-//		}
-//		JsonData jsonvale = JsonMapper.ToObject(jsonString);
-//		parseJSON parsejson;
-//		parsejson = new parseJSON();
-//		parsejson.title = jsonvale["title"].ToString();
-//		parsejson.id = jsonvale["ID"].ToString();
-//
-//		parsejson.but_title = new ArrayList ();
-//		parsejson.but_image = new ArrayList ();
-// 
-//		for(int i = 0; i<jsonvale["buttons"].Count; i++)
-//		{
-//			parsejson.but_title.Add(jsonvale["buttons"][i]["title"].ToString());
-//			parsejson.but_image.Add(jsonvale["buttons"][i]["image"].ToString());
-//		}
+		int count = battleData.Count;
+		Debug.Log ("count: " + count);
+
+		for (int i = 0; i < count; i++) {
+			string nameValue = battleData [i] ["name"].Value;
+			userList.Add (nameValue);
+			Debug.Log (nameValue);
+		}
 	}
 }
