@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SimpleJSON;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Battle : MonoBehaviour
@@ -12,6 +13,20 @@ public class Battle : MonoBehaviour
 	public string token;
 	public string email;
 	public string password;
+
+	// battle notification warning
+	public Image battleWarning;
+	public GameObject battleGO;
+
+	public Text warning_label;
+	public GameObject WL_GO;
+
+	public Text warning_body;
+	public GameObject WB_GO;
+
+	public Button ok_button;
+	public GameObject ok_GO;
+
 
 	string url = "http://104.131.144.86/api/battles";
 
@@ -25,6 +40,14 @@ public class Battle : MonoBehaviour
 
 		blobID1 = PlayerPrefs.GetString ("RequestedBlobId");
 		blobID2 = PlayerPrefs.GetString ("opponentBlobId");
+
+		ok_button = ok_GO.GetComponent<Button> ();
+
+		battleWarning = battleGO.GetComponent<Image> ();
+		warning_label = WL_GO.GetComponent<Text> ();
+		warning_body = WB_GO.GetComponent<Text> ();
+
+		DisableWarningWindow (0);
 
 //		SendTokenRequest (email, password);
 		CallBattleAPI();
@@ -102,10 +125,48 @@ public class Battle : MonoBehaviour
 			Debug.Log ("!!! USER EXISTS.");
 //			SceneManager.LoadScene ("BattleResult");
 			Debug.Log ("battleresults: " + www.text);
-			SceneManager.LoadScene ("BattleMain"); // TEMP SCENE
+//			SceneManager.LoadScene ("BattleResult"); // TEMP SCENE
+			SetWarningWindowText (0);
+			EnableWarningWindow(0);
 		} else {
 			Debug.Log ("!!! USER DOESN'T EXIST.");
 			Debug.Log ("***WWW Error: " + www.error);
 		}    
+	}
+
+	public void SetWarningWindowText (int msgCode)
+	{
+		if (msgCode == 0) {
+			warning_body.text = "You won!";
+		} else if (msgCode == 1) {
+			warning_body.text = "You lost...";
+		}
+	}
+
+	public void EnableWarningWindow(int msgCode)
+	{
+		battleWarning.enabled = true;
+		warning_label.enabled = true;
+		warning_body.enabled = true;
+
+		if (msgCode == 0) {
+			ok_GO.SetActive (true);
+		} else if (msgCode == 1) {
+			ok_GO.SetActive (false);
+		}
+	}
+
+	public void DisableWarningWindow(int msgCode)
+	{
+		battleWarning.enabled = false;
+		warning_label.enabled = false;
+		warning_body.enabled = false;
+		ok_GO.SetActive (false);
+	}
+
+	public void OkayButtonClicked()
+	{
+		DisableWarningWindow (0);
+		SceneManager.LoadScene ("UserProfileUI");
 	}
 }
