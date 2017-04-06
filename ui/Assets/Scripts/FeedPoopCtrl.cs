@@ -16,6 +16,8 @@ using UnityEngine.Networking;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Configuration;
 
 public class FeedPoopCtrl : MonoBehaviour
 {
@@ -24,11 +26,13 @@ public class FeedPoopCtrl : MonoBehaviour
 	public JSONNode N;
 	public string nextCleanTime;
 	public string nextFeedTime;
+	public string endRestTime;
 	public string level;
 	public string cleanlinessLevel;
 	public string healthLevel;
 	public string exerciseLevel;
 	public string blobLevel;
+
 
 	//private string nameKey = "Name";
 	private string emailKey = "Email";
@@ -61,6 +65,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	public DateTime dateTime;
 	public DateTime cleanTime;
 	public DateTime feedTime;
+	public DateTime endRest;
 	public int cleanComp;
 	public int feedComp;
 
@@ -94,6 +99,9 @@ public class FeedPoopCtrl : MonoBehaviour
 	public Button no_button;
 	public GameObject no_GO;
 
+	public Button ok_button;
+	public GameObject ok_GO;
+
 
 
 	// battle 
@@ -105,6 +113,8 @@ public class FeedPoopCtrl : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		ok_button = ok_GO.GetComponent<Button> ();
+
 		battleBtn = blueBattleBtnGO.GetComponent<Button> ();
 
 		battleWarning = battleGO.GetComponent<Image> ();
@@ -119,7 +129,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		b = bGO.GetComponent<Text> ();
 
 
-		DisableWarningWindow ();
+		DisableWarningWindow (0);
 
 		string blobIdKey = "RequestedBlobId";
 		if (PlayerPrefs.HasKey (blobIdKey)) {
@@ -161,8 +171,8 @@ public class FeedPoopCtrl : MonoBehaviour
 		//Debug.Log ("Current time in UTC: " + dateTime.ToString ());
 
 		cleanTime = Convert.ToDateTime (nextCleanTime);
-
 		feedTime = Convert.ToDateTime (nextFeedTime);
+
 
 		cleanComp = DateTime.Compare (dateTime, cleanTime);
 		feedComp = DateTime.Compare (dateTime, feedTime);
@@ -262,11 +272,12 @@ public class FeedPoopCtrl : MonoBehaviour
 		Debug.Log ("Current time in UTC: " + dateTime.ToString ());
 
 		DateTime cleanTime = Convert.ToDateTime (nextCleanTime);
-
 		DateTime feedTime = Convert.ToDateTime (nextFeedTime);
+		DateTime endTime = Convert.ToDateTime (endRestTime);
 
 		int cleanComp = DateTime.Compare (dateTime, cleanTime);
 		int feedComp = DateTime.Compare (dateTime, feedTime);
+		int endComp = DateTime.Compare (dateTime, endTime);
 
 		if (cleanComp < 0) {
 			// dateTime is earlier than cleanTime
@@ -300,6 +311,17 @@ public class FeedPoopCtrl : MonoBehaviour
 			needsFeeding = true;
 			imgThoughtBub.enabled = true;
 			Invoke ("EnableHam", 1);
+		}
+
+		if (endComp < 0) {
+			// dateTime is earlier than end_rest
+			SetWarningWindowText (1);
+			EnableWarningWindow (1);
+		} else if (endComp == 0 || cleanComp > 0) {
+			// == 0 : dateTime same as CleanTime
+			// > 0 : dateTime is later than cleanTime
+
+
 		}
 	}
 
@@ -406,7 +428,8 @@ public class FeedPoopCtrl : MonoBehaviour
 
 
 		if (healthLevelInt < 10 || cleanlinessLevelInt < 10 || exerciseLevelInt < 10) {
-			EnableWarningWindow ();
+			SetWarningWindowText (0);
+			EnableWarningWindow (0);
 		} else {
 			gpsObject = GameObject.Find ("GPSCTRL");
 			battleGPS = (GPSCtrl)gpsObject.GetComponent (typeof(GPSCtrl));
@@ -472,7 +495,7 @@ public class FeedPoopCtrl : MonoBehaviour
 			currentLong = battleGPS.long2;
 			StartCoroutine (BattlePutRequest ());
 		} else if (cmd == "no") {
-			DisableWarningWindow ();
+			DisableWarningWindow (0);
 		}
 	}
 
@@ -485,22 +508,34 @@ public class FeedPoopCtrl : MonoBehaviour
 		}
 	}
 
-	public void DisableWarningWindow()
+	public void DisableWarningWindow(int msgCode)
 	{
 		battleWarning.enabled = false;
 		warning_label.enabled = false;
 		warning_body.enabled = false;
-		yes_GO.SetActive (false);
-		no_GO.SetActive (false);
+			yes_GO.SetActive (false);
+			no_GO.SetActive (false);
+			ok_GO.SetActive (false);
+
+
+
 	}
 
-	public void EnableWarningWindow()
+	public void EnableWarningWindow(int msgCode)
 	{
 		battleWarning.enabled = true;
 		warning_label.enabled = true;
 		warning_body.enabled = true;
-		yes_GO.SetActive (true);
-		no_GO.SetActive (true);
+
+		if (msgCode == 0) {
+			yes_GO.SetActive (true);
+			no_GO.SetActive (true);
+			ok_GO.SetActive (false);
+		} else if (msgCode == 1) {
+			yes_GO.SetActive (false);
+			no_GO.SetActive(false);
+			ok_GO.SetActive (true);
+		}
 	}
 
 	public void PrintLevelBars()
@@ -515,5 +550,10 @@ public class FeedPoopCtrl : MonoBehaviour
 		b.text = blobLevel;
 
 
+	}
+
+	public void OkayButtonClicked()
+	{
+		DisableWarningWindow (0);
 	}
 }
