@@ -6,14 +6,12 @@ using SimpleJSON;
 
 public class BattleUserList : MonoBehaviour
 {
-	public string battleData;
+	private string battleData;
 	private JSONNode battleListData;
 
 	// User info
 	private string userName;
-	private List<string> userList;
-
-	//	public ArrayList userList;
+	public List<string> userList;
 
 	// Blob info
 
@@ -43,15 +41,12 @@ public class BattleUserList : MonoBehaviour
 		Button[] buttons = this.GetComponentsInChildren<Button> ();
 		Debug.Log ("NUMBER OF BUTTONS: " + buttons.Length);
 
-		ProcessJson(battleListData);
+		ProcessJson (battleListData);
 
 		for (int i = 0; i < buttons.Length; i++) {
 			string buttonName = buttons [i].name;
-			// for # of users returned, 
-			// add info to button i
-			GameObject.Find(buttonName).GetComponentInChildren<Text>().text = userList[i];
+			GameObject.Find (buttonName).GetComponentInChildren<Text> ().text = userList [i];
 		}
-		ProcessJson(battleListData);
 	}
 
 	private void ProcessJson (JSONNode battleData)
@@ -61,8 +56,9 @@ public class BattleUserList : MonoBehaviour
 
 		for (int i = 0; i < count; i++) {
 			string nameValue = battleData [i] ["name"].Value;
-			userList.Add (nameValue);
-			Debug.Log (nameValue);
+			string userIndex = i.ToString();
+			userList.Add (userIndex + " " + nameValue);
+			Debug.Log (userIndex + nameValue);
 		}
 	}
 }
