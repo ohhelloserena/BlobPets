@@ -120,8 +120,6 @@ public class CreateNewBlobCtrl : MonoBehaviour {
 		byte[] rawData = form.data;
 		WWW www = new WWW (breedUrl, rawData, headers);
 		StartCoroutine (WaitForRequest2 (www));
-
-
 	}
 
 	IEnumerator WaitForRequest2 (WWW www)
