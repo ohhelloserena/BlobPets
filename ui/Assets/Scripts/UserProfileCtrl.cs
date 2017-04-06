@@ -451,7 +451,10 @@ public class UserProfileCtrl : MonoBehaviour
 			ParseJson (result);
 			//CallExerciseAPI ();
 			//SetHeader ();
-			CheckBlobStatus();
+			CheckBlobStatus(0);
+			CheckBlobStatus(1);
+			CheckBlobStatus(2);
+			CheckBlobStatus(3);
 			SetBlobNames ();
 			ManageBlobButtons ();
 			SendTokenRequest (email, password);
@@ -501,32 +504,36 @@ public class UserProfileCtrl : MonoBehaviour
 		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
 	}
 
-	public void CheckBlobStatus()
+	public void CheckBlobStatus(int blobNum)
 	{
 		Debug.Log ("Checking blob status...");
+		Debug.Log ("b0 alive: " + aliveStatus0);
+		Debug.Log ("b1 alive: " + aliveStatus1);
+		Debug.Log ("b2 alive: " + aliveStatus2);
+		Debug.Log ("b3 alive: " + aliveStatus3);
 
-		if (!String.IsNullOrEmpty (aliveStatus0)) {
+		if (blobNum == 0 && !String.IsNullOrEmpty (aliveStatus0)) {
 			if (aliveStatus0 == "0") {
 				Debug.Log ("Blob 0 dead.");
 				EnableDeadBlobWindow ();
 				deadBlobNum = "0";
 				PrintDeadBlobWarning ("0");
 			}
-		} else if (!String.IsNullOrEmpty (aliveStatus1)) {
+		} else if (blobNum == 1 && !String.IsNullOrEmpty (aliveStatus1)) {
 			if (aliveStatus1 == "0") {
 				Debug.Log ("Blob 1 dead.");
 				EnableDeadBlobWindow ();
 				deadBlobNum = "1";
 				PrintDeadBlobWarning ("1");
 			}
-		} else if (!String.IsNullOrEmpty (aliveStatus2)) {
+		} else if (blobNum == 2 && !String.IsNullOrEmpty (aliveStatus2)) {
 			if (aliveStatus2 == "0") {
 				Debug.Log ("Blob 2 dead.");
 				EnableDeadBlobWindow ();
 				deadBlobNum = "2";
 				PrintDeadBlobWarning ("2");
 			}
-		} else if (!String.IsNullOrEmpty (aliveStatus3)) {
+		} else if (blobNum == 3 && !String.IsNullOrEmpty (aliveStatus3)) {
 			if (aliveStatus3 == "0") {
 				Debug.Log ("Blob 3 dead.");
 				EnableDeadBlobWindow ();
