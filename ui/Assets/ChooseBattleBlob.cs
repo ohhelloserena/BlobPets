@@ -31,11 +31,11 @@ public class ChooseBattleBlob : MonoBehaviour {
 
 		// get blob ID from text of button clicked
 		string chosenBlobID = chosenBlob.Substring (0, 1);
-		int chosenBlobInt = int.Parse (chosenBlobID);
-		Debug.Log ("Chosen blob ID: " + chosenBlobInt);
+//		int chosenBlobInt = int.Parse (chosenBlobID);
+//		Debug.Log ("Chosen blob ID: " + chosenBlobInt);
 
 		// set in playerprefs
-		PlayerPrefs.SetInt ("opponentBlobId", chosenBlobInt);
+		PlayerPrefs.SetString ("opponentBlobId", chosenBlobID);
 
 		// go to choosing blob scene
 		SceneManager.LoadScene ("BattleAnimationScreen");

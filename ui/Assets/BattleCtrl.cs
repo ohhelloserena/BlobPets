@@ -52,7 +52,7 @@ public class BattleCtrl : MonoBehaviour {
 		
 	}
 
-	// GET THE LIST OF THE CHOSEN USER'S BLOB AND POPULATE THE BUTTONS
+	// GET THE LIST OF THE CHOSEN USER'S BLOBS AND POPULATE THE BUTTONS
 	public void BuildBlobList ()
 	{
 		Button[] buttons = this.GetComponentsInChildren<Button> ();
