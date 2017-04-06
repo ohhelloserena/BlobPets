@@ -26,7 +26,8 @@ public class Battle : MonoBehaviour
 		blobID1 = PlayerPrefs.GetString ("RequestedBlobId");
 		blobID2 = PlayerPrefs.GetString ("opponentBlobId");
 
-		SendTokenRequest (email, password);
+//		SendTokenRequest (email, password);
+		CallBattleAPI();
 	}
 
 	// playerprefs string "RequestedBlobId" --> current user's blob that will battle
