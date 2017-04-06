@@ -70,15 +70,23 @@ public class FeedPoopCtrl : MonoBehaviour
 	public int feedComp;
 
 	// level bars
-	public Text h;	// health level
-	public Text e;	// exercise level
-	public Text c;	// cleanliness level
-	public Text b;	// blob level
+	public Text h;
+	// health level
+	public Text e;
+	// exercise level
+	public Text c;
+	// cleanliness level
+	public Text b;
+	// blob level
 
-	public GameObject hGO;	// health level
-	public GameObject eGO;	// exercise level	
-	public GameObject cGO;	// cleanliness level
-	public GameObject bGO;	// blob level
+	public GameObject hGO;
+	// health level
+	public GameObject eGO;
+	// exercise level
+	public GameObject cGO;
+	// cleanliness level
+	public GameObject bGO;
+	// blob level
 
 	public Button battleBtn;
 	public GameObject blueBattleBtnGO;
@@ -102,9 +110,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	public Button ok_button;
 	public GameObject ok_GO;
 
-
-
-	// battle 
+	// battle
 	public GPSCtrl battleGPS;
 	private GameObject gpsObject;
 	public double currentLat;
@@ -475,16 +481,16 @@ public class FeedPoopCtrl : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-			PlayerPrefs.SetString("battleUserList", www.text);
+			PlayerPrefs.SetString ("battleUserList", www.text);
 			Debug.Log ("WWW Ok!: " + www.text);
 			SceneManager.LoadScene ("BattleMain");
-			Debug.Log("WWW Ok!: " + www.text);
+			Debug.Log ("WWW Ok!: " + www.text);
 		} else {
 			Debug.Log ("WWW Error: " + www.error);
 		}    
 	}
 
-	public void WarningButtonClicked(string cmd)
+	public void WarningButtonClicked (string cmd)
 	{
 		if (cmd == "yes") {
 			gpsObject = GameObject.Find ("GPSCTRL");
@@ -499,7 +505,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		}
 	}
 
-	public void SetWarningWindowText(int msgCode)
+	public void SetWarningWindowText (int msgCode)
 	{
 		if (msgCode == 0) {
 			warning_body.text = "Your blob is too weak to battle. Would you like to do it anyway?";
@@ -508,20 +514,17 @@ public class FeedPoopCtrl : MonoBehaviour
 		}
 	}
 
-	public void DisableWarningWindow(int msgCode)
+	public void DisableWarningWindow (int msgCode)
 	{
 		battleWarning.enabled = false;
 		warning_label.enabled = false;
 		warning_body.enabled = false;
-			yes_GO.SetActive (false);
-			no_GO.SetActive (false);
-			ok_GO.SetActive (false);
-
-
-
+		yes_GO.SetActive (false);
+		no_GO.SetActive (false);
+		ok_GO.SetActive (false);
 	}
 
-	public void EnableWarningWindow(int msgCode)
+	public void EnableWarningWindow (int msgCode)
 	{
 		battleWarning.enabled = true;
 		warning_label.enabled = true;
@@ -533,12 +536,12 @@ public class FeedPoopCtrl : MonoBehaviour
 			ok_GO.SetActive (false);
 		} else if (msgCode == 1) {
 			yes_GO.SetActive (false);
-			no_GO.SetActive(false);
+			no_GO.SetActive (false);
 			ok_GO.SetActive (true);
 		}
 	}
 
-	public void PrintLevelBars()
+	public void PrintLevelBars ()
 	{
 		decimal val = Decimal.Parse (exerciseLevel);
 		//int level = Convert.ToInt32 (val);
@@ -552,7 +555,7 @@ public class FeedPoopCtrl : MonoBehaviour
 
 	}
 
-	public void OkayButtonClicked()
+	public void OkayButtonClicked ()
 	{
 		DisableWarningWindow (0);
 	}

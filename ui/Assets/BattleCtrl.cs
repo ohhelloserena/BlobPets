@@ -52,7 +52,7 @@ public class BattleCtrl : MonoBehaviour {
 		
 	}
 
-	// GET THE LIST OF THE CHOSEN USER'S BLOB AND POPULATE THE BUTTONS
+	// GET THE LIST OF THE CHOSEN USER'S BLOBS AND POPULATE THE BUTTONS
 	public void BuildBlobList ()
 	{
 		Button[] buttons = this.GetComponentsInChildren<Button> ();
@@ -64,6 +64,8 @@ public class BattleCtrl : MonoBehaviour {
 		for (int blobIndex = 0; blobIndex < 4; blobIndex++) {
 			string tempName = battleListData [chosenUserIndex] ["blobs"] [blobIndex] ["name"].Value;
 			if (tempName != "" && tempName != null) {
+				string blobID = battleListData [chosenUserIndex] ["blobs"] [blobIndex] ["id"].Value.ToString();
+				tempName = blobID + ". " + tempName;
 				blobList.Add (tempName);
 			}
 		}
@@ -73,6 +75,4 @@ public class BattleCtrl : MonoBehaviour {
 			GameObject.Find (buttonName).GetComponentInChildren<Text> ().text = blobList [i];
 		}
 	}
-
-	// "RequestedBlobId" --> current user's blob that will battle
 }
