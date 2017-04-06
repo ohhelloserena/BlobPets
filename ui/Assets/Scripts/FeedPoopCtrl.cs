@@ -28,6 +28,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	public string cleanlinessLevel;
 	public string healthLevel;
 	public string exerciseLevel;
+	public string blobLevel;
 
 	//private string nameKey = "Name";
 	private string emailKey = "Email";
@@ -64,12 +65,15 @@ public class FeedPoopCtrl : MonoBehaviour
 	public int feedComp;
 
 	// level bars
-	public Text h;
-	public Text e;
-	public Text c;
-	public GameObject hGO;
-	public GameObject eGO;
-	public GameObject cGO;
+	public Text h;	// health level
+	public Text e;	// exercise level
+	public Text c;	// cleanliness level
+	public Text b;	// blob level
+
+	public GameObject hGO;	// health level
+	public GameObject eGO;	// exercise level	
+	public GameObject cGO;	// cleanliness level
+	public GameObject bGO;	// blob level
 
 	public Button battleBtn;
 	public GameObject blueBattleBtnGO;
@@ -110,6 +114,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		h = hGO.GetComponent<Text> ();
 		c = cGO.GetComponent<Text> ();
 		e = eGO.GetComponent<Text> ();
+		b = bGO.GetComponent<Text> ();
 
 
 		DisableWarningWindow ();
@@ -244,13 +249,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		healthLevel = N ["health_level"].Value;
 		exerciseLevel = N ["exercise_level"].Value;
 		blobName0 = N ["name"].Value;
-
-		/*
-		Debug.Log ("nextCleanTime: " + nextCleanTime);
-		Debug.Log ("nextFeedTime: " + nextFeedTime);
-		Debug.Log ("cleanliness level: " + cleanlinessLevel);
-		Debug.Log ("health level: " + healthLevel);
-		*/
+		blobLevel = N ["level"].Value;
 	}
 
 
@@ -456,10 +455,7 @@ public class FeedPoopCtrl : MonoBehaviour
 			Debug.Log (battleListResult);
 			Debug.Log ("WWW Ok!: " + www.text);
 			SceneManager.LoadScene ("BattleMain");
-<<<<<<< HEAD
 			Debug.Log("WWW Ok!: " + www.text);
-=======
->>>>>>> 71b335fb404bf8e2b9a688465a68d1cea4ebcdcb
 		} else {
 			Debug.Log ("WWW Error: " + www.error);
 		}    
@@ -503,5 +499,6 @@ public class FeedPoopCtrl : MonoBehaviour
 		h.text = healthLevel;
 		c.text = cleanlinessLevel;
 		e.text = exerciseLevel;
+		b.text = blobLevel;
 	}
 }
