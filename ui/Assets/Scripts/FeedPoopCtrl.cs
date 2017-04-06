@@ -32,6 +32,7 @@ public class FeedPoopCtrl : MonoBehaviour
 	public string healthLevel;
 	public string exerciseLevel;
 	public string blobLevel;
+	public bool isResting;
 
 
 	//private string nameKey = "Name";
@@ -347,12 +348,15 @@ public class FeedPoopCtrl : MonoBehaviour
 
 		if (endComp < 0) {
 			// dateTime is earlier than end_rest
-			SetWarningWindowText (1);
-			EnableWarningWindow (1);
-		} else if (endComp == 0 || cleanComp > 0) {
+			isResting = true;
+			//DisableWarningWindow (0);
+		} else if (endComp == 0 || endComp > 0) {
 			// == 0 : dateTime same as CleanTime
 			// > 0 : dateTime is later than cleanTime
-			DisableWarningWindow (0);
+
+			isResting = false;
+			//SetWarningWindowText (1);
+			//EnableWarningWindow (1);
 		}
 
 	}
@@ -459,10 +463,18 @@ public class FeedPoopCtrl : MonoBehaviour
 		Debug.Log ("exercise: " + exerciseLevelInt);
 
 
-		if (healthLevelInt < 10 || cleanlinessLevelInt < 10 || exerciseLevelInt < 10) {
+		if (healthLevelInt < 10) {
+			SetWarningWindowText (2);
+			EnableWarningWindow (1);
+		} else if (cleanlinessLevelInt < 10 || exerciseLevelInt < 10) {
 			SetWarningWindowText (0);
 			EnableWarningWindow (0);
-		} else {
+		} else if (isResting){
+			SetWarningWindowText (1);
+			EnableWarningWindow (1);
+		}
+
+			else {
 			gpsObject = GameObject.Find ("GPSCTRL");
 			battleGPS = (GPSCtrl)gpsObject.GetComponent (typeof(GPSCtrl));
 			battleGPS.StartLocationService ();
@@ -536,7 +548,10 @@ public class FeedPoopCtrl : MonoBehaviour
 		if (msgCode == 0) {
 			warning_body.text = "Your blob is too weak to battle. Would you like to do it anyway?";
 		} else if (msgCode == 1) {
+			Debug.Log ("setting rest message.");
 			warning_body.text = "Your blob is tired and needs to rest before it can battle again. Try again later.";
+		} else if (msgCode == 2) {
+			warning_body.text = "Your blob is too unhealthy to battle. Feed it better and try again once its health level reaches 10.";
 		}
 	}
 
