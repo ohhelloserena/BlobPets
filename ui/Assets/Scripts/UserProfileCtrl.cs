@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using System.Security.Cryptography;
 using UnityEngine.Networking;
-using UnityEditor;
+//using UnityEditor;
 
 public class UserProfileCtrl : MonoBehaviour
 {
@@ -224,7 +224,8 @@ public class UserProfileCtrl : MonoBehaviour
 			if (www.isError) {
 				Debug.Log ("Delete blob error: " + www.error);
 			} else {
-				SceneView.RepaintAll ();
+				// reload scene after delete
+				SceneManager.LoadScene ("UserProfileUI");
 		
 			}
 		}

@@ -496,9 +496,15 @@ public class FeedPoopCtrl : MonoBehaviour
 
 	public void PrintLevelBars()
 	{
+		decimal val = Decimal.Parse (exerciseLevel);
+		//int level = Convert.ToInt32 (val);
+		int levelRounded = (int)Math.Round (val, 0);
+
 		h.text = healthLevel;
 		c.text = cleanlinessLevel;
-		e.text = exerciseLevel;
+		e.text = levelRounded.ToString ();
 		b.text = blobLevel;
+
+
 	}
 }
