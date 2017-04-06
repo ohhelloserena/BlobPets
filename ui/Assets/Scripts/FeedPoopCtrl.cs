@@ -473,7 +473,7 @@ public class FeedPoopCtrl : MonoBehaviour
 		{
 			N = JSON.Parse (www.text);
 			SceneManager.LoadScene ("BattleMain");
-			Debug.Log("WWW Ok!: " + www.data);
+			Debug.Log("WWW Ok!: " + www.text);
 		} else {
 			Debug.Log("WWW Error: "+ www.error);
 		}    

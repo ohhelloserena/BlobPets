@@ -85,8 +85,9 @@ public class GPSCtrl : MonoBehaviour
 		// First, check if user has location service enabled
 		if (!Input.location.isEnabledByUser)
 			//yield break;
-			distance_label.text = "Your phone's location setting is turned off. Go to your phone's Settings -> Location to turn on this service.";
-		// Start service before querying location
+			//distance_label.text = "Your phone's location setting is turned off. Go to your phone's Settings -> Location to turn on this service.";
+			distance_label.text = "You and your blobs have walked 0km so far.";
+			// Start service before querying location
 		Input.location.Start (5f, 5f);	// accuracy = 5m, update frequency = 5m
 
 

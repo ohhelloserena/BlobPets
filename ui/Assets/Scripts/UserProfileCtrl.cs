@@ -11,6 +11,8 @@ using System.Security.Policy;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using System.Security.Cryptography;
+using UnityEngine.Networking;
+using UnityEditor;
 
 public class UserProfileCtrl : MonoBehaviour
 {
@@ -29,6 +31,8 @@ public class UserProfileCtrl : MonoBehaviour
 	public string weeklyGoal;
 	public string remainingExercise;
 
+	public string deadBlobNum;
+
 	public string blobName0;
 	public string blobName1;
 	public string blobName2;
@@ -43,6 +47,11 @@ public class UserProfileCtrl : MonoBehaviour
 	public string blobId1;
 	public string blobId2;
 	public string blobId3;
+
+	public string aliveStatus0; 
+	public string aliveStatus1; 
+	public string aliveStatus2; 
+	public string aliveStatus3; 
 
 	public JSONNode result;
 
@@ -93,10 +102,32 @@ public class UserProfileCtrl : MonoBehaviour
 	public GameObject b2GO;
 	public GameObject b3GO;
 
+	// dead blob window
+	public Image dead_window;
+	public GameObject dead_windowGO;
+	public Text dead_header;
+	public GameObject dead_headerGO;
+	public Text dead_tombName;
+	public GameObject dead_tombNameGO;
+	public GameObject dead_okButton;
+	public Image dead_tombPic;
+	public GameObject dead_tombPicGO;
+	public Text dead_body;
+	public GameObject dead_bodyGO;
+	public Text dead_tombMsg;
+	public GameObject dead_tombMsgGO;
+
 
 	// Use this for initialization
 	void Start ()
 	{
+		dead_window = dead_windowGO.GetComponent<Image> ();
+		dead_header = dead_headerGO.GetComponent<Text> ();
+		dead_tombName = dead_tombNameGO.GetComponent<Text> ();
+		dead_tombPic = dead_tombPicGO.GetComponent<Image> ();
+		dead_body = dead_bodyGO.GetComponent<Text> ();
+		dead_tombMsg = dead_tombMsgGO.GetComponent<Text> ();
+
 		nameLabel = nameGameObject.GetComponent<Text> ();
 		winsLabel = winsGameObject.GetComponent<Text> ();
 		blobCountLabel = blobCountGameObject.GetComponent<Text> ();
@@ -128,16 +159,83 @@ public class UserProfileCtrl : MonoBehaviour
 		email = playerPreferences.GetEmail ();
 		password = playerPreferences.GetPassword ();
 
+		DisableDeadBlobWindow ();
+
 		//SendTokenRequest (email, password);
 		CallAPI ();
 
 	}
 
+	public void EnableDeadBlobWindow()
+	{
+		dead_window.enabled = true;
+		dead_header.enabled = true;
+		dead_tombName.enabled = true;
+		dead_okButton.SetActive (true);
+		dead_tombPic.enabled = true;
+		dead_body.enabled = true;
+		dead_tombMsg.enabled = true;
 
+	}
 
+	public void DisableDeadBlobWindow()
+	{
+		dead_window.enabled = false;
+		dead_header.enabled = false;
+		dead_tombName.enabled = false;
+		dead_okButton.SetActive (false);
+		dead_tombPic.enabled = false;
+		dead_body.enabled = false;
+		dead_tombMsg.enabled = false;
+	}
 
+	public void SetDeadBlobWindow(string blobName)
+	{
+		// tombstone
+		dead_tombName.text = blobName;
 
+		// header
+		dead_header.text = "RIP " + blobName;
+	}
 
+	IEnumerator DeleteBlob(string blobNum)
+	{
+		string blobid = "-1";
+
+		if (blobNum == "0") {
+			blobid = blobId0;
+		} else if (blobNum == "1") {
+			blobid = blobId1;
+		} else if (blobNum == "2") {
+			blobid = blobId2;
+		} else if (blobNum == "3") {
+			blobid = blobId3;
+		}
+
+		string url = "http://104.131.144.86/api/blobs/";
+
+		string fullUrl = url + blobid + "?token=" + token;
+
+		Debug.Log ("full URL: " + fullUrl);
+
+		using (UnityWebRequest www = UnityWebRequest.Delete (fullUrl)) {
+			yield return www.Send ();
+
+			if (www.isError) {
+				Debug.Log ("Delete blob error: " + www.error);
+			} else {
+				SceneView.RepaintAll ();
+		
+			}
+		}
+
+	}
+
+	public void DeadBlobButtonClicked()
+	{
+		StartCoroutine (DeleteBlob (deadBlobNum));
+	}
+		
 	/// <summary>
 	/// Prints user info on the scene.
 	/// </summary>
@@ -352,6 +450,7 @@ public class UserProfileCtrl : MonoBehaviour
 			ParseJson (result);
 			//CallExerciseAPI ();
 			//SetHeader ();
+			CheckBlobStatus();
 			SetBlobNames ();
 			ManageBlobButtons ();
 			SendTokenRequest (email, password);
@@ -391,8 +490,67 @@ public class UserProfileCtrl : MonoBehaviour
 		blobColor2 = result ["blobs"] [2] ["color"].Value;
 		blobColor3 = result ["blobs"] [3] ["color"].Value;
 
+		// blob alive status
+		aliveStatus0 = result ["blobs"] [0] ["alive"].Value;
+		aliveStatus1 = result ["blobs"] [1] ["alive"].Value;
+		aliveStatus2 = result ["blobs"] [2] ["alive"].Value;
+		aliveStatus3 = result ["blobs"] [3] ["alive"].Value;
+
 		// set exercise level
 		exerciseLevel = result ["blobs"] [0] ["exercise_level"].Value;
+	}
+
+	public void CheckBlobStatus()
+	{
+		Debug.Log ("Checking blob status...");
+
+		if (!String.IsNullOrEmpty (aliveStatus0)) {
+			if (aliveStatus0 == "0") {
+				Debug.Log ("Blob 0 dead.");
+				EnableDeadBlobWindow ();
+				deadBlobNum = "0";
+				PrintDeadBlobWarning ("0");
+			}
+		} else if (!String.IsNullOrEmpty (aliveStatus1)) {
+			if (aliveStatus1 == "0") {
+				Debug.Log ("Blob 1 dead.");
+				EnableDeadBlobWindow ();
+				deadBlobNum = "1";
+				PrintDeadBlobWarning ("1");
+			}
+		} else if (!String.IsNullOrEmpty (aliveStatus2)) {
+			if (aliveStatus2 == "0") {
+				Debug.Log ("Blob 2 dead.");
+				EnableDeadBlobWindow ();
+				deadBlobNum = "2";
+				PrintDeadBlobWarning ("2");
+			}
+		} else if (!String.IsNullOrEmpty (aliveStatus3)) {
+			if (aliveStatus3 == "0") {
+				Debug.Log ("Blob 3 dead.");
+				EnableDeadBlobWindow ();
+				deadBlobNum = "3";
+				PrintDeadBlobWarning ("3");
+			}
+		}
+	}
+
+	public void PrintDeadBlobWarning(string blobNum)
+	{
+		string deadBlobName = "";
+
+		if (blobNum == "0") {
+			deadBlobName = blobName0;
+		} else if (blobNum == "1") {
+			deadBlobName = blobName1;
+		} else if (blobNum == "2") {
+			deadBlobName = blobName2;
+		} else if (blobNum == "3") {
+			deadBlobName = blobName3;
+		}
+
+		dead_header.text = "RIP " + deadBlobName;
+		dead_tombName.text = deadBlobName;
 	}
 
 

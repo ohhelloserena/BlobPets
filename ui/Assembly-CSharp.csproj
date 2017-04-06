@@ -48,7 +48,6 @@
   <ItemGroup>
      <Compile Include="Assets\BattleCtrl.cs" />
      <Compile Include="Assets\BattleUserList.cs" />
-     <Compile Include="Assets\BlobRoomCtrl.cs" />
      <Compile Include="Assets\CreateNewBlobCtrl.cs" />
      <Compile Include="Assets\PlayerLocationCtrl.cs" />
      <Compile Include="Assets\Scripts\BreedCtrl.cs" />
