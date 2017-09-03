@@ -2,6 +2,11 @@
 
 An Android mobile virtual pet game where players can raise blobs and fight other players' blobs.
 
+## Requirements
+
+* Unity
+* Android SDK
+
 ## Screenshots
 
 ![login](http://i.imgur.com/YWs4GSC.png)
