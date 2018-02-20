@@ -10,6 +10,16 @@ An Android mobile virtual pet game where players can raise blobs and fight other
 * Android SDK
 * Laravel
 
+## Features
+
+* Create and name a blob
+* Once user has 2 or more blobs, user can pick 2 blobs to breed and produce a child blob
+* Visit the blob's room to see how it's doing
+* Feed, clean, and physically walk the blobs to keep them healthy
+* App tracks distance walked using GPS
+* See other users/blobs within a given radius of your current location
+* Pick fights with other blobs to gain health points
+
 ## Screenshots
 
 ![login](http://i.imgur.com/YWs4GSC.png)
