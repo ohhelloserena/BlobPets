@@ -20,11 +20,10 @@ An Android mobile virtual pet game where players can raise blobs and fight other
 * See other users/blobs within a given radius of your current location
 * Pick fights with other blobs to gain health points
 
-## Screenshots
+## Team Members
 
-![login](http://i.imgur.com/YWs4GSC.png)
-
-![blob home](http://i.imgur.com/6j9blXm.png)
-
-![blob fight](http://i.imgur.com/ngjiyCO.png)
+* Janelle Ashley Sy - front-end
+* Robert Hsieh - back-end
+* Lulu Lee - back-end
+* Serena Chen - front-end
 
