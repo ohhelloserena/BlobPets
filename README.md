@@ -2,7 +2,9 @@
 
 An Android mobile virtual pet game where players can raise blobs and fight other players' blobs.
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/4gvzy6m7hH0/0.jpg)](https://www.youtube.com/watch?v=4gvzy6m7hH0)
+Video:
+
+[![Video link](https://img.youtube.com/vi/4gvzy6m7hH0/0.jpg)](https://www.youtube.com/watch?v=4gvzy6m7hH0)
 
 [![download](https://i.imgur.com/YOoTH4Y.png)](https://play.google.com/store/apps/details?id=com.Team2.BlobPets&hl=en&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
